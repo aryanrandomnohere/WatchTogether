@@ -1,7 +1,7 @@
 export default function Series({ imdbId }: { imdbId: string }) {
   if (!imdbId) {
       return (
-          <div className="flex justify-center items-center text-lg md:text-2xl lg:text-3xl mt-36 lg:mt-72 text-center px-4">
+          <div className="flex justify-center items-center text-lg md:text-2xl lg:text-3xl mt-36 lg:mt-72 text-center px-4 font-medium text-zinc-600">
               There is no media link or any IMDb ID present
           </div>
       );
