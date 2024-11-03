@@ -47,7 +47,13 @@ export default function ShowsDisplay() {
     }, [id]);
 
     if (!media) {
-        return <div>Loading...</div>;
+        return <div className="flex h-screen w-full bg-gray-900 justify-center items-center"><div
+        className="inline-block h-24 w-24 md:h-36 md:w-36  animate-spin rounded-full text-orange-600  border-4 border-solid  border-current border-r-transparent  align-[-0.125em] text-warning motion-reduce:animate-[spin_1.5s_linear_infinite]"
+        role="status">
+        <span
+          className="!absolute !-m-px !h-px !w-px !overflow-hidden !whitespace-nowrap !border-0 !p-0 ![clip:rect(0,0,0,0)]"
+        >Loading...</span>
+      </div></div>
     }
 
     if (!media.success) {
@@ -62,8 +68,8 @@ export default function ShowsDisplay() {
         <div className="flex flex-wrap bg-gray-900 min-h-screen justify-center text-zinc-300">
             {media.result.map((item) => (
                 <div
-                    key={item.imdbID}
-                    className="relative flex flex-col items-center justify-center m-2 sm:m-5 w-full sm:w-2/5 md:w-1/5 bg-gray-800 rounded-lg overflow-hidden shadow-lg transition-transform transform hover:scale-105 group"
+                    key={item.imdbID}  onClick={() => handleClick(item.imdbID)}
+                    className="relative flex flex-col items-center justify-center m-2 mt-3 sm:m-5 w-full sm:w-2/5 md:w-1/6 bg-gray-800 rounded-lg overflow-hidden shadow-lg transition-transform transform hover:scale-105 group"
                 >
                     <div className="relative w-full">
                         <img
