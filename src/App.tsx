@@ -9,6 +9,7 @@ import ShowsDisplay from "./pages/ShowsDisplay";
 export default function App() {
   return (
     <BrowserRouter> <Routes>  
+     
       <Route path="/" element={<Applayout/>}>
       <Route path="/" element={<Home/>}/>
       <Route path="/nowwatching" element={<Room />}/>
