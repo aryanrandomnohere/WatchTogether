@@ -3,8 +3,9 @@ import Navbar from "./Navbar";
 
 export default function Applayout() {
   return (
-    <div><Navbar/>
-    <Outlet/>
+    <div className="flex flex-col">
+      <div><Navbar/></div>
+    <div className=""><Outlet/></div>
     </div>
   )
 }
