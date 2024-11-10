@@ -17,17 +17,18 @@ const client_1 = require("@prisma/client");
 const jsonwebtoken_1 = require("jsonwebtoken");
 const bcrypt_1 = __importDefault(require("bcrypt"));
 const JWT_SECRET_1 = __importDefault(require("../JWT_SECRET"));
-// const signUpSchema = zod.object({
-//     firstname: zod.string(),
-//     lastname:  zod.string(),
-//     username:  zod.string(),
-//     password:  zod.string(),
-//     email:     zod.string().email(),
-// })
-// const logInSchema =zod.object({
-//     email: zod.string(),
-//     password:zod.string(),
-// })
+const zod_1 = __importDefault(require("zod"));
+const signUpSchema = zod_1.default.object({
+    firstname: zod_1.default.string(),
+    lastname: zod_1.default.string(),
+    username: zod_1.default.string(),
+    password: zod_1.default.string(),
+    email: zod_1.default.string().email(),
+});
+const logInSchema = zod_1.default.object({
+    email: zod_1.default.string(),
+    password: zod_1.default.string(),
+});
 const authRouter = express_1.default.Router();
 const prisma = new client_1.PrismaClient();
 const SALT_ROUNDS = 10; // Number of salt rounds for bcrypt
@@ -35,9 +36,10 @@ const SALT_ROUNDS = 10; // Number of salt rounds for bcrypt
 //@ts-ignore
 authRouter.post("/signup", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const { email, firstname, lastname, password, username } = req.body;
-    const data = { email, firstname, lastname, password, username };
-    // const { success, data } = signUpSchema.safeParse(credentials);
-    // if (!success) return res.status(400).json({ msg: "Invalid Input" });
+    const credentials = { email, firstname, lastname, password, username };
+    const { success, data } = signUpSchema.safeParse(credentials);
+    if (!success)
+        return res.status(400).json({ msg: "Invalid Input" });
     try {
         // Check if user already exists
         const existingUser = yield prisma.user.findUnique({ where: { email: data.email } });
@@ -55,6 +57,8 @@ authRouter.post("/signup", (req, res) => __awaiter(void 0, void 0, void 0, funct
                 username: data.username,
             }
         });
+        yield prisma.room.create({ data: { userId: newUser.id }
+        });
         // Generate JWT token
         const token = (0, jsonwebtoken_1.sign)({ userId: newUser.id, username: newUser.username }, JWT_SECRET_1.default);
         return res.status(201).json({ msg: "Signup Successful", token });
@@ -68,17 +72,18 @@ authRouter.post("/signup", (req, res) => __awaiter(void 0, void 0, void 0, funct
 //@ts-ignore
 authRouter.post("/login", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const { email, password } = req.body;
-    const data = { email, password };
-    // const { success, data } = logInSchema.safeParse(req.body);
-    // if (!success) return res.status(400).json({ msg: "Invalid Input" });
+    const credential = { email, password };
+    const { success, data } = logInSchema.safeParse(credential);
+    if (!success)
+        return res.status(400).json({ msg: "Invalid Input" });
     try {
         const user = yield prisma.user.findUnique({ where: { email: data.email } });
         if (!user)
-            return res.status(401).json({ msg: "Invalid credentials" });
+            return res.status(401).json({ msg: "Email does not exists" });
         // Compare password with stored hashed password
         const isPasswordValid = yield bcrypt_1.default.compare(data.password, user.password);
         if (!isPasswordValid)
-            return res.status(401).json({ msg: "Invalid credentials" });
+            return res.status(401).json({ msg: "Invalid Password" });
         // Generate JWT token
         const token = (0, jsonwebtoken_1.sign)({ userId: user.id, username: user.username }, JWT_SECRET_1.default);
         return res.status(200).json({ msg: "Login Successful", token });

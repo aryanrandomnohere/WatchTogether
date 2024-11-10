@@ -15,8 +15,27 @@ model User {
   password         String
   createdAt        DateTime        @default(now())
   Movies           UserMovieList[] 
-
+  chats            Chat[]
+  room             Room?        @relation("UserRoom")
 }
+ 
+model Room {
+  id    String   @id @default(uuid())
+  playing String  @default("")
+  user  User     @relation(fields: [userId], references: [id],name:"UserRoom")
+  userId String  @unique
+}
+
+
+ model Chat {
+  id   Int    @id  @default(autoincrement()) 
+  name String
+  time String
+  createdAt DateTime @default(now())
+  message String
+  userId  String
+  user    User  @relation(fields: [userId], references:[id])
+ }
 
 model UserMovieList {
   id         String       @id @default(uuid())

@@ -5,7 +5,14 @@ export default {
     "./src/**/*.{js,ts,jsx,tsx}",
   ],
   theme: {
-    extend: {},
+    extend: {width: {
+      '128': '28rem',
+      '92':'21rem',
+    }},
   },
-  plugins: [],
+  plugins: [
+    require('daisyui'),    
+  ],
 }
+
+

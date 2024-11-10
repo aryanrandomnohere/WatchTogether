@@ -5,7 +5,7 @@ export default function Applayout() {
   return (
     <div className="flex flex-col">
       <div><Navbar/></div>
-    <div className="mt-24 md:mt-16"><Outlet/></div>
+    <div className=""><Outlet/></div>
     </div>
   )
 }
