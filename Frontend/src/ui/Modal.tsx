@@ -1,6 +1,7 @@
 import React, { cloneElement, createContext, ReactNode, useContext, useState } from "react";
 import { createPortal } from "react-dom";
 import { HiXMark } from "react-icons/hi2";
+import { useOutsideClick } from "../hooks/useOutsideClick";
 
 interface ModalContextType {
   openName: string;
@@ -51,12 +52,12 @@ interface WindowProps {
 
 function Window({ children, name }: WindowProps) {
   const { openName, close } = useModal();
-
+  const ref = useOutsideClick(close)
   if (name !== openName) return null;
 
   return createPortal(
     <div className="fixed inset-0 w-full h-screen bg-slate-950 bg-opacity-20 backdrop-blur-sm z-[1000] transition-all duration-500 flex items-center justify-center p-1">
-      <div className="flex flex-col w-auto h-auto max-w-full max-h-full bg-gray-900 rounded-xl shadow-lg overflow-auto">
+      <div ref={ref} className="flex flex-col w-auto h-auto max-w-full max-h-full bg-gray-900 rounded-xl shadow-lg overflow-auto">
         <div className="self-end p-2 text-orange-600 text-3xl cursor-pointer" onClick={close}>
           <HiXMark />
         </div>

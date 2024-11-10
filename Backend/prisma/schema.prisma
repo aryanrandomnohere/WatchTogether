@@ -52,7 +52,7 @@ model Movie {
   id         String             @id @default(uuid())
   title      String
   year       String          
-  imdbID     String          @unique
+  imdbID     String             @unique
   type       String          
   poster     String          
 

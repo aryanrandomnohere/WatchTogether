@@ -74,7 +74,7 @@ export default function ShowsDisplay() {
           `https://api.collectapi.com/imdb/imdbSearchByName?query=${id}`,
           {
             headers: {
-              authorization: "apikey 2FqyBZsg4poihWXGffNIp4:0AUvyarI8lQqOTn2BJaECz",
+              authorization: "apikey 3qxa4XE7HSF8jW6TXnB1m1:5jPzdeDrHaI7wkz9weXRyj",
             },
           }
         );
