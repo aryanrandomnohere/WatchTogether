@@ -119,7 +119,7 @@ const WatchLater = [
           ))}
         </div>
         
-        <div className="row-span-1 col-span-5 text-white font-bold text-3xl self-end mb-4 mt-8">
+        <div className="row-span-1 col-span-5 text-white font-bold text-3xl self-end mb-4 mt-8 ml-6">
           Recently Watched
         </div>
         
