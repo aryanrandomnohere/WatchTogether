@@ -5,18 +5,18 @@ import bcrypt from "bcrypt";
 import JWT_SECRET from "../JWT_SECRET";
 import zod from 'zod'
 
-// const signUpSchema = zod.object({
-//     firstname: zod.string(),
-//     lastname:  zod.string(),
-//     username:  zod.string(),
-//     password:  zod.string(),
-//     email:     zod.string().email(),
-// })
+const signUpSchema = zod.object({
+    firstname: zod.string(),
+    lastname:  zod.string(),
+    username:  zod.string(),
+    password:  zod.string(),
+    email:     zod.string().email(),
+})
 
-// const logInSchema =zod.object({
-//     email: zod.string(),
-//     password:zod.string(),
-// })
+const logInSchema =zod.object({
+    email: zod.string(),
+    password:zod.string(),
+})
 
 const authRouter = express.Router();
 const prisma = new PrismaClient();
@@ -26,9 +26,9 @@ const SALT_ROUNDS = 10; // Number of salt rounds for bcrypt
 //@ts-ignore
 authRouter.post("/signup", async (req: Request, res: Response) => {
    const  {email,firstname,lastname,password,username} = req.body;
-    const data = {email,firstname,lastname,password,username}
-    // const { success, data } = signUpSchema.safeParse(credentials);
-    // if (!success) return res.status(400).json({ msg: "Invalid Input" });
+    const credentials = {email,firstname,lastname,password,username}
+    const { success, data } = signUpSchema.safeParse(credentials);
+    if (!success) return res.status(400).json({ msg: "Invalid Input" });
 
     try {
         // Check if user already exists
@@ -49,8 +49,11 @@ authRouter.post("/signup", async (req: Request, res: Response) => {
             }
         });
 
+       await prisma.room.create({data: {userId:newUser.id}
+    }) 
+
         // Generate JWT token
-        const token = sign({ userId: newUser.id, username: newUser.username }, JWT_SECRET);
+        const token = sign({ userId: newUser.id, username: newUser.username}, JWT_SECRET);
         return res.status(201).json({ msg: "Signup Successful", token });
     } catch (error) {
         console.error(error);
@@ -62,17 +65,17 @@ authRouter.post("/signup", async (req: Request, res: Response) => {
 //@ts-ignore
 authRouter.post("/login", async (req: Request, res: Response) => {
 const {email, password} = req.body;
-    const data = {email, password}
-    // const { success, data } = logInSchema.safeParse(req.body);
-    // if (!success) return res.status(400).json({ msg: "Invalid Input" });
+    const credential = {email, password}
+    const { success, data } = logInSchema.safeParse(credential);
+    if (!success) return res.status(400).json({ msg: "Invalid Input" });
 
     try {
         const user = await prisma.user.findUnique({ where: { email: data.email } });
-        if (!user) return res.status(401).json({ msg: "Invalid credentials" });
+        if (!user) return res.status(401).json({ msg: "Email does not exists" });
 
         // Compare password with stored hashed password
         const isPasswordValid = await bcrypt.compare(data.password, user.password);
-        if (!isPasswordValid) return res.status(401).json({ msg: "Invalid credentials" });
+        if (!isPasswordValid) return res.status(401).json({ msg: "Invalid Password" });
 
         // Generate JWT token
         const token = sign({ userId: user.id, username: user.username }, JWT_SECRET);

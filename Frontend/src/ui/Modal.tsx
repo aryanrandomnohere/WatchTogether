@@ -1,17 +1,13 @@
 import React, { cloneElement, createContext, ReactNode, useContext, useState } from "react";
 import { createPortal } from "react-dom";
-// import Button from "./Button";
 import { HiXMark } from "react-icons/hi2";
-// import { useOutsideClick } from "../hooks/useOutsideClick";
 
-// Define a context type
 interface ModalContextType {
   openName: string;
   close: () => void;
   open: (name: string) => void;
 }
 
-// Create a context with a default value
 const ModalContext = createContext<ModalContextType | undefined>(undefined);
 
 export const useModal = () => {
@@ -41,7 +37,7 @@ interface OpenProps {
 }
 
 function Open({ children, opens }: OpenProps) {
-  const { open } = useModal(); // Using the custom hook to access the context
+  const { open } = useModal();
 
   const handleClick = () => open(opens);
 
@@ -54,23 +50,19 @@ interface WindowProps {
 }
 
 function Window({ children, name }: WindowProps) {
-  const { openName, close } = useModal(); // Using the custom hook to access the context
+  const { openName, close } = useModal();
 
   if (name !== openName) return null;
-  
-  // const ref = useOutsideClick(close, true);
 
   return createPortal(
-    <div
-  
-      className="fixed inset-0 w-full h-screen bg-slate-950 bg-opacity-20 backdrop-blur-sm z-[1000] transition-all duration-500 flex items-center justify-center p-1"
-    >
-      <div className="flex flex-col w-full max-w-md bg-gray-950 rounded-lg shadow-lg">
+    <div className="fixed inset-0 w-full h-screen bg-slate-950 bg-opacity-20 backdrop-blur-sm z-[1000] transition-all duration-500 flex items-center justify-center p-1">
+      <div className="flex flex-col w-auto h-auto max-w-full max-h-full bg-gray-900 rounded-xl shadow-lg overflow-auto">
         <div className="self-end p-2 text-orange-600 text-3xl cursor-pointer" onClick={close}>
           <HiXMark />
-         </div>
-        <div className="px-5">
-        {children}</div>
+        </div>
+        <div className="px-7">
+          {cloneElement(children as React.ReactElement, { close })}
+        </div>
       </div>
     </div>,
     document.body

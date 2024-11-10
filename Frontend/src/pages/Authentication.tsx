@@ -1,28 +1,37 @@
 import { FormEvent, useState } from "react";
 import n from "./n.png";
 import axios from "axios";
+import toast from "react-hot-toast";
+import useAuth from "../hooks/useAuth";
 
-export default function Authentication() {
+interface AuthenticationProps {
+  close?: () => void;
+}
+
+
+export default function Authentication({ close }: AuthenticationProps) {
   const [isSignup, setIsSignup] = useState(false);
   const [email, setEmail] = useState("");
-  const [firstName, setFirstName] = useState("");
-  const [lastName, setLastName] = useState("");
+  const [firstname, setFirstName] = useState("");
+  const [lastname, setLastName] = useState("");
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
-
+  const [isLoading, setIsLoading] =useState<boolean>(false);
+  const {login} = useAuth();
+  
   const handleToggle = () => {
     setIsSignup((prev) => !prev);
   };
 
   const handleSubmit = async (event: FormEvent) => {
     event.preventDefault();
-
+setIsLoading(true);
     const url = isSignup
       ? "http://localhost:3000/api/v1/Auth/signup"
       : "http://localhost:3000/api/v1/Auth/login";
       
     const data = isSignup
-      ? { email, firstName, lastName, username, password } // Send all fields for signup
+      ? { email, firstname, lastname, username, password } // Send all fields for signup
       : { email, password }; // Send only email and password for login
 
     try {
@@ -32,21 +41,38 @@ export default function Authentication() {
       const token = response.data.token;
 
       // Save token to local storage
-      localStorage.setItem("token", token);
+      login(token);
 
-      // Optionally, you can redirect the user or update the UI
-      console.log(`${isSignup ? "Signup" : "Login"} successful, token saved.`);
+      toast.success(`${isSignup ? "Signup" : "Login"} successful`,{
+        style: {
+          borderRadius: '5px',
+          background: '#333',
+          color: '#fff',
+        },
+      });
+      setIsLoading(false);
+      if (close) close();
     } catch (error) {
-      console.error("Error during authentication:", error);
+      console.log();
+      //@ts-ignore
+      toast.error(`${isSignup ? "Signup" : "Login"} Failed: ${error.response.data.msg}`);
+      setIsLoading(false);  
       // Handle errors accordingly, e.g., show a message to the user
     }
   };
 
+
+ <span className="loading loading-dots loading-lg"></span> 
+
+
+
   return (
     <div className="flex items-center justify-center">
-      <section className="w-full max-w-md p-2 rounded-lg shadow-lg">
+
+
+      <section className="w-full max-w-md px-1 pb-7 rounded-lg shadow-lg">
         <div className="text-center mb-0">
-          <img className="mx-auto mb-3 w-32" src={n} alt="logo" />
+          <img className="mx-auto mb-12 w-32" src={n} alt="logo" />
         </div>
 
         <form onSubmit={handleSubmit}>
@@ -60,21 +86,24 @@ export default function Authentication() {
               type="email"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
-              className="peer block w-full px-4 py-2 rounded bg-transparent outline-none border border-neutral-300 transition-all duration-200 ease-linear focus:border-yellow-500 text-white"
+              className="peer block w-full px-4 py-2 rounded min-w-72 md:min-w-96  bg-transparent outline-none border border-neutral-300 transition-all duration-200 ease-linear focus:border-yellow-500 text-white"
               placeholder="Email"
+              disabled={isLoading}
               required
             />
           </div>
 
           {/* First Name Input (only for signup) */}
+          <div className="flex gap-3">
           {isSignup && (
             <div className="mb-6">
               <input
                 type="text"
-                value={firstName}
+                value={firstname}
                 onChange={(e) => setFirstName(e.target.value)}
-                className="peer block w-full px-4 py-2 rounded bg-transparent outline-none border border-neutral-300 transition-all duration-200 ease-linear focus:border-yellow-500 text-white"
+                className="peer block  w-full px-4 py-2 rounded bg-transparent outline-none border border-neutral-300 transition-all duration-200 ease-linear focus:border-yellow-500 text-white"
                 placeholder="First Name"
+                disabled={isLoading}
                 required
               />
             </div>
@@ -85,14 +114,15 @@ export default function Authentication() {
             <div className="mb-6">
               <input
                 type="text"
-                value={lastName}
+                value={lastname}
                 onChange={(e) => setLastName(e.target.value)}
                 className="peer block w-full px-4 py-2 rounded bg-transparent outline-none border border-neutral-300 transition-all duration-200 ease-linear focus:border-yellow-500 text-white"
                 placeholder="Last Name"
+                disabled={isLoading}
                 required
               />
             </div>
-          )}
+          )}</div>
 
           {/* Username Input (only for signup) */}
           {isSignup && (
@@ -103,6 +133,7 @@ export default function Authentication() {
                 onChange={(e) => setUsername(e.target.value)}
                 className="peer block w-full px-4 py-2 rounded bg-transparent outline-none border border-neutral-300 transition-all duration-200 ease-linear focus:border-yellow-500 text-white"
                 placeholder="Username"
+                disabled={isLoading}
                 required
               />
             </div>
@@ -114,8 +145,9 @@ export default function Authentication() {
               type="password"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
-              className="peer mb-8 block w-full px-4 py-2 rounded bg-transparent outline-none border border-neutral-300 transition-all duration-200 ease-linear focus:border-yellow-500 text-white"
+              className="peer mb-8 block min-w-72 md:min-w-96  w-full px-4 py-2 rounded bg-transparent outline-none border border-neutral-300 transition-all duration-200 ease-linear focus:border-yellow-500 text-white"
               placeholder="Password"
+              disabled={isLoading}
               required
             />
           </div>
