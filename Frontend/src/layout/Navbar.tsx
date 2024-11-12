@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import n from "./n.png"; // Correctly import the image
 import Button from "../ui/Button";
-import { useRecoilValue } from "recoil";
+import { useRecoilValue, useSetRecoilState } from "recoil";
 import { isAuthenticatedState } from "../State/authState";
 import Modal from "../ui/Modal";
 import Authentication from "../pages/Authentication";
@@ -10,14 +10,22 @@ import axios from "axios";
 import {TbLayoutSidebarRight } from "react-icons/tb";
 import Sidebar from "../ui/SidebarUI";
 import SideBar from "./SideBar";
+import { userInfo } from "../State/userState";
 
 
+interface UserInfoType {
+  id:string,
+  username:string,
+  email:string,
+  firsname:string,
+  lastname:string,
+}
 
 
 export default function Navbar() {
   const navigate = useNavigate();
   const [query, setQuery] = useState("");
-
+const setUserInfo = useSetRecoilState(userInfo);
 
   useEffect(() => {
     async function fetchUserData() {
@@ -27,8 +35,8 @@ headers:{
   authorization:localStorage.getItem("token")
 }
  }); 
-      console.log(response);
-       
+      const { id, username, email, firsname, lastname }:UserInfoType = response.data.userWithMovies
+       setUserInfo({ id, username, email, firsname, lastname })
     }
 
     fetchUserData();

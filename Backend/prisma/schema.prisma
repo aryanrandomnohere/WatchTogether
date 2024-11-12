@@ -7,23 +7,37 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 model User {
-  id               String             @id @default(uuid())
+  id               String          @id @default(uuid())
   firstname        String
   lastname         String
   email            String          @unique
   username         String          @unique
   password         String
+  status           String         @default("OFFLINE")
   createdAt        DateTime        @default(now())
   Movies           UserMovieList[] 
   chats            Chat[]
-  room             Room?        @relation("UserRoom")
+  room             Room?         @relation("UserRoom")
+  friend           Friendship[]  @relation("MyFriendships")
+  friendships      Friendship[]  @relation("FriendOf")
 }
+
+
+model Friendship {
+  id  Int           @id @default(autoincrement())
+  user User         @relation(fields: [userId], references: [id], name:"MyFriendships")
+  userId  String  
+  friend  User      @relation(fields: [friendId], references: [id], name:"FriendOf")
+  friendId String   
+  @@unique([userId, friendId])
+}
+
  
 model Room {
-  id    String   @id @default(uuid())
+  id    String    @id @default(uuid())
   playing String  @default("")
-  user  User     @relation(fields: [userId], references: [id],name:"UserRoom")
-  userId String  @unique
+  user  User      @relation(fields: [userId], references: [id],name:"UserRoom")
+  userId String   @unique
 }
 
 

@@ -1,1 +1,1 @@
-{"root":["./src/AuthMiddleware.ts","./src/JWT_SECRET.ts","./src/app.ts","./src/index.ts","./src/InputValidation/AuthValidation.ts","./src/Routes/AuthRouter.ts","./src/Routes/UserRouter.ts","./src/Routes/index.ts"],"version":"5.6.2"}
+{"root":["./src/AuthMiddleware.ts","./src/JWT_SECRET.ts","./src/app.ts","./src/index.ts","./src/Events/chatEvents.ts","./src/Events/userEvents.ts","./src/Events/videoEvents.ts","./src/InputValidation/AuthValidation.ts","./src/Routes/AuthRouter.ts","./src/Routes/UserRouter.ts","./src/Routes/index.ts"],"version":"5.6.2"}

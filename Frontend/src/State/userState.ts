@@ -1,13 +1,20 @@
-// import { selector } from "recoil";
+import { atom } from "recoil";
 
-// // interface userInfo {
+interface UserInfoType {
+    id:string,
+    username:string,
+    email:string,
+    firsname:string,
+    lastname:string,
+}
 
-
-// // }
-
-
-
-// const userInfo = selector({
-//     key:"userInfo",
-//     get: 
-// })
+export const userInfo = atom<UserInfoType>({
+   key:"userInfo",
+   default: {
+    id:"",
+    username:"",
+    email:"",
+    firsname:"",
+    lastname:"",
+   }
+})

@@ -1,17 +1,16 @@
 import { FormEvent, useEffect, useState } from "react";
 import Series from "../components/Series";
 import { GoTriangleLeft, GoTriangleRight } from "react-icons/go";
-import io from "socket.io-client";
 import ChatBox from "../components/ChatBox";
 import { BiSend } from "react-icons/bi";
-import { useParams } from "react-router-dom";
 import { FaExchangeAlt } from "react-icons/fa";
-import { useRecoilState } from "recoil";
-import { nowPlaying } from "../State/playingOnState";
+import { useRecoilState, useRecoilValue, useSetRecoilState} from "recoil";
+import { nowPlaying, wasPlaying } from "../State/playingOnState";
+import { userInfo } from "../State/userState";
+import { roomMessages } from "../State/roomChatState";
+import { useParams } from "react-router-dom";
+import { socketAtom } from "../State/socketState";
 
-const socket = io("http://localhost:8000/", {
-    transports: ["websocket"]
-});
 
 interface Message {
     name: string;
@@ -19,26 +18,26 @@ interface Message {
     message: string;
 }
 
-const initialState: Message[] = [];
-
 export default function Room() {
     const [playing, setPlaying] = useRecoilState(nowPlaying)
-    const [wasPlaying, setWasPlaying]= useState<string>();
-    const [isOpen, setIsOpen] = useState<boolean>(false);
-    const { roomId } = useParams();
-    const [messages, setMessages] = useState<Message[]>(initialState);
-    const [name, setName] = useState("");
+    const wasplaying= useRecoilValue(wasPlaying)
+    const [isOpen, setIsOpen] = useState<boolean>(false)
+    const [messages, setMessages] = useRecoilState(roomMessages);
     const [newMessage, setNewMessage] = useState("");
-    const isPlaying = playing || wasPlaying ||"";
+    const isPlaying = playing || wasplaying ||"";
+    const Info = useRecoilValue(userInfo)
+    const { roomId } = useParams();
+    const setWasPlaying = useSetRecoilState(wasPlaying);
+    const socket = useRecoilValue(socketAtom);
+    
     useEffect(() => {
         if (!roomId) return;
     
         socket.emit("join-room", roomId);
-    
-        // Listen for old messages to load
         socket.on("load-messages", (oldMessages: Message[]) => {
             setMessages(oldMessages);
         });
+
 
         socket.on("load-playing",(playing)=>{console.log(playing);
             setWasPlaying(playing.playing)
@@ -50,7 +49,7 @@ export default function Room() {
         });
         socket.on("receive-playing", ({playing})=>{setPlaying(playing);}
         )
-    
+
         return () => {
             socket.off("load-messages");
             socket.off("receive-message");
@@ -68,7 +67,7 @@ export default function Room() {
         });
     
         socket.emit("send-message", {
-            name,
+            name:Info.username,
             time: currentTime,
             message: newMessage,
             userId: roomId
@@ -78,7 +77,17 @@ export default function Room() {
     }
 
     function ChangeVideo() {
+        const currentTime = new Date().toLocaleTimeString([], {
+            hour: '2-digit',
+            minute: '2-digit'
+        });
         socket.emit("change-video", {url:playing, roomId})
+        socket.emit("send-message", {
+            name:Info.username,
+            time: currentTime,
+            message: `${Info.username} changed the video to ${playing}`,
+            userId: roomId
+        });
     }
 
     return (
@@ -100,7 +109,7 @@ export default function Room() {
             </div>
 
             <div className="w-full grid grid-cols-4 gap-4 mt-0">
-                <div className="flex justify-center items-center col-span-4 sm:col-span-3 bg-black bg-opacity-30 rounded-lg p-4">
+                <div className="flex justify-center items-center col-span-4 sm:col-span-3 bg-zinc-900 bg-opacity-90 shadow-sm shadow-yellow-600 rounded-lg p-4">
                     <Series imdbId={isPlaying} />
                 </div>
                 <div className="flex flex-col justify-between bg-slate-900 border border-black rounded-lg col-span-4 md:col-span-1 h-80 md:h-auto">
@@ -136,7 +145,7 @@ export default function Room() {
 
 function ChatNav() {
     const [connectionCount, setConnectionCount] = useState(0);
-
+    const socket = useRecoilValue(socketAtom);
     useEffect(() => {
         socket.on("room-user-count", (data) => {
             setConnectionCount(data);
