@@ -1,15 +1,91 @@
 "use strict";
+var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
+    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
+    return new (P || (P = Promise))(function (resolve, reject) {
+        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
+        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
+        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
+        step((generator = generator.apply(thisArg, _arguments || [])).next());
+    });
+};
 var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 const express_1 = __importDefault(require("express"));
 const cors_1 = __importDefault(require("cors"));
+const http_1 = __importDefault(require("http"));
 const index_1 = __importDefault(require("./Routes/index"));
+const socket_io_1 = require("socket.io");
+const client_1 = require("@prisma/client");
+const videoEvents_1 = __importDefault(require("./Events/videoEvents"));
+const chatEvents_1 = __importDefault(require("./Events/chatEvents"));
+const userEvents_1 = __importDefault(require("./Events/userEvents"));
 const app = (0, express_1.default)();
+const prisma = new client_1.PrismaClient();
 app.use((0, cors_1.default)());
 app.use(express_1.default.json());
 app.use('/api/v1', index_1.default);
-app.listen(3000, () => {
+const server = http_1.default.createServer(app);
+const rooms = {};
+const io = new socket_io_1.Server(server, {
+    cors: {
+        origin: "*", // replace with client’s origin if different
+        methods: ["GET", "POST"]
+    }
+});
+io.on("connection", (socket) => {
+    console.log(`A user connected: ${socket.id}`);
+    socket.on("join-room", (userId) => __awaiter(void 0, void 0, void 0, function* () {
+        socket.join(userId);
+        // Add the user to the room
+        if (!rooms[userId]) {
+            rooms[userId] = new Set();
+        }
+        rooms[userId].add(socket.id);
+        // Emit the user count for the room
+        io.to(userId).emit("room-user-count", rooms[userId].size);
+        try {
+            const oldMessages = yield prisma.chat.findMany({
+                where: { userId },
+                orderBy: { createdAt: "desc" },
+                take: 10,
+                select: { name: true, time: true, message: true }
+            });
+            const playing = yield prisma.room.findFirst({
+                where: {
+                    userId
+                },
+                select: {
+                    playing: true
+                }
+            });
+            socket.emit("load-messages", oldMessages.reverse());
+            socket.emit("load-playing", playing);
+        }
+        catch (error) {
+            console.error("Error fetching messages:", error);
+            socket.emit("error-loading-messages", "Failed to load previous messages.");
+        }
+    }));
+    (0, userEvents_1.default)(io, socket);
+    (0, videoEvents_1.default)(io, socket);
+    (0, chatEvents_1.default)(io, socket);
+    // Handle disconnection
+    socket.on("disconnect", () => {
+        console.log(`User disconnected: ${socket.id}`);
+        // Remove the user from any room they were in
+        for (const roomId in rooms) {
+            rooms[roomId].delete(socket.id);
+            if (rooms[roomId].size === 0) {
+                delete rooms[roomId]; // Clean up empty rooms
+            }
+            else {
+                io.to(roomId).emit("room-user-count", rooms[roomId].size);
+            }
+        }
+    });
+});
+server.listen(3000, () => {
     console.log('Server is running on port 3000');
 });

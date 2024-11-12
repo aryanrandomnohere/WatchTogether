@@ -59,8 +59,8 @@ function Window({ children }: WindowProps) {
       {/* Sidebar Panel with smoother sliding animation */}
       <div
         ref={ref} // Attach ref to the main container to detect outside clicks
-        className={`flex flex-col border-l border-yellow-600  w-80 h-screen max-w-full max-h-screen bg-gray-900 rounded-xl shadow-lg overflow-auto z-20 transform transition-all duration-500 ease-out ${
-          isOpen ? "translate-x-0" : "-translate-x-full"
+        className={`flex flex-col border-l border-yellow-600 overflow-hidden w-80 h-screen max-w-full max-h-screen bg-gray-900 rounded-xl shadow-lg z-20 transform transition-all duration-500 ease-out ${
+          isOpen ? "translate-y-0" : "-translate-y-full"
         }`}
       >
         <div
@@ -69,7 +69,7 @@ function Window({ children }: WindowProps) {
         >
           <TbLayoutSidebarRight />
         </div>
-        <div className="px-7">
+        <div className="px-4">
           {cloneElement(children as React.ReactElement, { toggle })}
         </div>
       </div>
