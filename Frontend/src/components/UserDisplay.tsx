@@ -12,9 +12,9 @@ export default function UserDisplay() {
     return (
         <div 
             onClick={() => setIsOpen(!isOpen)} 
-            className="relative flex gap-5 items-center justify-center p-2 mb-14 mt-auto rounded-lg hover:bg-slate-950 hover:bg-opacity-40 hover:cursor-pointer"
+            className="relative shadow-black shadow-md flex gap-2 items-center justify-center py-2 px-3  mb-14 mt-auto rounded-lg hover:bg-slate-950 hover:bg-opacity-40 hover:cursor-pointer"
         >
-            <Avatar name={user.username} />
+            <Avatar r="user" name={user.username} />
             <div className="flex justify-between items-center w-full mt-1">
                 <div className="flex flex-col justify-center">
                     <h1 className="text-lg font-bold">{user.username}</h1>

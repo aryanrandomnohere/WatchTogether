@@ -9,7 +9,7 @@ import { nowPlaying, wasPlaying } from "../State/playingOnState";
 import { userInfo } from "../State/userState";
 import { roomMessages } from "../State/roomChatState";
 import { useParams } from "react-router-dom";
-import { socketAtom } from "../State/socketState";
+import { io } from "socket.io-client";
 
 
 interface Message {
@@ -17,7 +17,7 @@ interface Message {
     time: string;
     message: string;
 }
-
+const socket = io("http://localhost:3000/")
 export default function Room() {
     const [playing, setPlaying] = useRecoilState(nowPlaying)
     const wasplaying= useRecoilValue(wasPlaying)
@@ -28,7 +28,7 @@ export default function Room() {
     const Info = useRecoilValue(userInfo)
     const { roomId } = useParams();
     const setWasPlaying = useSetRecoilState(wasPlaying);
-    const socket = useRecoilValue(socketAtom);
+  
     
     useEffect(() => {
         if (!roomId) return;
@@ -145,7 +145,6 @@ export default function Room() {
 
 function ChatNav() {
     const [connectionCount, setConnectionCount] = useState(0);
-    const socket = useRecoilValue(socketAtom);
     useEffect(() => {
         socket.on("room-user-count", (data) => {
             setConnectionCount(data);
