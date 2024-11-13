@@ -28,7 +28,10 @@ export default function userEvents(io:Server, socket:Socket){
        
 
 
-    socket.emit("send-friend-request", async(senderId:string,Senderusername:string, receiverId:string)=>{
+    socket.emit("send-friend-request", async(senderId:string,Senderusername:string, receiversUsername:string)=>{
+             
+        
+        
                io.to(receiverId).emit("receive-friend-request",{
                 senderId,
                 message:`${senderId} sent you a friend request`

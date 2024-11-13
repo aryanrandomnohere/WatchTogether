@@ -69,7 +69,7 @@ function Window({ children }: WindowProps) {
         >
           <TbLayoutSidebarRight />
         </div>
-        <div className="px-4">
+        <div className="px-0">
           {cloneElement(children as React.ReactElement, { toggle })}
         </div>
       </div>

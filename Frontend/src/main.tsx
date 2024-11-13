@@ -6,10 +6,10 @@ import { RecoilRoot } from 'recoil'
 
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
-    <div className='bg-gray-900 w-full h-screen'>
-      <RecoilRoot>
-    <App />
+    <RecoilRoot>
+      <div className='bg-gray-900 w-full h-screen'>
+        <App />
+      </div>
     </RecoilRoot>
-    </div>
-  </StrictMode>,
+  </StrictMode>
 )
