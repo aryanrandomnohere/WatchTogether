@@ -6,7 +6,7 @@ import { Friends } from "../State/friendsState";
 export default function Friend({friend="Aryan"}) {
   const AllFriends = useRecoilValue(Friends);
 
-  if (!AllFriends) return <div>There are no friend present</div>
+  if (AllFriends) return <div>There are no friend present</div>
 
   return (
     <div className="text-white py-1.5 px-3 rounded-md hover:bg-slate-600 hover:bg-opacity-10">

@@ -12,13 +12,13 @@ export default function UserDisplay() {
     return (
         <div 
             onClick={() => setIsOpen(!isOpen)} 
-            className="relative shadow-black shadow-md flex gap-2 items-center justify-center py-2 px-3  mb-14 mt-auto rounded-lg hover:bg-slate-950 hover:bg-opacity-40 hover:cursor-pointer"
+            className="ml-2 relative border border-slate-700 shadow-black shadow-md flex gap-2 items-center justify-center py-2 px-3  mb-14 mt-auto rounded-lg hover:bg-slate-950 hover:bg-opacity-40 hover:cursor-pointer"
         >
             <Avatar r="user" name={user.username} />
             <div className="flex justify-between items-center w-full mt-1">
                 <div className="flex flex-col justify-center">
-                    <h1 className="text-lg font-bold">{user.username}</h1>
-                    <h5 className="font-extralight">{user.email}</h5>
+                    <h1 className="text-lg font-bold text-yellow-600">{user.username}</h1>
+                    <h5 className="font-extralight text-white">{user.email}</h5>
                 </div>
                 <MdUnfoldMore className="text-xl text-white font-bold" />
             </div>
