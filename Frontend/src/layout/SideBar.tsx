@@ -22,8 +22,8 @@ export default function SideBar({toggle}:{toggle?:()=>void;}) {
   {fOpen && <Friend/>}
   {fOpen && <Friend/>}
   {fOpen && <Friend/>}
-  {fOpen && <Friend/>}
-  <AddFriend />
+  {fOpen && <AddFriend />}
+  
   </div>
 
   {/* Sidebar content, add more here as needed */}
