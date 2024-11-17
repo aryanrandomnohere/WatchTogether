@@ -1,15 +1,58 @@
 import { useState } from "react";
-import Button from "../ui/Button";
 import { userInfo } from "../State/userState";
-const socket = io("http://localhost:3000/")
+import { io } from "socket.io-client";
+import { useRecoilValue } from "recoil";
+import toast from "react-hot-toast";
+
+const socket = io("http://localhost:3000/");
+
 export default function AddFriend() {
-    const User = useRecoilValue(userInfo)
-    const [fusername, setfusername] = useState("");
-    const [isOpen , setIsOpen] = useState<boolean>(false);
-    function sendRequest() {
-socket.emit("send-friend-request",User.id, User.username, fusername)
+  const User = useRecoilValue(userInfo);
+  const [fusername, setfusername] = useState("");
+  const [isOpen, setIsOpen] = useState<boolean>(false);
+  const [loading, setLoading] = useState<boolean>(false);
+
+
+
+  function sendRequest() {
+    if (!fusername.trim()) {
+      toast.error("Please enter a username.");
+      return;
     }
+
+    setLoading(true);
+    socket.emit("send-friend-request", User.id, User.username, fusername);
+
+    // After emitting the request, reset the username input
+    setfusername("");
+
+    // Assuming the event will be handled by server for success or failure feedback
+    // toast.success("Friend request sent.");
+    setLoading(false);
+  }
+
   return (
-   <div className="flex flex-col justify-center w-full"><div onClick={()=>setIsOpen(!isOpen)} className="py-1 hover:cursor-pointer bg-slate-800 hover:text-yellow-600 text-center  rounded-md text-white font-bold">Find Friend</div>
-  { isOpen && <div><input onChange={(e)=>setfusername(e.target.value)} value={fusername} className="bg-black bg-opacity-5 rounded-md py-1 px-2 w-full font-bold mt-2 border text-center self-center focus:outline-none focus:placeholder-transparent focus:border-yellow-600" placeholder="Enter UserId"/><Button onClick={sendRequest} w="4">Find</Button></div>}</div>)
+    <div className="flex flex-col justify-center w-full">
+      <div
+        onClick={() => setIsOpen(!isOpen)}
+        className="py-1 hover:cursor-pointer bg-slate-800 hover:text-yellow-600 text-center rounded-md text-white font-bold"
+      >
+        Find Friend
+      </div>
+
+      {isOpen && (
+        <div>
+          <input
+            onChange={(e) => setfusername(e.target.value)}
+            value={fusername}
+            className="bg-black bg-opacity-5 rounded-md py-1 px-2 w-full font-bold mt-2 border text-center self-center focus:outline-none focus:placeholder-transparent focus:border-yellow-600"
+            placeholder="Enter UserId"
+          />
+          <button onClick={sendRequest} className="p-1 mt-2 rounded-md border border-blue-600"  >
+            {loading ? "Sending..." : "Find"}
+          </button>
+        </div>
+      )}
+    </div>
+  );
 }

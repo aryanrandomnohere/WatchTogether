@@ -13,46 +13,80 @@ exports.default = userEvents;
 const client_1 = require("@prisma/client");
 const prisma = new client_1.PrismaClient();
 function userEvents(io, socket) {
+    // Handle user registration
     socket.on('register', (userId) => __awaiter(this, void 0, void 0, function* () {
-        socket.join(userId);
-        console.log(`User ${userId} joined room ${userId}`);
-        const userfriends = yield prisma.friendship.findMany({
-            where: { userId },
-            select: { friendId: true }
-        });
-        const friendIds = userfriends.map(f => f.friendId);
-        const mutualFriends = yield prisma.friendship.findMany({
-            where: { userId: { in: friendIds },
-                friendId: userId },
-            include: { user: true }
-        });
-        const actualFriends = mutualFriends.map(f => f.user);
-        io.to(userId).emit("load-friends", actualFriends);
+        try {
+            socket.join(userId);
+            console.log(`User ${userId} joined room ${userId}`);
+            const userFriends = yield prisma.friendship.findMany({
+                where: { userId },
+                select: { friendId: true },
+            });
+            const friendIds = userFriends.map(f => f.friendId);
+            const mutualFriends = yield prisma.friendship.findMany({
+                where: {
+                    userId: { in: friendIds },
+                    friendId: userId,
+                },
+                include: { user: true },
+            });
+            const actualFriends = mutualFriends.map(f => f.user);
+            io.to(userId).emit("load-friends", actualFriends);
+        }
+        catch (error) {
+            console.error("Error in register event:", error);
+        }
     }));
-    socket.emit("send-friend-request", (senderId, Senderusername, receiverId) => __awaiter(this, void 0, void 0, function* () {
-        io.to(receiverId).emit("receive-friend-request", {
-            senderId,
-            message: `${senderId} sent you a friend request`
-        });
-        console.log(`Friend request sent from ${senderId} to ${receiverId}`);
+    // Handle sending friend requests
+    socket.on("send-friend-request", (senderId, senderUsername, receiverUsername) => __awaiter(this, void 0, void 0, function* () {
+        try {
+            const receiver = yield prisma.user.findFirst({
+                where: { username: receiverUsername },
+                select: { id: true },
+            });
+            if (!receiver) {
+                io.to(senderId).emit("user-not-found");
+            }
+            else {
+                const receiverId = receiver.id;
+                io.to(receiverId).emit("receive-friend-request", {
+                    senderId,
+                    senderUsername
+                });
+                console.log(`Friend request sent from ${senderId} to ${receiverId}`);
+            }
+        }
+        catch (error) {
+            console.error("Error in send-friend-request event:", error);
+        }
     }));
+    // Handle accepting friend requests
     socket.on("accept-friend-request", (userId, friendId) => __awaiter(this, void 0, void 0, function* () {
-        const newFriend = yield prisma.friendship.createMany({
-            data: [
-                { userId: userId, friendId: friendId },
-                { userId: friendId, friendId: userId },
-            ],
-        });
-        const friendInfo = yield prisma.user.findUnique({
-            where: { id: friendId },
-            select: { id: true, username: true, firstname: true, lastname: true },
-        });
-        const userInfo = yield prisma.user.findUnique({
-            where: { id: userId },
-            select: { id: true, username: true, firstname: true, lastname: true },
-        });
-        // Emit the updated friends list to both users
-        io.to(userId).emit("receive-friend", friendInfo);
-        io.to(friendId).emit("receive-friend", userInfo);
+        try {
+            yield prisma.$transaction((tx) => __awaiter(this, void 0, void 0, function* () {
+                yield tx.friendship.createMany({
+                    data: [
+                        { userId, friendId },
+                        { userId: friendId, friendId: userId },
+                    ],
+                });
+                const [friendInfo, userInfo] = yield Promise.all([
+                    tx.user.findUnique({
+                        where: { id: friendId },
+                        select: { id: true, username: true, firstname: true, lastname: true },
+                    }),
+                    tx.user.findUnique({
+                        where: { id: userId },
+                        select: { id: true, username: true, firstname: true, lastname: true },
+                    }),
+                ]);
+                // Emit updated friend lists
+                io.to(userId).emit("receive-friend", friendInfo);
+                io.to(friendId).emit("receive-friend", userInfo);
+            }));
+        }
+        catch (error) {
+            console.error("Error in accept-friend-request event:", error);
+        }
     }));
 }
