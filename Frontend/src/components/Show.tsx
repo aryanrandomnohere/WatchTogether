@@ -19,7 +19,7 @@ export default function Show({
   return (
     <div
       onClick={() => onClick?.(item.imdbID)}
-      className="relative hover:cursor-pointer flex flex-col items-center justify-center min-w-[200px] max-h-[250px] sm:max-h-[500px] m-2 mt-3 sm:m-2 w-full sm:w-2/5 md:w-1/6 bg-opacity-30 rounded-xl overflow-hidden shadow-lg transition-transform transform hover:scale-95 group border border-black"
+      className="relative hover:cursor-pointer flex flex-col items-center justify-center min-w-[200px] md:min-w-[225px] max-h-[1000px] sm:max-h-[500px] m-2 mt-3 sm:m-2 w-full sm:w-2/5 md:w-1/6 bg-opacity-30 rounded-xl overflow-hidden shadow-lg transition-transform transform hover:scale-95 group border border-black"
     >
       <div className="relative w-full min-w-[200px] min-h-[250px]">
         {item.Poster ? (
@@ -34,18 +34,21 @@ export default function Show({
           </div>
         )}
 
-        <div className="absolute inset-0 flex flex-col justify-end p-2 opacity-0 hover:opacity-100 backdrop-blur-sm group-hover:backdrop-blur-sm transition duration-300">
-          <p className="text-blue-950 text-sm font-extrabold">{item.Year}</p>
+        <div className="absolute inset-0 flex flex-col h-full justify-end p-2 opacity-0 hover:opacity-100 backdrop-blur-sm group-hover:backdrop-blur-sm transition duration-300">
+          <p className="text-yellow-400 text-lg font-extrabold">{item.Year}</p>
+          <div className="group-hover">
+        {children}
+        </div>
         </div>
 
-        {children}
-      </div>
-
-      <h3 className="text-center text-white mt-2 font-semibold mb-1">
+        <h3 className=" absolute text-center text-yellow-400 font-bold text-lg md:text-xl mt-2  mb-1 top-1 opacity-0 group-hover:opacity-100 w-full ">
         {item.Title && item.Title.length > 22
           ? `${item.Title.slice(0, 22)}...`
           : item.Title}
       </h3>
+      </div>
+
+      
     </div>
   );
 }

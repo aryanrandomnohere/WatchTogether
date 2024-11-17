@@ -115,7 +115,7 @@ export default function ShowsDisplay() {
                 className="absolute bottom-8 left-1/2 transform -translate-x-1/2 text-white py-1 px-4 rounded opacity-0 transition-opacity duration-300 group-hover:opacity-100"
                 onClick={() => handleClick(item.imdbID)}
               >
-                <RiInformation2Fill className="h-10 w-10 text-yellow-600 opacity-80" />
+                <RiInformation2Fill className="h-10 w-10 text-yellow-400 opacity-80" />
               </button>
             </Modal.open>
             <Modal.window name="Showinfo">

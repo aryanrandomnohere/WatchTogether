@@ -1,20 +1,22 @@
-import { useState } from "react";
+import { FormEvent, useState } from "react";
 import { userInfo } from "../State/userState";
 import { io } from "socket.io-client";
 import { useRecoilValue } from "recoil";
 import toast from "react-hot-toast";
+import { ImFinder } from "react-icons/im";
 
 const socket = io("http://localhost:3000/");
 
 export default function AddFriend() {
   const User = useRecoilValue(userInfo);
   const [fusername, setfusername] = useState("");
-  const [isOpen, setIsOpen] = useState<boolean>(false);
+  const [isOpen, setIsOpen] = useState<boolean>(true);
   const [loading, setLoading] = useState<boolean>(false);
 
 
 
-  function sendRequest() {
+  function sendRequest(e:FormEvent) {
+    e.preventDefault();
     if (!fusername.trim()) {
       toast.error("Please enter a username.");
       return;
@@ -33,25 +35,25 @@ export default function AddFriend() {
 
   return (
     <div className="flex flex-col justify-center w-full">
-      <div
+      {/* <div
         onClick={() => setIsOpen(!isOpen)}
         className="py-1 hover:cursor-pointer bg-slate-800 hover:text-yellow-600 text-center rounded-md text-white font-bold"
       >
         Find Friend
-      </div>
+      </div> */}
 
       {isOpen && (
-        <div>
+        <form className="flex items-center" onSubmit={sendRequest}>
           <input
             onChange={(e) => setfusername(e.target.value)}
             value={fusername}
-            className="bg-black bg-opacity-5 rounded-md py-1 px-2 w-full font-bold mt-2 border text-center self-center focus:outline-none focus:placeholder-transparent focus:border-yellow-600"
-            placeholder="Enter UserId"
+            className="relative bg-black bg-opacity-5 rounded-md py-1 px-2 w-full font-bold mt-2 border text-center self-center focus:outline-none focus:placeholder-transparent focus:border-yellow-600"
+            placeholder="Find Friend"
           />
-          <button onClick={sendRequest} className="p-1 mt-2 rounded-md border border-blue-600"  >
-            {loading ? "Sending..." : "Find"}
+          <button className=" absolute right-3 p-1 mt-2 text-x text-yellow-600"  >
+          <ImFinder />
           </button>
-        </div>
+        </form>
       )}
     </div>
   );

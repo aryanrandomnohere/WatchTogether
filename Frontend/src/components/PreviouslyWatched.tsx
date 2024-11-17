@@ -106,7 +106,7 @@ const WatchLater = [
    
 ];export default function PreviouslyWatched() {
     return (
-      <div className="bg-gray-900 h-screen px-4 sm:px-4 grid grid-rows-12 grid-cols-5 gap-1">
+      <div className="bg-gray-900 h-screen grid grid-rows-12 grid-cols-5 gap-1">
         {/* <div className="row-span-1 col-span-5"></div> Don't remove this */}
         
         <div className="row-span-1 col-span-5 text-white font-bold text-3xl  self-end mb-4">
@@ -119,7 +119,7 @@ const WatchLater = [
           ))}
         </div>
         
-        <div className="row-span-1 col-span-5 text-white font-bold text-2xl md:text-3xl self-end mb-4 mt-8 ml-1">
+        <div className="row-span-1 col-span-5 text-white font-bold text-2xl md:text-3xl self-end mb-0 mt-0 ml-6">
           Recently Watched
         </div>
         
