@@ -15,3 +15,7 @@
 img[src="/images/player.png"] {
     display: none !important;
 }
+
+.text-border {
+    text-shadow: 0 0 2px #000; /* adjust the values to your liking */
+  }

@@ -35,13 +35,13 @@ export default function Show({
         )}
 
         <div className="absolute inset-0 flex flex-col h-full justify-end p-2 opacity-0 hover:opacity-100 backdrop-blur-sm group-hover:backdrop-blur-sm transition duration-300">
-          <p className="text-yellow-400 text-lg font-extrabold">{item.Year}</p>
+          <p className="text-yellow-400 text-border text-lg font-extrabold font-stencil">{item.Year}</p>
           <div className="group-hover">
         {children}
         </div>
         </div>
 
-        <h3 className=" absolute text-center text-yellow-400 font-bold text-lg md:text-xl mt-2  mb-1 top-1 opacity-0 group-hover:opacity-100 w-full ">
+        <h3  className=" absolute text-center text-border text-yellow-400 font-bold font-stencil text-lg md:text-xl mt-2  mb-1 top-1 opacity-0 group-hover:opacity-100 w-full ">
         {item.Title && item.Title.length > 22
           ? `${item.Title.slice(0, 22)}...`
           : item.Title}
