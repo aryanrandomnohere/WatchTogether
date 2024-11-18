@@ -3,6 +3,9 @@ import { createPortal } from "react-dom";
 import { TbLayoutSidebarRight } from "react-icons/tb";
 import { useOutsideClick } from "../hooks/useOutsideClick";
 
+import { useRecoilState } from "recoil";
+import { isNotiOpen } from "../State/notificationPanel";
+
 interface ModalContextType {
   isOpen: boolean;
   toggle: () => void;
@@ -51,7 +54,6 @@ interface WindowProps {
 function Window({ children }: WindowProps) {
   const { isOpen, toggle, close } = useSidebar();
   const ref = useOutsideClick(close, true);
-
   if (!isOpen) return null;
 
   return createPortal(
@@ -64,10 +66,10 @@ function Window({ children }: WindowProps) {
         }`}
       >
         <div
-          className="self-start p-2 text-orange-600 text-3xl cursor-pointer"
-          onClick={toggle}
+          className="flex w-full justify-between self-start p-2 text-orange-600 text-3xl cursor-pointer"
+          
         >
-          <TbLayoutSidebarRight />
+          <div onClick={toggle}><TbLayoutSidebarRight /></div>
         </div>
         <div className="px-0">
           {cloneElement(children as React.ReactElement, { toggle })}

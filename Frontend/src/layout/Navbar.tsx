@@ -11,6 +11,8 @@ import { TbLayoutSidebarRight } from "react-icons/tb";
 import Sidebar from "../ui/SidebarUI";
 import SideBar from "./SideBar";
 import { userInfo } from "../State/userState";
+import { isNotiOpen } from "../State/notificationPanel";
+import Notifications from "../components/Notifications";
 
 interface UserInfoType {
   id: string;
@@ -25,6 +27,7 @@ export default function Navbar() {
   const [query, setQuery] = useState("");
   const setUserInfo = useSetRecoilState(userInfo);
   const isAuthenticated = useRecoilValue(isAuthenticatedState);
+  const isNotiOpenValue = useRecoilValue(isNotiOpen);
 
   useEffect(() => {
     
@@ -53,25 +56,25 @@ export default function Navbar() {
 
   return (
     <div className="relative">
-      <div className="flex flex-col sm:flex-row items-center justify-between w-full bg-slate-950 text-yellow-600 font-bold shadow-yellow-950 shadow-md mb-10 fixed">
-        <Link to="/">
-          <div className="flex w-full justify-between items-center mb-2 sm:mb-0 my-2 sm:my-0">
-            <img src={n} alt="Logo" className="h-10 w-10 sm:h-12 sm:w-12 ml-2 sm:ml-8" />
-            <div className="flex w-full justify-between ">
-            <p className="ml-2 text-2xl sm:text-3xl font-comic">WatchAlong</p>
-            <div className="sm:hidden right-11"><Sidebar>
+      <div className="flex flex-col sm:flex-row items-center w-full bg-slate-950 text-yellow-600 font-bold shadow-yellow-950 shadow-md mb-10 fixed">
+        
+          <div className="flex w-full items-center mb-2 sm:mb-0 my-2 sm:my-0 justify-between">
+         
+            <div className="flex w-full justify-between items-center ">
+            <Link to="/"> <div className="flex items-center"><img src={n} alt="Logo" className="h-10 w-10 sm:h-12 sm:w-12 ml-2 sm:ml-8" /><p className="ml-2 text-2xl sm:text-3xl font-comic ">WatchAlong</p></div></Link>
+            <div className="sm:hidden right-11 mr-6"><Sidebar>
               <Sidebar.open>
                 <TbLayoutSidebarRight className="text-3xl hover:cursor-pointer text-yellow-600 font-extralight" />
               </Sidebar.open>
               <Sidebar.window>
-                <SideBar />
+                  {!isNotiOpenValue ?<SideBar/> : <Notifications/>}
               </Sidebar.window>
             </Sidebar>
             </div>
             </div>
           </div>
-        </Link>
-        <form onSubmit={handleSearch} className="w-full sm:w-auto flex justify-center">
+        
+        <form onSubmit={handleSearch} className="w-full sm:w-full flex justify-between">
           <input
             className="w-full sm:w-96 bg-white bg-opacity-10 text-stone-300 rounded px-3 py-1 sm:py-1 sm:my-2 placeholder-stone-400 border-solid border border-yellow-600 focus:outline-none"
             value={query}
@@ -99,7 +102,7 @@ export default function Navbar() {
                 <TbLayoutSidebarRight className="text-3xl hover:cursor-pointer text-yellow-600 font-extralight" />
               </Sidebar.open>
               <Sidebar.window>
-                <SideBar />
+                {!isNotiOpenValue ? <SideBar /> : <Notifications/>}
               </Sidebar.window>
             </Sidebar>
           </div>

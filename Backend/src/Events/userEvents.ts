@@ -44,7 +44,14 @@ export default function userEvents(io: Server, socket: Socket) {
                 io.to(senderId).emit("user-not-found");
             } else {
                 const receiverId = receiver.id;
-                    
+                  const isReceived =   await prisma.friendRequests.create({
+                        data:{
+                            from:senderId,
+                            toId:receiverId,
+                            fromUsername:senderUsername,
+                        }
+                    })
+                    if(!isReceived) io.to(senderId).emit("user-not-found")
                 io.to(receiverId).emit("receive-friend-request", {
                     senderId,
                     senderUsername

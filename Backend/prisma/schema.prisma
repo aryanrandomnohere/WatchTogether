@@ -20,6 +20,17 @@ model User {
   room             Room?         @relation("UserRoom")
   friend           Friendship[]  @relation("MyFriendships")
   friendships      Friendship[]  @relation("FriendOf")
+  Requests         FriendRequests[]  @relation("requests")
+}
+
+model FriendRequests {
+  id    Int   @id  @default(autoincrement())
+  user  User  @relation(fields: [from], references: [id], name: "requests")
+  from  String  
+  toId  String  
+  fromUsername String
+  createdAt   DateTime  @default(now()) 
+  @@unique([from,toId])
 }
 
 
