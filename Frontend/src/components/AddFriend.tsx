@@ -10,8 +10,7 @@ const socket = io("http://localhost:3000/");
 export default function AddFriend() {
   const User = useRecoilValue(userInfo);
   const [fusername, setfusername] = useState("");
-  const [isOpen, setIsOpen] = useState<boolean>(true);
-  const [loading, setLoading] = useState<boolean>(false);
+
 
 
 
@@ -22,7 +21,6 @@ export default function AddFriend() {
       return;
     }
 
-    setLoading(true);
     socket.emit("send-friend-request", User.id, User.username, fusername);
 
     // After emitting the request, reset the username input
@@ -30,19 +28,13 @@ export default function AddFriend() {
 
     // Assuming the event will be handled by server for success or failure feedback
     // toast.success("Friend request sent.");
-    setLoading(false);
+
   }
 
   return (
     <div className="flex flex-col justify-center w-full">
-      {/* <div
-        onClick={() => setIsOpen(!isOpen)}
-        className="py-1 hover:cursor-pointer bg-slate-800 hover:text-yellow-600 text-center rounded-md text-white font-bold"
-      >
-        Find Friend
-      </div> */}
+    
 
-      {isOpen && (
         <form className="flex items-center" onSubmit={sendRequest}>
           <input
             onChange={(e) => setfusername(e.target.value)}
@@ -54,7 +46,7 @@ export default function AddFriend() {
           <ImFinder />
           </button>
         </form>
-      )}
+      
     </div>
   );
 }

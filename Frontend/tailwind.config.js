@@ -8,6 +8,10 @@ export default {
     extend: {width: {
       '128': '28rem',
       '92':'21rem',
+      
+    },
+    margin:{
+    '22': '85px'
     },
   fontFamily:{
     stencil:['"Stencil Std"', 'fantasy'], 

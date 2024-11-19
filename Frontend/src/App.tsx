@@ -4,18 +4,38 @@ import Applayout from "./layout/Applayout";
 import Room from "./pages/Room";
 import ShowsDisplay from "./pages/ShowsDisplay";
 import toast, { Toaster } from "react-hot-toast";
-import { useRecoilValue } from "recoil";
+import { useRecoilState, useRecoilValue } from "recoil";
 import { userInfo } from "./State/userState";
 import { useEffect } from "react";
 import { io } from "socket.io-client";
+import { FriendRequests } from "./State/FriendRequests";
 
 
 const socket = io("http://localhost:3000/", { autoConnect: true });
 export default function App() {
+const [Requests, setFriendRequests] = useRecoilState(FriendRequests);
 
  
   const userInfoState = useRecoilValue(userInfo);
  const userId = userInfoState.id;
+ useEffect(()=>{
+  socket.on("receive-friend-request", ({senderId, senderUsername}) => {
+    console.log(senderUsername, senderId);
+    setFriendRequests([...Requests, {fromUsername:senderUsername, from:senderId}])
+    toast(`${senderUsername} sent you a friend request`,
+      {
+        icon: '👨‍❤️‍💋‍👨',
+        style: {
+          borderRadius: '1px',
+          background: '#333',
+          color: '#fff',
+        },
+      }
+    );
+});
+
+
+ },[Requests])
   useEffect(() => {
     
 
@@ -25,20 +45,10 @@ export default function App() {
       toast.error("User does not exist");
     });
 
-    socket.on("receive-friend-request", ({senderId, senderUsername}) => {
-      console.log(senderUsername, senderId);
-      
-      toast(`${senderUsername} sent you a friend request`,
-        {
-          icon: '👨‍❤️‍💋‍👨',
-          style: {
-            borderRadius: '1px',
-            background: '#333',
-            color: '#fff',
-          },
-        }
-      );
-    });
+    socket.on("load-noti", (noti)=>{setFriendRequests(noti)})
+
+
+    //@ts-ignore
     const handleLoadFriends = (actualFriends) => {
         console.log(actualFriends);
     };
@@ -49,10 +59,10 @@ export default function App() {
     return () => {
         socket.off("load-friends", handleLoadFriends);
         socket.off("user-not-found");
-      socket.off("receive-friend-request");
+      
         // socket.disconnect();
     };
-}, [socket, userId]); // Add dependencies here to handle changes in socket or userId
+}, [userId]); // Add dependencies here to handle changes in socket or userId
 
 
   return (

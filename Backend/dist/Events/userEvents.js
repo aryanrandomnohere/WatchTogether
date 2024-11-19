@@ -22,6 +22,13 @@ function userEvents(io, socket) {
                 where: { userId },
                 select: { friendId: true },
             });
+            const noti = yield prisma.friendRequests.findMany({
+                where: { toId: userId },
+                select: { from: true,
+                    fromUsername: true,
+                }
+            });
+            io.to(userId).emit("load-noti", noti);
             const friendIds = userFriends.map(f => f.friendId);
             const mutualFriends = yield prisma.friendship.findMany({
                 where: {
@@ -49,6 +56,15 @@ function userEvents(io, socket) {
             }
             else {
                 const receiverId = receiver.id;
+                const isReceived = yield prisma.friendRequests.create({
+                    data: {
+                        from: senderId,
+                        toId: receiverId,
+                        fromUsername: senderUsername,
+                    }
+                });
+                if (!isReceived)
+                    io.to(senderId).emit("Server-Error");
                 io.to(receiverId).emit("receive-friend-request", {
                     senderId,
                     senderUsername

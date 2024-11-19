@@ -104,12 +104,13 @@ const WatchLater = [
         "Poster": "https://m.media-amazon.com/images/M/MV5BM2JmZGNmNTItMGNiZC00YWU2LTg2NDctZThkNWM1YmY4MzcwXkEyXkFqcGc@._V1_SX300.jpg"
     }
    
-];export default function PreviouslyWatched() {
+];
+export default function PreviouslyWatched() {
     return (
-      <div className="bg-gray-900 h-screen grid grid-rows-12 grid-cols-5 gap-1">
+      <div className="bg-gray-900 h-screen flex flex-col">
         {/* <div className="row-span-1 col-span-5"></div> Don't remove this */}
         
-        <div className="row-span-1 col-span-5 text-white font-bold text-3xl  self-end mb-4">
+        <div className="mt-22 sm:mt-16 col-span-5 text-white font-bold text-3xl  self-end mb-4">
          
         </div>
         
@@ -119,7 +120,7 @@ const WatchLater = [
           ))}
         </div>
         
-        <div className="row-span-1 col-span-5 text-white font-bold text-2xl md:text-3xl self-end mb-0 mt-0 ml-6">
+        <div className="col-span-5 text-white font-bold text-2xl md:text-3xl self-start mb-0 mt-0 ml-6">
           Recently Watched
         </div>
         
