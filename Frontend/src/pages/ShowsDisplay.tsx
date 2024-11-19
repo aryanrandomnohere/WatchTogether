@@ -106,10 +106,10 @@ export default function ShowsDisplay() {
   }
 
   return (
-    <div className="flex flex-wrap bg-gray-900 min-h-screen justify-center items-center text-zinc-300 mt-24 md:mt-16 gap-5">
+    <div className="flex flex-wrap bg-gray-900 justify-center items-center text-zinc-300 mt-24 md:mt-16 gap-5">
       {media.result.map((item) => (
         <Show key={item.imdbID} item={item} onClick={() => handleClick(item.imdbID)}>
-          <Modal>
+         <div> <Modal>
             <Modal.open opens="Showinfo">
               <button
                 className="absolute bottom-8 left-1/2 transform -translate-x-1/2 text-white py-1 px-4 rounded opacity-0 transition-opacity duration-300 group-hover:opacity-100"
@@ -122,6 +122,7 @@ export default function ShowsDisplay() {
               <Showinfo movie={MovieInfo} />
             </Modal.window>
           </Modal>
+          </div>
         </Show>
       ))}
     </div>

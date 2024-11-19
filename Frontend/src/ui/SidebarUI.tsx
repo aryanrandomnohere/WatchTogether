@@ -3,8 +3,6 @@ import { createPortal } from "react-dom";
 import { TbLayoutSidebarRight } from "react-icons/tb";
 import { useOutsideClick } from "../hooks/useOutsideClick";
 
-import { useRecoilState } from "recoil";
-import { isNotiOpen } from "../State/notificationPanel";
 
 interface ModalContextType {
   isOpen: boolean;

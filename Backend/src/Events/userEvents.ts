@@ -9,11 +9,19 @@ export default function userEvents(io: Server, socket: Socket) {
         try {
             socket.join(userId);
             console.log(`User ${userId} joined room ${userId}`);
-
             const userFriends = await prisma.friendship.findMany({
                 where: { userId },
                 select: { friendId: true },
             });
+
+            const noti = await prisma.friendRequests.findMany({
+                where:{toId:userId},
+                select:{from:true,
+                    fromUsername:true,
+                }
+            })
+           
+            io.to(userId).emit("load-noti", noti)
 
             const friendIds = userFriends.map(f => f.friendId);
 
@@ -27,6 +35,9 @@ export default function userEvents(io: Server, socket: Socket) {
 
             const actualFriends = mutualFriends.map(f => f.user);
             io.to(userId).emit("load-friends", actualFriends);
+            
+
+
         } catch (error) {
             console.error("Error in register event:", error);
         }
@@ -51,7 +62,7 @@ export default function userEvents(io: Server, socket: Socket) {
                             fromUsername:senderUsername,
                         }
                     })
-                    if(!isReceived) io.to(senderId).emit("user-not-found")
+                    if(!isReceived) io.to(senderId).emit("Server-Error")
                 io.to(receiverId).emit("receive-friend-request", {
                     senderId,
                     senderUsername
