@@ -7,7 +7,7 @@ interface Friend {
     lastname:string;
     username:string
 }
-export const Friends = atom<Friend[] | undefined>({
+export const Friends = atom<Friend[]>({
     key :"Friends",
-    default: undefined
+    default: []
 })

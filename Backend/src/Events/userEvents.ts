@@ -27,11 +27,22 @@ export default function userEvents(io: Server, socket: Socket) {
 
             const mutualFriends = await prisma.friendship.findMany({
                 where: {
-                    userId: { in: friendIds },
-                    friendId: userId,
+                  userId: { in: friendIds },
+                  friendId: userId,
                 },
-                include: { user: true },
-            });
+                include: {
+                  user: {
+                    select: {
+                        username:true,
+                      id: true, // Select specific fields
+                      firstname: true,
+                      lastname: false,
+                      status:true, // Exclude specific fields
+                    },
+                  },
+                },
+              });
+              
 
             const actualFriends = mutualFriends.map(f => f.user);
             io.to(userId).emit("load-friends", actualFriends);

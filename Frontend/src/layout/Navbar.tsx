@@ -34,7 +34,7 @@ export default function Navbar() {
     if (isAuthenticated) {
       async function fetchUserData() {
         try {
-          const response = await axios.get("http://localhost:3000/api/v1/user/getuser", {
+          const response = await axios.get("http://192.168.0.106:5000/api/v1/user/getuser", {
             headers: {
               authorization: localStorage.getItem("token") || ""
             }

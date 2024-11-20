@@ -35,7 +35,17 @@ function userEvents(io, socket) {
                     userId: { in: friendIds },
                     friendId: userId,
                 },
-                include: { user: true },
+                include: {
+                    user: {
+                        select: {
+                            username: true,
+                            id: true, // Select specific fields
+                            firstname: true,
+                            lastname: false,
+                            status: true, // Exclude specific fields
+                        },
+                    },
+                },
             });
             const actualFriends = mutualFriends.map(f => f.user);
             io.to(userId).emit("load-friends", actualFriends);

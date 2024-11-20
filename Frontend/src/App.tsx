@@ -4,19 +4,19 @@ import Applayout from "./layout/Applayout";
 import Room from "./pages/Room";
 import ShowsDisplay from "./pages/ShowsDisplay";
 import toast, { Toaster } from "react-hot-toast";
-import { useRecoilState, useRecoilValue } from "recoil";
+import { useRecoilState, useRecoilValue, useSetRecoilState } from "recoil";
 import { userInfo } from "./State/userState";
 import { useEffect } from "react";
 import { io } from "socket.io-client";
 import { FriendRequests } from "./State/FriendRequests";
+import { Friends } from "./State/friendsState";
 
 
-const socket = io("http://localhost:3000/", { autoConnect: true });
+const socket = io("http://192.168.0.106:5000", { autoConnect: true });
 export default function App() {
 const [Requests, setFriendRequests] = useRecoilState(FriendRequests);
-
- 
-  const userInfoState = useRecoilValue(userInfo);
+const setFriends = useSetRecoilState(Friends);
+ const userInfoState = useRecoilValue(userInfo);
  const userId = userInfoState.id;
  useEffect(()=>{
   socket.on("receive-friend-request", ({senderId, senderUsername}) => {
@@ -37,7 +37,8 @@ const [Requests, setFriendRequests] = useRecoilState(FriendRequests);
 return () =>{
   socket.off("receive-friend-request")
 }
- },[Requests])
+ },[])
+
   useEffect(() => {
     
 
@@ -54,7 +55,7 @@ return () =>{
   
 
     socket.on("load-friends",(actualFriends) => {
-      console.log(actualFriends);
+      setFriends(actualFriends);
   });
 
     // Clean up on unmount
