@@ -9,11 +9,9 @@ import AllFriends from "../components/AllFriends";
 
 
 
-export default function SideBar({toggle}:{toggle?:()=>void;}) {
+export default function SideBar() {
    const [fOpen, setfOpen] = useState(false);
    
-
-   console.log(toggle);
   return (
     <div className="flex flex-col h-screen w-full  justify-between">
   {/* Header with toggle button */}

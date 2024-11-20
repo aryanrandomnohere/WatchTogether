@@ -32,8 +32,8 @@ SocialRouter.put("/rejectrequest", AuthMiddleware, async (req: Request, res: Res
   const deletedRequest =  await prisma.friendRequests.delete({
       where: { id: friendRequest.id },
     });
-
-    res.json({ msg: `You rejected ${deletedRequest.fromUsername}'s friend request` });
+   const fromUsername = deletedRequest.fromUsername;
+    res.json({ fromUsername });
   } catch (error) {
     console.error("Error rejecting friend request:", error);
     res.status(500).json({ msg: "An error occurred while rejecting the request" });

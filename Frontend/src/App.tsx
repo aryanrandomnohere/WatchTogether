@@ -34,7 +34,9 @@ const [Requests, setFriendRequests] = useRecoilState(FriendRequests);
     );
 });
 
-
+return () =>{
+  socket.off("receive-friend-request")
+}
  },[Requests])
   useEffect(() => {
     
@@ -46,20 +48,20 @@ const [Requests, setFriendRequests] = useRecoilState(FriendRequests);
     });
 
     socket.on("load-noti", (noti)=>{setFriendRequests(noti)})
-
+ 
 
     //@ts-ignore
-    const handleLoadFriends = (actualFriends) => {
-        console.log(actualFriends);
-    };
+  
 
-    socket.on("load-friends", handleLoadFriends);
+    socket.on("load-friends",(actualFriends) => {
+      console.log(actualFriends);
+  });
 
     // Clean up on unmount
     return () => {
-        socket.off("load-friends", handleLoadFriends);
+        socket.off("load-friends");
         socket.off("user-not-found");
-      
+        socket.off("load-noti")
         // socket.disconnect();
     };
 }, [userId]); // Add dependencies here to handle changes in socket or userId
