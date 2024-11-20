@@ -5,7 +5,7 @@ import { useRecoilValue } from "recoil";
 import toast from "react-hot-toast";
 import { ImFinder } from "react-icons/im";
 
-const socket = io("http://localhost:3000/");
+const socket = io("http://192.168.0.106:5000");
 
 export default function AddFriend() {
   const User = useRecoilValue(userInfo);

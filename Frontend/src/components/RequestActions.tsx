@@ -7,7 +7,7 @@ import toast from "react-hot-toast";
 import { io } from "socket.io-client";
 import { userInfo } from "../State/userState";
 
-const socket = io("http://localhost:3000/", { autoConnect: true });
+const socket = io("http://192.168.0.106:5000", { autoConnect: true });
 export default function RequestActions({id, fromUsername}:{id:string, fromUsername:string}) {
   const [requests, setFriendRequests] = useRecoilState(FriendRequests)
   const  UserInfo = useRecoilValue(userInfo);
@@ -15,7 +15,7 @@ export default function RequestActions({id, fromUsername}:{id:string, fromUserna
   async function handleRejection() {
     try {
       await axios.put(
-        "http://localhost:3000/api/v1/social/rejectrequest",
+        "http://192.168.0.106:5000/api/v1/social/rejectrequest",
         { from: id },
         {
           headers: {
@@ -24,11 +24,10 @@ export default function RequestActions({id, fromUsername}:{id:string, fromUserna
         }
       );
 
-      toast.success("Request Rejected")
+     
       const afterDeletion = requests.filter((req) => req.fromUsername !== fromUsername); // Fixed line
-    
-  
       setFriendRequests(afterDeletion);
+      toast.success("Request Rejected")
     } catch (error) {
       console.error("Error rejecting the friend request:", error);
     }
@@ -40,7 +39,20 @@ export default function RequestActions({id, fromUsername}:{id:string, fromUserna
       userId: UserInfo.id,
       friendId:id,
     }
+
    socket.emit("accept-friend-request",acceptdata);
+      const afterDeletion = requests.filter((req) => req.fromUsername !== fromUsername); // Fixed line
+      await axios.put(
+        "http://192.168.0.106:5000/api/v1/social/rejectrequest",
+        { from: id },
+        {
+          headers: {
+            authorization: localStorage.getItem("token"),
+          },
+        }
+      );
+      setFriendRequests(afterDeletion);
+      toast.success("Friend Request Accepted")
   }
   
   return (

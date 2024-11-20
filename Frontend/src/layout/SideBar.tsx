@@ -22,7 +22,7 @@ export default function SideBar() {
   </div><div className="flex flex-col gap-1 ml-1 px-3 w-full ">
   {fOpen && <AllFriends/>}
   {fOpen && <AddFriend />}
-  {fOpen && <Notifications/> }
+  { <Notifications/> }
   </div>
   
 

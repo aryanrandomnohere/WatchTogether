@@ -17,7 +17,7 @@ interface Message {
     time: string;
     message: string;
 }
-const socket = io("http://localhost:3000/")
+const socket = io("http://192.168.0.106:5000")
 export default function Room() {
     const [playing, setPlaying] = useRecoilState(nowPlaying)
     const wasplaying= useRecoilValue(wasPlaying)

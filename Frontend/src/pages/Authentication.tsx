@@ -27,8 +27,8 @@ export default function Authentication({ close }: AuthenticationProps) {
     event.preventDefault();
 setIsLoading(true);
     const url = isSignup
-      ? "http://localhost:3000/api/v1/Auth/signup"
-      : "http://localhost:3000/api/v1/Auth/login";
+      ? "http://192.168.0.106:5000/api/v1/Auth/signup"
+      : "http://192.168.0.106:5000/api/v1/Auth/login";
       
     const data = isSignup
       ? { email, firstname, lastname, username, password } // Send all fields for signup
