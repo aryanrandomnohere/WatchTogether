@@ -1,6 +1,5 @@
 
 export default function Avatar({name,r}:{name:string,r:string}) {
-  console.log(name);
   
   return (
     <div className={`relative inline-flex items-center justify-center ${r==="user"? "w-16 h-14"  : "w-10 h-10"} border border-slate-600 overflow-hidden rounded-xl ${r==="user"?"bg-slate-700": r==="req"? "bg-red-800" :"bg-yellow-600"}`}>

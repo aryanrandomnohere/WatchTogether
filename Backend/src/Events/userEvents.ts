@@ -76,8 +76,10 @@ export default function userEvents(io: Server, socket: Socket) {
     });
 
     // Handle accepting friend requests
-    socket.on("accept-friend-request", async (userId: string, friendId: string) => {
+    socket.on("accept-friend-request", async ({userId, friendId}:{userId:string, friendId:string}) => {
         try {
+            console.log(userId,friendId);
+            
             await prisma.$transaction(async (tx) => {
                 await tx.friendship.createMany({
                     data: [

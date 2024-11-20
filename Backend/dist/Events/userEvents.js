@@ -77,8 +77,9 @@ function userEvents(io, socket) {
         }
     }));
     // Handle accepting friend requests
-    socket.on("accept-friend-request", (userId, friendId) => __awaiter(this, void 0, void 0, function* () {
+    socket.on("accept-friend-request", (_a) => __awaiter(this, [_a], void 0, function* ({ userId, friendId }) {
         try {
+            console.log(userId, friendId);
             yield prisma.$transaction((tx) => __awaiter(this, void 0, void 0, function* () {
                 yield tx.friendship.createMany({
                     data: [
