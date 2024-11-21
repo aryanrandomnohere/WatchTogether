@@ -100,11 +100,11 @@ function userEvents(io, socket) {
                 const [friendInfo, userInfo] = yield Promise.all([
                     tx.user.findUnique({
                         where: { id: friendId },
-                        select: { id: true, username: true, firstname: true, lastname: true },
+                        select: { id: true, username: true, firstname: true, lastname: true, status: true },
                     }),
                     tx.user.findUnique({
                         where: { id: userId },
-                        select: { id: true, username: true, firstname: true, lastname: true },
+                        select: { id: true, username: true, firstname: true, lastname: true, status: true },
                     }),
                 ]);
                 // Emit updated friend lists
