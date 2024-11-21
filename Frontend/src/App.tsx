@@ -21,7 +21,7 @@ const setFriends = useSetRecoilState(Friends);
  useEffect(()=>{
   socket.on("receive-friend-request", ({senderId, senderUsername}) => {
     console.log(senderUsername, senderId);
-    setFriendRequests([...Requests, {fromUsername:senderUsername, from:senderId}])
+    setFriendRequests((requests)=>[...requests, {fromUsername:senderUsername, from:senderId}])
     toast(`${senderUsername} sent you a friend request`,
       {
         icon: '👨‍❤️‍💋‍👨',
@@ -57,12 +57,16 @@ return () =>{
     socket.on("load-friends",(actualFriends) => {
       setFriends(actualFriends);
   });
+  socket.on("receive-friend",(newFriend)=>{
+    setFriends((friend)=>[...friend, newFriend])
+  })
 
     // Clean up on unmount
     return () => {
         socket.off("load-friends");
         socket.off("user-not-found");
         socket.off("load-noti")
+        socket.off("receive-friend")
         // socket.disconnect();
     };
 }, [userId]); // Add dependencies here to handle changes in socket or userId
