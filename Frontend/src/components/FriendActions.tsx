@@ -1,13 +1,29 @@
 import { HiPlusSm } from "react-icons/hi";
 import { LiaJointSolid } from "react-icons/lia";
+import { useRecoilValue } from "recoil";
+import { userInfo } from "../State/userState";
+import { io } from "socket.io-client";
+
+const socket = io("http://192.168.0.106:5000", { autoConnect: true });
+
+export default function FriendActions({to}:{to:string}) {
+ const userInfovalue = useRecoilValue(userInfo);
+ const {id:from} = userInfovalue;
 
 
+ function handleSendInvite(){
+  socket.emit("send-invite",from,to)
+ }
 
-export default function FriendActions() {
+ function handleJoinRequest(){
+  socket.emit("request-join",from,to)
+ }
+
+
   return (
     <div className="flex items-center gap-3">
-      <LiaJointSolid className="text-yellow-600 text-lg hover:cursor-pointer hover:text-yellow-800" />
-      <HiPlusSm className="text-2xl hover:cursor-pointer hover:text-yellow-800  text-yellow-600"/>
+      <div onClick={handleJoinRequest}><LiaJointSolid className="text-yellow-600 text-lg hover:cursor-pointer hover:text-yellow-800" /></div>
+      <div onClick={handleSendInvite} ><HiPlusSm className="text-2xl hover:cursor-pointer hover:text-yellow-800  text-yellow-600"/></div>
       </div>
   )
 }
