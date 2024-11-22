@@ -21,6 +21,7 @@ const client_1 = require("@prisma/client");
 const videoEvents_1 = __importDefault(require("./Events/videoEvents"));
 const chatEvents_1 = __importDefault(require("./Events/chatEvents"));
 const userEvents_1 = __importDefault(require("./Events/userEvents"));
+const FriendActionsEvent_1 = __importDefault(require("./Events/FriendActionsEvent"));
 const app = (0, express_1.default)();
 const prisma = new client_1.PrismaClient();
 app.use((0, cors_1.default)());
@@ -71,6 +72,7 @@ io.on("connection", (socket) => {
     (0, userEvents_1.default)(io, socket);
     (0, videoEvents_1.default)(io, socket);
     (0, chatEvents_1.default)(io, socket);
+    (0, FriendActionsEvent_1.default)(io, socket);
     // Handle disconnection
     socket.on("disconnect", () => {
         console.log(`User disconnected: ${socket.id}`);

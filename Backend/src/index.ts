@@ -7,6 +7,7 @@ import { PrismaClient } from '@prisma/client';
 import videoEvents from './Events/videoEvents';
 import chatEvents from './Events/chatEvents';
 import userEvents from './Events/userEvents';
+import FriendActionEvents from './Events/FriendActionsEvent';
 const app = express();
 const prisma = new PrismaClient();
 app.use(cors());
@@ -69,7 +70,7 @@ io.on("connection", (socket) => {
   userEvents(io,socket);
   videoEvents(io,socket);
   chatEvents(io,socket);
-
+  FriendActionEvents(io,socket);
   // Handle disconnection
   socket.on("disconnect", () => {
       console.log(`User disconnected: ${socket.id}`);
