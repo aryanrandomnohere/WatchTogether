@@ -8,15 +8,15 @@ const socket = io("http://192.168.0.106:5000", { autoConnect: true });
 
 export default function FriendActions({to}:{to:string}) {
  const userInfovalue = useRecoilValue(userInfo);
- const {id:from} = userInfovalue;
+ const {id:from, username:fromUsername} = userInfovalue;
 
 
  function handleSendInvite(){
-  socket.emit("send-invite",from,to)
+  socket.emit("send-invite",from,fromUsername,to)
  }
 
  function handleJoinRequest(){
-  socket.emit("request-join",from,to)
+  socket.emit("request-join",from,fromUsername,to)
  }
 
 

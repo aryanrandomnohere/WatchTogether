@@ -1,4 +1,4 @@
-import { BrowserRouter, Route, Routes } from "react-router-dom";
+import {Route, Routes, useNavigate } from "react-router-dom";
 import Home from "./pages/Home";
 import Applayout from "./layout/Applayout";
 import Room from "./pages/Room";
@@ -12,12 +12,15 @@ import { FriendRequests } from "./State/FriendRequests";
 import { Friends } from "./State/friendsState";
 
 
+
 const socket = io("http://192.168.0.106:5000", { autoConnect: true });
 export default function App() {
 const setFriendRequests = useSetRecoilState(FriendRequests);
 const setFriends = useSetRecoilState(Friends);
  const userInfoState = useRecoilValue(userInfo);
  const userId = userInfoState.id;
+ const navigate =useNavigate();
+
  useEffect(()=>{
   socket.on("receive-friend-request", ({senderId, senderUsername}) => {
     console.log(senderUsername, senderId);
@@ -51,38 +54,44 @@ return () =>{
     socket.on("load-noti", (noti)=>{setFriendRequests(noti)})
  
 
-    socket.on("receive-join-request",(from)=>{
+    socket.on("receive-join-request",(from, fromId)=>{
       toast.custom((t) => (
         <div
           className={`${
             t.visible ? 'animate-enter' : 'animate-leave'
-          } max-w-md w-full bg-white shadow-lg rounded-lg pointer-events-auto flex ring-1 ring-black ring-opacity-5`}
+          } max-w-md w-full bg-slate-800 shadow-lg rounded-lg pointer-events-auto flex justify-center items-center ring-1 ring-black ring-opacity-5`}
         >
-          <div className="flex-1 w-0 p-4">
+          <div className="flex-1 items-center w-0 p-2">
             <div className="flex items-start">
               <div className="flex-shrink-0 pt-0.5">
-                <img
-                  className="h-10 w-10 rounded-full"
-                  src="https://images.unsplash.com/photo-1494790108377-be9c29b29330?ixlib=rb-1.2.1&ixqx=6GHAjsWpt9&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=2.2&w=160&h=160&q=80"
-                  alt=""
-                />
+                {/* <Avatar name={from} r=""/> */}
               </div>
               <div className="ml-3 flex-1">
-                <p className="text-sm font-medium text-gray-900">
+                <p className="text-sm font-medium text-yellow-600">
                   {from}
                 </p>
-                <p className="mt-1 text-sm text-gray-500">
+                <p className="-scroll-mt-0.5 text-sm text-gray-200">
                  has requested to join your room
                 </p>
               </div>
             </div>
           </div>
           <div className="flex border-l border-gray-200">
-            <button
+          <button
               onClick={() => toast.dismiss(t.id)}
               className="w-full border border-transparent rounded-none rounded-r-lg p-4 flex items-center justify-center text-sm font-medium text-indigo-600 hover:text-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-500"
             >
-              Close
+              Cancel
+            </button>
+          </div>
+          <div className="flex border-l border-gray-200">
+          <button
+              onClick={() =>{toast.dismiss(t.id);
+                navigate(`/watch/${fromId}`);
+              }}
+              className="w-full border border-transparent rounded-none rounded-r-lg p-4 flex items-center justify-center text-sm font-medium text-indigo-600 hover:text-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-500"
+            >
+              Accept
             </button>
           </div>
         </div>
@@ -90,38 +99,44 @@ return () =>{
     })
 
 
-    socket.on("receive-invite-request",(from)=>{
+    socket.on("receive-invite-request",(from, fromId)=>{
       toast.custom((t) => (
         <div
           className={`${
             t.visible ? 'animate-enter' : 'animate-leave'
-          } max-w-md w-full bg-white shadow-lg rounded-lg pointer-events-auto flex ring-1 ring-black ring-opacity-5`}
+          } max-w-md w-full bg-slate-800 shadow-lg rounded-lg pointer-events-auto flex justify-center items-center ring-1 ring-black ring-opacity-5`}
         >
-          <div className="flex-1 w-0 p-4">
+          <div className="flex-1 items-center w-0 p-2">
             <div className="flex items-start">
               <div className="flex-shrink-0 pt-0.5">
-                <img
-                  className="h-10 w-10 rounded-full"
-                  src="https://images.unsplash.com/photo-1494790108377-be9c29b29330?ixlib=rb-1.2.1&ixqx=6GHAjsWpt9&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=2.2&w=160&h=160&q=80"
-                  alt=""
-                />
+                {/* <Avatar name={from} r=""/> */}
               </div>
               <div className="ml-3 flex-1">
-                <p className="text-sm font-medium text-gray-900">
+                <p className="text-sm font-medium text-yellow-600">
                   {from}
                 </p>
-                <p className="mt-1 text-sm text-gray-500">
-                 Sent you room invite
+                <p className="-scroll-mt-0.5 text-sm text-gray-200">
+                 has requested you to join his room
                 </p>
               </div>
             </div>
           </div>
           <div className="flex border-l border-gray-200">
-            <button
+          <button
               onClick={() => toast.dismiss(t.id)}
               className="w-full border border-transparent rounded-none rounded-r-lg p-4 flex items-center justify-center text-sm font-medium text-indigo-600 hover:text-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-500"
             >
-              Close
+              Cancel
+            </button>
+          </div>
+          <div className="flex border-l border-gray-200">
+          <button
+              onClick={() =>{toast.dismiss(t.id);
+                navigate(`/watch/${fromId}`);
+              }}
+              className="w-full border border-transparent rounded-none rounded-r-lg p-4 flex items-center justify-center text-sm font-medium text-indigo-600 hover:text-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-500"
+            >
+              Accept
             </button>
           </div>
         </div>
@@ -151,7 +166,7 @@ return () =>{
 
 
   return (
-    <BrowserRouter>
+   
       <>
         <Toaster />
         <Routes>
@@ -163,6 +178,6 @@ return () =>{
           </Route>
         </Routes>
       </>
-    </BrowserRouter>
+   
   );
 }

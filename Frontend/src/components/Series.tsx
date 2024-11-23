@@ -10,7 +10,7 @@ export default function Series({ imdbId }: { imdbId: string }) {
           return (
               <iframe
                   className="w-full h-64 sm:h-96 md:h-[450px] lg:h-[600px] rounded"
-                  src={`https://www.2embed.cc/embedtvfull/${imdbId}`}
+                  src={`https://www.2embed.cc/embedtv/tt0903747/&s=5&e=1`}
                   frameBorder="0"
                   allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
                   allowFullScreen
