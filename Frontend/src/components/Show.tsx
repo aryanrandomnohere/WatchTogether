@@ -1,10 +1,21 @@
 import { ReactNode } from "react";
+
 interface mData {
-  Title: string;
-  Year: string;
-  imdbID: string;
-  Type: string;
-  Poster: string;
+  adult: boolean;
+  backdrop_path: string;
+  first_air_date: string;
+  genre_ids: number[];
+  id: number;
+  media_type: string;
+  name: string;
+  origin_country?: string[];
+  original_language: string;
+  original_name: string;
+  overview: string;
+  popularity: number;
+  poster_path: string;
+  vote_average: number;
+  vote_count: number;
 }
 
 export default function Show({
@@ -13,19 +24,19 @@ export default function Show({
   children,
 }: {
   item: mData;
-  onClick?: (ImdbId: string) => void;
+  onClick?: (id: number) => void;
   children?: ReactNode;
 }) {
   return (
     <div
-      onClick={() => onClick?.(item.imdbID)}
+      onClick={() => onClick?.(item.id)}
       className="relative hover:cursor-pointer flex flex-col items-center justify-center min-w-[200px] md:min-w-[225px] max-h-[1000px] sm:max-h-[500px] m-2 mt-3 sm:m-2 w-full sm:w-2/5 md:w-1/6 bg-opacity-30 rounded-xl overflow-hidden shadow-lg transition-transform transform hover:scale-95 group border border-black duration-300"
     >
       <div className="relative w-full min-w-[200px] min-h-[250px]">
-        {item.Poster ? (
+        {item.poster_path ? (
           <img
-            src={item.Poster}
-            alt={item.Title}
+            src={`https://image.tmdb.org/t/p/w500/${item.poster_path}`}
+            alt={item.name}
             className="w-full h-full object-cover aspect-w-2 aspect-h-3"
           />
         ) : (

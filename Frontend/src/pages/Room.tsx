@@ -110,7 +110,7 @@ export default function Room() {
 
             <div className="w-full grid grid-cols-4 gap-4 mt-0">
                 <div className="flex justify-center items-center col-span-4 sm:col-span-3 bg-black bg-opacity-35 shadow-sm rounded-lg p-4">
-                    <Series imdbId={isPlaying} />
+                    <Series imdbId={isPlaying} type="" />
                 </div>
                 <div className="flex flex-col justify-between bg-slate-900 border border-black rounded-lg col-span-4 md:col-span-1 h-80 md:h-auto">
                     {/* <input

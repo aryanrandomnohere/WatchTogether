@@ -1,4 +1,4 @@
-export default function Series({ imdbId }: { imdbId: string }) {
+export default function Series({ imdbId,type }: { imdbId: string,type:string }) {
   if (!imdbId) {
       return (
           <div className="flex justify-center items-center text-lg md:text-2xl lg:text-3xl mt-36 lg:mt-72 text-center px-4 font-medium text-zinc-600">
@@ -6,11 +6,11 @@ export default function Series({ imdbId }: { imdbId: string }) {
           </div>
       );
   } else {
-      if (imdbId[0] === "t") {
+      if (imdbId) {
           return (
-              <iframe
+              <iframe 
                   className="w-full h-64 sm:h-96 md:h-[450px] lg:h-[600px] rounded"
-                  src={`https://www.2embed.cc/embedtv/tt0903747/&s=5&e=1`}
+                  src={`https://www.2embed.cc/embedtvfull/${type==="movie"?imdbId:`${imdbId}&s=1&e=1`}`}
                   frameBorder="0"
                   allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
                   allowFullScreen

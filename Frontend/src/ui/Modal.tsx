@@ -58,10 +58,10 @@ function Window({ children, name }: WindowProps) {
   return createPortal(
     <div className="fixed inset-0 w-full h-screen bg-slate-950 bg-opacity-20 backdrop-blur-sm z-[1000] transition-all duration-500 flex items-center justify-center p-1">
       <div ref={ref} className="flex flex-col w-auto h-auto max-w-full max-h-full bg-gray-900 rounded-xl shadow-lg overflow-auto">
-        <div className="self-end p-2 text-orange-600 text-3xl cursor-pointer" onClick={close}>
+        <div className="fixed z-10 self-end p-2 text-orange-600 text-3xl cursor-pointer" onClick={close}>
           <HiXMark />
         </div>
-        <div className="px-7">
+        <div className="px-0">
           {cloneElement(children as React.ReactElement, { close })}
         </div>
       </div>

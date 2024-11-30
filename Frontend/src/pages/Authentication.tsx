@@ -67,7 +67,7 @@ setIsLoading(true);
 
 
   return (
-    <div className="flex items-center justify-center">
+    <div className="flex items-center justify-center px-7 pt-10">
 
 
       <section className="w-full max-w-md px-1 pb-7 rounded-lg shadow-lg">
