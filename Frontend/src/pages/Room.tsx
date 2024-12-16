@@ -1,63 +1,92 @@
 import { FormEvent, useEffect, useState } from "react";
 import Series from "../components/Series";
-import { GoTriangleLeft, GoTriangleRight } from "react-icons/go";
 import ChatBox from "../components/ChatBox";
 import { BiSend } from "react-icons/bi";
-import { FaExchangeAlt } from "react-icons/fa";
+import ChangeVideo from "../components/ChangeVideo";
 import { useRecoilState, useRecoilValue, useSetRecoilState} from "recoil";
-import { nowPlaying, wasPlaying } from "../State/playingOnState";
+import { controlledPlaying, nowPlaying, wasPlaying } from "../State/playingOnState";
 import { userInfo } from "../State/userState";
 import { roomMessages } from "../State/roomChatState";
 import { useParams } from "react-router-dom";
 import { io } from "socket.io-client";
+import Modal from "../ui/Modal";
+import { RiExchangeLine } from "react-icons/ri";
+import SeasonBox from "../components/SeasonBox";
+import { TfiViewList } from "react-icons/tfi";
 
+const socket = io("http://192.168.0.106:5000")
 
 interface Message {
     name: string;
     time: string;
     message: string;
 }
-const socket = io("http://192.168.0.106:5000")
+
+interface isPlayingType {
+    id:number | string;
+    title: string | undefined;
+    type:string;
+    animeId?:string | undefined;
+}
+
+
 export default function Room() {
     const [playing, setPlaying] = useRecoilState(nowPlaying)
     const wasplaying= useRecoilValue(wasPlaying)
-    const [isOpen, setIsOpen] = useState<boolean>(false)
     const [messages, setMessages] = useRecoilState(roomMessages);
     const [newMessage, setNewMessage] = useState("");
-    const isPlaying = playing || wasplaying ||"";
+   const [isOpen, setIsOpen] = useState(false);
+    const controlledInput =useSetRecoilState(controlledPlaying)
     const Info = useRecoilValue(userInfo)
     const { roomId } = useParams();
     const setWasPlaying = useSetRecoilState(wasPlaying);
-  
+    const isPlaying: isPlayingType = 
+    playing ?? 
+    wasplaying ?? 
+    { id: "", title: "", type: "Custom" }; 
+
     
     useEffect(() => {
         if (!roomId) return;
     
-        socket.emit("join-room", roomId);
-        socket.on("load-messages", (oldMessages: Message[]) => {
+        const handleLoadMessages = (oldMessages: Message[]) => {
             setMessages(oldMessages);
-        });
-
-
-        socket.on("load-playing",(playing)=>{console.log(playing);
-            setWasPlaying(playing.playing)
-        })
-    
-        // Listen for incoming messages
-        socket.on("receive-message", (newMessage: Message) => {
-            setMessages((prevMessages) => [...prevMessages, newMessage]);
-        });
-        socket.on("receive-playing", ({playing})=>{setPlaying(playing);}
-        )
-
-        return () => {
-            socket.off("load-messages");
-            socket.off("receive-message");
-            socket.emit("leave-room", roomId); // Optionally leave room on unmount
         };
-    }, [roomId]);
     
-
+        const handleLoadPlaying = (playing: { playingId: string, playingTitle: string, playingType: string }) => {
+            const { playingId: id, playingTitle: title, playingType: type } = playing;
+            setWasPlaying({ id, title, type });
+        };
+    
+        const handleReceiveMessage = (newMessage: Message) => {
+            setMessages((prevMessages) => [...prevMessages, newMessage]);
+        };
+    
+        const handleReceivePlaying = (playing: { playingId: string, playingTitle: string, playingType: string }) => {
+            const { playingId: id, playingTitle: title, playingType: type } = playing;
+            setPlaying({ id, title, type });
+            controlledInput({ id, title, type });
+        };
+    
+        socket.emit("join-room", roomId);
+    
+        socket.on("load-messages", handleLoadMessages);
+        socket.on("load-playing", handleLoadPlaying);
+        socket.on("receive-message", handleReceiveMessage);
+        socket.on("receive-playing", handleReceivePlaying);
+    
+        return () => {
+            socket.off("load-messages", handleLoadMessages);
+            socket.off("load-playing", handleLoadPlaying);
+            socket.off("receive-message", handleReceiveMessage);
+            socket.off("receive-playing", handleReceivePlaying);
+            socket.emit("leave-room", roomId);
+        };
+    }, [roomId]); 
+    
+    
+ 
+    
     function sendMessage(e: FormEvent) {
         e.preventDefault();
         
@@ -76,43 +105,28 @@ export default function Room() {
         setNewMessage("");
     }
 
-    function ChangeVideo() {
-        const currentTime = new Date().toLocaleTimeString([], {
-            hour: '2-digit',
-            minute: '2-digit'
-        });
-        socket.emit("change-video", {url:playing, roomId})
-        socket.emit("send-message", {
-            name:Info.username,
-            time: currentTime,
-            message: `${Info.username} changed the video to ${playing}`,
-            userId: roomId
-        });
-    }
+    
 
     return (
-        <div className="bg-gray-900 min-h-screen flex flex-col items-center px-4 pt-4 mt-24 md:mt-16 sm:items-start">
-            <div className="flex gap-1">
-                <div onClick={() => setIsOpen(!isOpen)}>
-                    {isOpen ? <GoTriangleRight className="text-2xl hover:cursor-pointer" /> : <GoTriangleLeft className="text-2xl hover:cursor-pointer" />}
+        <div className="bg-gray-900 min-h-screen flex flex-col  px-4 pt-4 mt-24 md:mt-16 items-start">
+            <div className="flex gap-2 items-center"><div  onClick={()=>setIsOpen(!isOpen)}><TfiViewList className={`hover:cursor-pointer text-2xl font-bold  ml-2 ${isOpen?"text-yellow-600" :""}`}/></div>
+                <div>
+                    <Modal><Modal.open opens="changeVideo"><RiExchangeLine className="hover:cursor-pointer text-4xl "/></Modal.open><Modal.window name="changeVideo"><ChangeVideo  /></Modal.window></Modal>
                 </div>
-                {isOpen && (
-                    <div className="flex items-center gap-2 w-full sm:w-1/2 lg:w-1/3">
-                        <input
-                            className=" text-xs rounded-lg py-1 px-3 font-medium bg-white bg-opacity-20 text-zinc-300 placeholder-gray-500 focus:outline-none"
-                            placeholder="Enter IMDb ID or a download link to stream"
-                            value={playing}
-                            onChange={(e) => setPlaying(e.target.value)}
-                        /><button className="left-60" onClick={ChangeVideo}><FaExchangeAlt className="text-yellow-900" />
-                    </button></div>
-                )}
+               
+               
+      
+           
+            
             </div>
 
-            <div className="w-full grid grid-cols-4 gap-4 mt-0">
-                <div className="flex justify-center items-center col-span-4 sm:col-span-3 bg-black bg-opacity-35 shadow-sm rounded-lg p-4">
-                    <Series imdbId={isPlaying} type="" />
+            <div className="flex flex-col w-full md:flex-row gap-4 mt-0">
+                <div className="w-full md:w-1/6" > {isOpen && <SeasonBox tvId={isPlaying.id} />}</div>
+                <div className="flex w-full md:w-3/5 justify-center items-center shadow-yellow-600 bg-black shadow-sm rounded-lg p-4">
+
+                    <Series id={isPlaying.id} type={isPlaying.type} title={isPlaying.title}  animeId={isPlaying.animeId} />
                 </div>
-                <div className="flex flex-col justify-between bg-slate-900 border border-black rounded-lg col-span-4 md:col-span-1 h-80 md:h-auto">
+                <div className="flex flex-col justify-between bg-slate-900 rounded-lg w-full md:w-128 h-80 md:h-auto">
                     {/* <input
                         type="text"
                         value={name}
@@ -122,16 +136,16 @@ export default function Room() {
                     /> */}
                     <ChatNav />
                     <ChatBox messages={messages} />
-                    <div className="flex justify-center items-center">
-                        <form onSubmit={sendMessage} className="flex items-center">
+                    <div className="flex justify-center items-center w-full">
+                        <form onSubmit={sendMessage} className="flex items-center w-full">
                             <input
                                 type="text"
                                 value={newMessage}
                                 onChange={(e) => setNewMessage(e.target.value)}
                                 placeholder="Type here"
-                                className="relative bg-slate-950 input input-bordered w-92 md:w-128 md:h-11 text-sm md:text-base py-0 h-9 text-yellow-600"
+                                className="relative bg-slate-950 min-w-full pl-5 rounded h-10 text-sm  md:text-base text-yellow-600 "
                             />
-                            <button type="submit" className="absolute p-0 text-lg hover:bg-black hover:cursor-pointer hover:bg-opacity-50 right-8">
+                            <button type="submit" className="absolute p-0 text-xl hover:bg-black hover:cursor-pointer hover:bg-opacity-50 right-8">
                                 <BiSend />
                             </button>
                         </form>
@@ -155,13 +169,14 @@ function ChatNav() {
 }, []);
 
     return (
-        <div className="flex bg-slate-950 rounded-s-md text-yellow-600 justify-between p-3 font-extrabold">
-            <h1 className="hover:cursor-pointer ml-3">Chat</h1>
+        <div className="flex bg-slate-950 rounded-s-md text-yellow-600 justify-center gap-32  py-3 px-5 font-extrabold text-sm  md:text-base">
+            <h1 className="hover:cursor-pointer">Chat</h1>
             <div className="flex gap-2">
+            <div className="rounded-full px-2 text-white bg-yellow-600">{connectionCount}</div>
                 <h1 className="hover:cursor-pointer">People</h1>
-                <div className="rounded-full px-2 text-white bg-yellow-600">{connectionCount}</div>
+                
             </div>
-            <h1 className="hover:cursor-pointer ml-3">Settings</h1>
+          
         </div>
     );
 }

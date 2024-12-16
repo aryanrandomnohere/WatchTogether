@@ -46,7 +46,10 @@ model Friendship {
  
 model Room {
   id    String    @id @default(uuid())
-  playing String  @default("")
+  playingId String  @default("")
+  playingTitle String  @default("")
+  playingType String  @default("")
+  playingAnimeId String   @default("")
   user  User      @relation(fields: [userId], references: [id],name:"UserRoom")
   userId String   @unique
 }

@@ -19,7 +19,7 @@ const server = http.createServer(app);
 const rooms: Record<string, Set<string>> = {};
 const io = new Server(server, {
   cors: {
-      origin: "*",  // replace with client’s origin if different
+      origin: "*",  // replace with clientâ€™s origin if different
       methods: ["GET", "POST"]
   }
 });
@@ -53,7 +53,9 @@ io.on("connection", (socket) => {
                   userId
               },
               select:{
-                  playing:true
+                  playingId:true,
+                  playingTitle:true,
+                  playingType:true,
               }
           })
 
