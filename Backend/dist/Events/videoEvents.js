@@ -13,16 +13,26 @@ exports.default = videoEvents;
 const client_1 = require("@prisma/client");
 const prisma = new client_1.PrismaClient();
 function videoEvents(io, socket) {
-    socket.on("change-video", (_a) => __awaiter(this, [_a], void 0, function* ({ url, roomId }) {
-        console.log(url);
+    socket.on("change-video", (_a) => __awaiter(this, [_a], void 0, function* ({ playing, roomId }) {
+        console.log(playing);
         try {
-            const playing = yield prisma.room.update({
+            const newPlaying = yield prisma.room.update({
                 where: { userId: roomId },
-                data: { playing: url },
-                select: { playing: true }
+                data: {
+                    playingId: playing.id,
+                    playingTitle: playing.title,
+                    playingType: playing.type,
+                    playingAnimeId: playing.animeId,
+                },
+                select: {
+                    playingId: true,
+                    playingTitle: true,
+                    playingType: true,
+                    playingAnimeId: true,
+                }
             });
-            console.log(playing);
-            io.to(roomId).emit("receive-playing", playing);
+            console.log(newPlaying);
+            io.to(roomId).emit("receive-playing", newPlaying);
         }
         catch (error) {
             console.error("Error saving video:", error);

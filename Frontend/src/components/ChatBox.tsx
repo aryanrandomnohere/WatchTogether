@@ -23,7 +23,7 @@ export default function ChatBox({ messages }: { messages: Message[] }) {
       {/* Chats section */}
       <div
         ref={chatContainerRef}
-        className="flex flex-col justify-start items-start p-4 space-y-2 overflow-y-auto h-52 md:h-[35rem] "
+        className="flex flex-col w-full justify-start items-start p-2 space-y-2 overflow-y-auto h-64 md:h-[35rem] scrollbar scrollbar-thin scrollbar-track-black  scrollbar-track-yellow-600 "
       >
         {messages.map((message, index) => (
           <Chats key={index} chat={message} />

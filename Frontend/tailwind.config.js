@@ -11,6 +11,9 @@ export default {
       '92':'21rem',
       
     },
+    gap:{
+      "2.7":'11px'
+    },
     margin:{
     '22': '85px'
     },

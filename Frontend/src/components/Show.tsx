@@ -2,14 +2,15 @@ import { ReactNode } from "react";
 
 interface mData {
   adult: boolean;
+  title?: string;
   backdrop_path: string;
   first_air_date: string;
   genre_ids: number[];
   id: number;
-  media_type: string;
-  name: string;
+  media_type?: string;
+  name?: string;
   origin_country?: string[];
-  original_language: string;
+  original_language?: string;
   original_name: string;
   overview: string;
   popularity: number;

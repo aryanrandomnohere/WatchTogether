@@ -1,13 +1,30 @@
 import { atom } from "recoil";
 
-export const nowPlaying = atom<number|null>({
+interface nowPlayingType {
+    id:number | string;
+    title: string | undefined;
+    type:string;
+    animeId?: string;
+}
+
+
+export const nowPlaying = atom<nowPlayingType|null>({
 key:"nowPlaying",
 default:null,
 })
-export const wasPlaying = atom<string>({
+export const wasPlaying = atom<nowPlayingType|null>({
     key:"wasPlaying",
-    default:""
+    default: null,
 })
 
+export const controlledPlaying =atom<nowPlayingType>({
+    key:"inputPlaying",
+    default:{id:"",title:"",type:""}
+})
+
+export const finalPlaying = atom<nowPlayingType>({
+    key:"finalPlaying",
+    default:{id:"",title:"",type:""}
+})
 
 

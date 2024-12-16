@@ -31,7 +31,7 @@ const server = http_1.default.createServer(app);
 const rooms = {};
 const io = new socket_io_1.Server(server, {
     cors: {
-        origin: "*", // replace with client’s origin if different
+        origin: "*", // replace with clientâ€™s origin if different
         methods: ["GET", "POST"]
     }
 });
@@ -58,7 +58,9 @@ io.on("connection", (socket) => {
                     userId
                 },
                 select: {
-                    playing: true
+                    playingId: true,
+                    playingTitle: true,
+                    playingType: true,
                 }
             });
             socket.emit("load-messages", oldMessages.reverse());
