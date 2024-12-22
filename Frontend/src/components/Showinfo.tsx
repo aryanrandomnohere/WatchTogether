@@ -106,11 +106,11 @@ toast.error(error.response.data.msg)
 const handleAddFavourite = async ()=>{
   try {
     toast.success("Added to Favourites")
-    const newFavourite:mediaData = {listType:"Favourite", episode:1,season:1,movie}
+  const newFavourite:mediaData = {listType:"Favourite", episode:1,season:1,movie}
     setMedia((m)=>[...m,newFavourite])
    await axios.post("http://192.168.0.106:5000/api/v1/media/mediaaction",{
    movie,
-   listType:"Favourite"
+   listType:"Favourite" 
  },{
    headers: {
      authorization: localStorage.getItem("token"),

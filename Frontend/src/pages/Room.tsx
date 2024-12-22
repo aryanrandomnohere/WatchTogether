@@ -13,6 +13,7 @@ import Modal from "../ui/Modal";
 import { RiExchangeLine } from "react-icons/ri";
 import SeasonBox from "../components/SeasonBox";
 import { TfiViewList } from "react-icons/tfi";
+import { epState } from "../State/epState";
 
 const socket = io("http://192.168.0.106:5000")
 
@@ -31,6 +32,7 @@ interface isPlayingType {
 
 
 export default function Room() {
+    const setEp = useSetRecoilState(epState);
     const [playing, setPlaying] = useRecoilState(nowPlaying)
     const wasplaying= useRecoilValue(wasPlaying)
     const [messages, setMessages] = useRecoilState(roomMessages);
@@ -64,21 +66,31 @@ export default function Room() {
         };
     
         const handleReceivePlaying = (playing: { playingId: string, playingTitle: string, playingType: string, playingAnimeId:string }) => {
+            
             const { playingId: id, playingTitle: title, playingType: type, playingAnimeId: animeId } = playing;
             setPlaying({ id, title, type, animeId });
             controlledInput({ id, title, type, animeId });
             socket.emit("update-status",Info.id,`Watching ${title}`)
         };
-    
+         const handleChangeEp = async (episode:number,season:number)=>{ 
+            setEp((prevEp) => ({
+                ...prevEp, 
+                episode_number: episode,
+                season_number: season,
+            }));
+            
+             }
         socket.emit("join-room", roomId);
-        
+        socket.on("receive-ep",handleChangeEp)
         socket.on("load-messages", handleLoadMessages);
         socket.on("load-playing", handleLoadPlaying);
         socket.on("receive-message", handleReceiveMessage);
         socket.on("receive-playing", handleReceivePlaying);
         
         return () => {
+            // setPlaying({id:"",animeId:"",title:"",type:""})
             socket.emit("update-status",Info.id,"ONLINE")
+            socket.off("receive-ep",handleChangeEp)
             socket.off("load-messages", handleLoadMessages);
             socket.off("load-playing", handleLoadPlaying);
             socket.off("receive-message", handleReceiveMessage);

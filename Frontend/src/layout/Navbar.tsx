@@ -92,14 +92,26 @@ export default function Navbar() {
          
             <div className="flex w-full justify-between items-center ">
             <Link to="/"> <div className="flex items-center"><img src={n} alt="Logo" className="h-10 w-10 sm:h-12 sm:w-12 ml-2 sm:ml-8" /><p className="ml-2 text-2xl sm:text-3xl font-comic ">WatchAlong</p></div></Link>
-            <div className="sm:hidden right-11 mr-6"><Sidebar>
+            <div className="sm:hidden right-11 mr-2.5">
+              {!isAuthenticated ?<div>
+            <Modal>
+              <Modal.open opens="signIn">
+                <div className="">
+                  <Button w="2">Login</Button>
+                </div>
+              </Modal.open>
+              <Modal.window name="signIn">
+                <Authentication />
+              </Modal.window>
+            </Modal>
+          </div> :<Sidebar>
               <Sidebar.open>
                 <TbLayoutSidebarRight className="text-3xl hover:cursor-pointer text-yellow-600 font-extralight" />
               </Sidebar.open>
               <Sidebar.window>
                   {!isNotiOpenValue ?<SideBar/> : <Notifications/>}
               </Sidebar.window>
-            </Sidebar>
+            </Sidebar>}
             </div>
             </div>
           </div>
