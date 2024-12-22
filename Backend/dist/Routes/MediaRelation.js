@@ -15,6 +15,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const express_1 = __importDefault(require("express"));
 const AuthMiddleware_1 = __importDefault(require("../AuthMiddleware"));
 const client_1 = require("@prisma/client");
+const console_1 = require("console");
 const MediaRouter = express_1.default.Router();
 const prismaClient = new client_1.PrismaClient();
 const VALID_LIST_TYPES = ["Favourite", "Recently Watched", "Watch Later"];
@@ -183,7 +184,7 @@ MediaRouter.post("/mediaaction", AuthMiddleware_1.default, (req, res) => __await
                     createdAt: new Date()
                 }
             });
-            res.status(400).json({ msg: "Internal Server Error" });
+            res.status(200).json({ msg: "This media already exists" });
             return;
         }
         // Create the user-movie relationship
@@ -200,6 +201,73 @@ MediaRouter.post("/mediaaction", AuthMiddleware_1.default, (req, res) => __await
     catch (error) {
         console.error(error);
         res.status(500).json({ error: "An error occurred" });
+    }
+}));
+//update 
+MediaRouter.put("/setmedia", AuthMiddleware_1.default, (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    try {
+        const userId = req.userId;
+        if (!userId) {
+            res.status(401).json({ success: false, message: "Unauthorized access" });
+            return;
+        }
+        const { episode, season, movie_Id } = req.body;
+        if (!episode || !season || !movie_Id || episode <= 0 || season <= 0) {
+            res.status(400).json({ success: false, message: "Invalid input: episode, season, and movieId are required and must be valid numbers." });
+            return;
+        }
+        (0, console_1.log)(`Updating Recently Watched: userId=${userId}, movieId=${movie_Id}, episode=${episode}, season=${season}`);
+        // Attempt to update the entry
+        const response = yield prismaClient.userMovieList.findUnique({
+            where: {
+                userId_Mid_listType: {
+                    userId,
+                    Mid: movie_Id,
+                    listType: "Recently Watched",
+                },
+            },
+        });
+        if (response) {
+            yield prismaClient.userMovieList.update({
+                where: {
+                    userId_Mid_listType: {
+                        userId,
+                        Mid: movie_Id,
+                        listType: "Recently Watched",
+                    },
+                },
+                data: {
+                    episode,
+                    season,
+                },
+            });
+            res.status(200).json({ success: true, message: "Episode and season updated successfully." });
+            return;
+        }
+        // Create a new entry if no matching update found
+        const movie = yield prismaClient.movie.findUnique({
+            where: { id: movie_Id },
+            select: { Mid: true },
+        });
+        if (!movie) {
+            res.status(404).json({ success: false, message: "Movie not found." });
+            return;
+        }
+        yield prismaClient.userMovieList.create({
+            data: {
+                userId,
+                listType: "Recently Watched",
+                episode,
+                season,
+                Mid: movie_Id,
+                movieId: movie.Mid,
+            },
+        });
+        res.status(200).json({ success: true, message: "Movie relation made and episode and season updated" });
+        return;
+    }
+    catch (error) {
+        res.status(400).json({ msg: "Internal Server Error" });
     }
 }));
 exports.default = MediaRouter;

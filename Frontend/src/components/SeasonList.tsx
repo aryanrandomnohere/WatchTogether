@@ -59,7 +59,8 @@ export default function SeasonList({seasonInfo, tvId, isOpen, setIsOpen}:{season
         }
     
         getEpisodes();
-      }, [tvId, seasonInfo,episodes]);
+        
+      }, [tvId]);
 
 
 if(seasonInfo.name ==="Specials") return null

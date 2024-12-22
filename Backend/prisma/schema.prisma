@@ -50,6 +50,8 @@ model Room {
   playingTitle String  @default("")
   playingType String  @default("")
   playingAnimeId String   @default("")
+  episode        Int   @default(1)
+  season         Int    @default(1)
   user  User      @relation(fields: [userId], references: [id],name:"UserRoom")
   userId String   @unique
 }
