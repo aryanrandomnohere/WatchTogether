@@ -36,10 +36,30 @@ UserRouter.get("/getuser", AuthMiddleware_1.default, (req, res) => __awaiter(voi
                         listType: true,
                         movie: {
                             select: {
+                                id: true,
+                                adult: true,
                                 title: true,
-                                year: true,
-                                imdbID: true,
-                                poster: true,
+                                backdrop_path: true,
+                                first_air_date: true,
+                                media_type: true,
+                                name: true,
+                                original_language: true,
+                                original_name: true,
+                                overview: true,
+                                popularity: true,
+                                poster_path: true,
+                                vote_average: true,
+                                vote_count: true,
+                                genre_ids: {
+                                    select: {
+                                        genre_id: true,
+                                    },
+                                },
+                                origin_country: {
+                                    select: {
+                                        country: true,
+                                    }
+                                },
                             },
                         },
                     },

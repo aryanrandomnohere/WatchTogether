@@ -53,7 +53,6 @@ setIsLoading(true);
       setIsLoading(false);
       if (close) close();
     } catch (error) {
-      console.log();
       //@ts-ignore
       toast.error(`${isSignup ? "Signup" : "Login"} Failed: ${error.response.data.msg}`);
       setIsLoading(false);  

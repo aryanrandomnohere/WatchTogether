@@ -7,8 +7,9 @@ export default function Series({id ,type,title, animeId="" }: {id: number | stri
     console.log(title);
     
     const {episode_number, season_number} = useRecoilValue(epState);
-    if (id && type==="Anime") {
-        
+    if (id && type==="Anime" || type === "AniMov") {
+        console.log(animeId);
+            
         return (
               <iframe 
                  className="w-screen h-56 sm:h-[600px] rounded"
@@ -16,7 +17,6 @@ export default function Series({id ,type,title, animeId="" }: {id: number | stri
                   frameBorder="0"
                   allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
                   allowFullScreen
-
               ></iframe>
           );
       }
@@ -50,7 +50,7 @@ export default function Series({id ,type,title, animeId="" }: {id: number | stri
         return (
               <iframe 
                  className="w-screen h-56 lg:h-[600px]  sm:h-full rounded"
-                  src={`https://www.2embed.cc/embedtvfull/${id}`}
+                  src={`https://www.2embed.cc/embed/${id}`}
                   frameBorder="0"
                   allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
                   allowFullScreen

@@ -66,26 +66,54 @@ model Room {
  }
 
 model UserMovieList {
-  id         String       @id @default(uuid())
-  user       User      @relation(fields: [userId], references: [id])
-  movie      Movie     @relation(fields: [movieId], references: [id])
-  userId     String
-  movieId    String
-  listType   String  
-
-  @@unique([userId, movieId, listType]) 
+  id       String  @id @default(uuid())
+  user     User    @relation(fields: [userId], references: [id])
+  movie    Movie   @relation(fields: [movieId], references: [Mid])
+  userId   String
+  movieId  String
+  Mid      Int
+  episode  Int     @default(1)
+  season   Int     @default(1)
+  listType String
+  createdAt  DateTime    @default(now())
+  @@unique([userId, Mid, listType])
 }
 
 model Movie {
-  id         String             @id @default(uuid())
-  title      String
-  year       String          
-  imdbID     String             @unique
-  type       String          
-  poster     String          
-
-  userLists  UserMovieList[] 
+  Mid               String           @id @default(uuid()) // Internal primary key
+  id                Int              @unique              // External unique identifier
+  adult             Boolean?
+  title             String?
+  backdrop_path     String?
+  first_air_date    String?
+  genre_ids         GenreIds[]       
+  media_type        String?
+  name              String?
+  origin_country    OriginCountry[] 
+  original_language String?
+  original_name     String?
+  overview          String?
+  popularity        Int?
+  poster_path       String?
+  vote_average      Float?          
+  vote_count        Int?              
+  userLists         UserMovieList[]
 }
+
+model GenreIds {
+  id       Int    @id @default(autoincrement())
+  movieId  String
+  movie    Movie  @relation(fields: [movieId], references: [Mid])
+  genre_id Int
+}
+
+model OriginCountry {
+  id       Int    @id @default(autoincrement())
+  movieId  String
+  movie    Movie  @relation(fields: [movieId], references: [Mid])
+  country  String
+}
+
 
 
 

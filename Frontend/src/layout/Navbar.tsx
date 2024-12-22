@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import n from "./n.png";
 import Button from "../ui/Button";
-import { useRecoilValue, useSetRecoilState } from "recoil";
+import { useRecoilState, useRecoilValue, useSetRecoilState } from "recoil";
 import { isAuthenticatedState } from "../State/authState";
 import Modal from "../ui/Modal";
 import Authentication from "../pages/Authentication";
@@ -13,6 +13,10 @@ import SideBar from "./SideBar";
 import { userInfo } from "../State/userState";
 import { isNotiOpen } from "../State/notificationPanel";
 import Notifications from "../components/Notifications";
+import { Friends } from "../State/friendsState";
+import { FriendRequests } from "../State/FriendRequests";
+import { io } from "socket.io-client";
+
 
 interface UserInfoType {
   id: string;
@@ -21,24 +25,50 @@ interface UserInfoType {
   firsname: string;
   lastname: string;
 }
-
+const socket = io("http://192.168.0.106:5000")
 export default function Navbar() {
   const navigate = useNavigate();
   const [query, setQuery] = useState("");
-  const setUserInfo = useSetRecoilState(userInfo);
+  const [UserInfo, setUserInfo] = useRecoilState(userInfo);
   const isAuthenticated = useRecoilValue(isAuthenticatedState);
   const isNotiOpenValue = useRecoilValue(isNotiOpen);
+  const setFriends = useSetRecoilState(Friends);
+  const setFriendRequests = useSetRecoilState(FriendRequests);
 
   useEffect(() => {
-    
     if (isAuthenticated) {
-      async function fetchUserData() {
-        try {
+     
+
+
+    async function loadRequests() {
+      const response =   await axios.get("http://192.168.0.106:5000/api/v1/social/loadrequests", {
+        headers: {
+          authorization: localStorage.getItem("token"),
+        },
+      })
+       setFriendRequests(response.data.noti);
+    }
+    loadRequests();
+
+        async function loadFriends(){
+      const response =   await axios.get("http://192.168.0.106:5000/api/v1/social/friends", {
+          headers: {
+            authorization: localStorage.getItem("token"),
+          },
+        })
+         setFriends(response.data.actualFriends);
+         
+        }
+        loadFriends();
+ 
+          async function fetchUserData() {
+          try {
           const response = await axios.get("http://192.168.0.106:5000/api/v1/user/getuser", {
             headers: {
               authorization: localStorage.getItem("token") || ""
             }
           });
+          socket.emit("update-status",UserInfo.id, "ONLINE")
           const { id, username, email, firsname, lastname }: UserInfoType = response.data.userWithMovies;
           setUserInfo({ id, username, email, firsname, lastname });
         } catch (error) {
@@ -47,7 +77,7 @@ export default function Navbar() {
       }
       fetchUserData();
     }
-  }, [isAuthenticated, setUserInfo]);
+  }, [isAuthenticated, setUserInfo, setFriends,setFriendRequests, UserInfo.id]);
 
   function handleSearch(e: React.FormEvent) {
     e.preventDefault();
@@ -56,7 +86,7 @@ export default function Navbar() {
 
   return (
     <div className="relative">
-      <div className="flex flex-col sm:flex-row items-center w-full bg-slate-950 text-yellow-600 font-bold shadow-yellow-950 shadow-md mb-10 fixed">
+      <div className="flex flex-col sm:flex-row items-center justify-center w-full bg-slate-950 text-yellow-600 font-bold shadow-yellow-950 shadow-md mb-10 z-10 fixed">
         
           <div className="flex w-full items-center mb-2 sm:mb-0 my-2 sm:my-0 justify-between">
          
@@ -74,14 +104,14 @@ export default function Navbar() {
             </div>
           </div>
         
-        <form onSubmit={handleSearch} className="w-full sm:w-full flex justify-between">
+        <form onSubmit={handleSearch} className="w-full sm:w-full flex justify-between md:mr-44">
           <input
-            className="w-full sm:w-96 bg-white bg-opacity-10 text-stone-300 rounded px-3 py-1 sm:py-1 sm:my-2 placeholder-stone-400 border-solid border border-yellow-600 focus:outline-none"
+            className="w-full  md:min-w-96   md:w-150 bg-white bg-opacity-10 text-stone-300 rounded px-3 py-1 sm:py-1.5 sm:my-2 placeholder-stone-400 border-solid border border-yellow-600 focus:outline-none mx-0.5"
             value={query}
             onChange={(e) => setQuery(e.target.value)}
             placeholder="Search for anime/show"
           />
-        </form>
+        </form><div>
         {!isAuthenticated ? (
           <div className="hidden sm:hidden lg:block mr-8">
             <Modal>
@@ -106,7 +136,7 @@ export default function Navbar() {
               </Sidebar.window>
             </Sidebar>
           </div>
-        )}
+        )}</div>
       </div>
     </div>
   );

@@ -8,7 +8,7 @@ import Root from './Root.tsx'
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
     <RecoilRoot>
-      <div className='bg-gray-900 w-full h-screen'>
+      <div className='bg-gray-900 w-100 h-screen'>
         <Root />
       </div>
     </RecoilRoot>

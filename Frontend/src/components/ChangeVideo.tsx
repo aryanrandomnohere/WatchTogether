@@ -32,13 +32,14 @@ export default function ChangeVideo() {
     });
             console.log(inputPlaying);
             
-    socket.emit("change-video", {playing:{id:inputPlaying.id.toString(), title:inputPlaying.title, type:inputPlaying.type}, roomId})
+    socket.emit("change-video", {playing:{id:inputPlaying.id.toString(), title:inputPlaying.title, type:inputPlaying.type, animeId:inputPlaying.animeId }, roomId})
     socket.emit("send-message", {
         name:Info.username,
         time: currentTime,
-        message: `${Info.username} changed the video to ${inputPlaying?.title}`,
+        message: `Changed the video to ${inputPlaying?.title}`,
         userId: roomId
     });
+    socket.emit("update-status",Info.id,`Watching ${inputPlaying.title}`)
   }
 
 
@@ -53,13 +54,14 @@ export default function ChangeVideo() {
                    onChange={(e) => handleInputChange({id: e.target.value})} 
                  required={true}
                /></div>
+               
                <div>
                <h1 className="text-sm text-yellow-600">Enter Show Name</h1>
                <input className="text-xs rounded-lg py-1 px-3 font-medium w-36 bg-white bg-opacity-20 text-zinc-300 placeholder-gray-500 focus:outline-none" value={inputPlaying.title} onChange={(e) => handleInputChange({ title: e.target.value})}   required={true} />
                </div>
                <div>
                <h1 className="text-sm text-yellow-600">Media Type</h1>
-               <select className="text-xs rounded-lg py-1 px-3 font-medium w-36 bg-opacity-20 text-white  focus:outline-none" onChange={(e) => handleInputChange({type: e.target.value})} value={inputPlaying.type}  required={true}><option></option><option>Url<option/></option><option>Movie</option><option>Series</option><option>Anime</option></select>
+               <select className="text-xs rounded-lg py-1 px-3 font-medium w-36 bg-opacity-20 text-white  focus:outline-none" onChange={(e) => handleInputChange({type: e.target.value})} value={inputPlaying.type}  required={true}><option>AniMov</option><option>Url<option/></option><option>Movie</option><option>Series</option><option>Anime</option></select>
                </div></div><button className="p-1 text-sm hover:bg-yellow-600 border-l px-3 border-yellow-600 hover:text-white font-bold ">Change</button></form>
   )
 }

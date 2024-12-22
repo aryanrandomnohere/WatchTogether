@@ -1,4 +1,5 @@
 import { PrismaClient } from "@prisma/client";
+import { log } from "console";
 import { Server, Socket } from "socket.io";
 
 const prisma = new PrismaClient();
@@ -23,36 +24,50 @@ export default function userEvents(io: Server, socket: Socket) {
            
             io.to(userId).emit("load-noti", noti)
 
-            const friendIds = userFriends.map(f => f.friendId);
-
-            const mutualFriends = await prisma.friendship.findMany({
-                where: {
-                  userId: { in: friendIds },
-                  friendId: userId,
-                },
-                include: {
-                  user: {
-                    select: {
-                        username:true,
-                      id: true, // Select specific fields
-                      firstname: true,
-                      lastname: false,
-                      status:true, // Exclude specific fields
-                    },
-                  },
-                },
-              });
-              
-
-            const actualFriends = mutualFriends.map(f => f.user);
-            io.to(userId).emit("load-friends", actualFriends);
-            
+          
 
 
         } catch (error) {
             console.error("Error in register event:", error);
         }
     });
+    //End
+
+    //Handle Update Friend Status 
+    socket.on("update-status", async (userId: string, newStatus: string) => {
+        try {
+          //Updating status in db
+          log(userId,newStatus)
+          await prisma.user.update({
+            where:{
+                id:userId
+            },
+            data:{
+                status:newStatus
+            }
+          })
+          // Fetch the user's friends
+          const userFriends = await prisma.friendship.findMany({
+            where: { userId },
+            select: { friendId: true },
+          });
+      
+          const friendIds = userFriends.map((f) => f.friendId);
+      
+          // Notify all friends by broadcasting to their rooms
+          friendIds.forEach((friendId) => {
+            io.to(friendId).emit("friend-status-update", {
+              userId,
+              newStatus, // e.g., 'online', 'offline', etc.
+            });
+          });
+        } catch (error) {
+          console.error("Error updating status:", error);
+        }
+      });
+      
+
+
 
     // Handle sending friend requests
     socket.on("send-friend-request", async (senderId: string, senderUsername: string, receiverUsername: string) => {
