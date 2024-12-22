@@ -48,41 +48,44 @@ export default function Room() {
     
     useEffect(() => {
         if (!roomId) return;
-    
+        
         const handleLoadMessages = (oldMessages: Message[]) => {
             setMessages(oldMessages);
         };
     
-        const handleLoadPlaying = (playing: { playingId: string, playingTitle: string, playingType: string }) => {
-            const { playingId: id, playingTitle: title, playingType: type } = playing;
-            setWasPlaying({ id, title, type });
+        const handleLoadPlaying = (playing: { playingId: string, playingTitle: string, playingType: string,playingAnimeId:string}) => {
+            const { playingId: id, playingTitle: title, playingType: type, playingAnimeId: animeId } = playing;
+            setWasPlaying({ id, title, type, animeId });
+            socket.emit("update-status",Info.id,`Watching ${title}`)
         };
     
         const handleReceiveMessage = (newMessage: Message) => {
             setMessages((prevMessages) => [...prevMessages, newMessage]);
         };
     
-        const handleReceivePlaying = (playing: { playingId: string, playingTitle: string, playingType: string }) => {
-            const { playingId: id, playingTitle: title, playingType: type } = playing;
-            setPlaying({ id, title, type });
-            controlledInput({ id, title, type });
+        const handleReceivePlaying = (playing: { playingId: string, playingTitle: string, playingType: string, playingAnimeId:string }) => {
+            const { playingId: id, playingTitle: title, playingType: type, playingAnimeId: animeId } = playing;
+            setPlaying({ id, title, type, animeId });
+            controlledInput({ id, title, type, animeId });
+            socket.emit("update-status",Info.id,`Watching ${title}`)
         };
     
         socket.emit("join-room", roomId);
-    
+        
         socket.on("load-messages", handleLoadMessages);
         socket.on("load-playing", handleLoadPlaying);
         socket.on("receive-message", handleReceiveMessage);
         socket.on("receive-playing", handleReceivePlaying);
-    
+        
         return () => {
+            socket.emit("update-status",Info.id,"ONLINE")
             socket.off("load-messages", handleLoadMessages);
             socket.off("load-playing", handleLoadPlaying);
             socket.off("receive-message", handleReceiveMessage);
             socket.off("receive-playing", handleReceivePlaying);
             socket.emit("leave-room", roomId);
         };
-    }, [roomId]); 
+    }, [roomId,controlledInput,setMessages,setPlaying,setWasPlaying,Info]); 
     
     
  
@@ -121,19 +124,18 @@ export default function Room() {
             </div>
 
             <div className="flex flex-col w-full md:flex-row gap-4 mt-0">
-                <div className="w-full md:w-1/6" > {isOpen && <SeasonBox tvId={isPlaying.id} />}</div>
+            <div className="w-full md:w-1/6">
+  {isOpen && ["Series", "Anime"].includes(isPlaying.type) && (
+    <SeasonBox tvId={isPlaying.id} />
+  )}
+</div>
+
                 <div className="flex w-full md:w-3/5 justify-center items-center shadow-yellow-600 bg-black shadow-sm rounded-lg p-4">
 
                     <Series id={isPlaying.id} type={isPlaying.type} title={isPlaying.title}  animeId={isPlaying.animeId} />
                 </div>
                 <div className="flex flex-col justify-between bg-slate-900 rounded-lg w-full md:w-128 h-80 md:h-auto">
-                    {/* <input
-                        type="text"
-                        value={name}
-                        onChange={(e) => setName(e.target.value)}
-                        placeholder="Type display name"
-                        className="input bordered"
-                    /> */}
+                 
                     <ChatNav />
                     <ChatBox messages={messages} />
                     <div className="flex justify-center items-center w-full">

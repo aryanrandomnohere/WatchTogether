@@ -56,6 +56,7 @@ io.on("connection", (socket) => {
                   playingId:true,
                   playingTitle:true,
                   playingType:true,
+                  playingAnimeId:true
               }
           })
 

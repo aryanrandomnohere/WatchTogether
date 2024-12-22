@@ -5,8 +5,8 @@ import { MovieInfoState } from "../State/MovieInfoState";
 import Show from "../components/Show";
 import { RiInformation2Fill } from "react-icons/ri";
 import Modal from "../ui/Modal";
-import Showinfo from "../components/Showinfo";
 import { useRecoilState} from "recoil";
+import ShowInfo from "../components/Showinfo";
 const options = {
   method: 'GET',
   headers: {
@@ -52,7 +52,7 @@ export default function ShowsDisplay() {
         //     },
         //   }
         // );
-        const response = await axios.get(`https://api.themoviedb.org/3/search/multi?query=${id}&include_adult=false&language=en-US&page=1`,options)
+        const response = await axios.get(`https://api.themoviedb.org/3/search/multi?query=${id}&include_adult=true&language=en-US&page=1`,options)
         console.log(response.data.results);
         setMedia(response.data.results);
       } catch (error) {
@@ -82,20 +82,20 @@ export default function ShowsDisplay() {
   }
 
   return (
-    <div className="flex flex-wrap bg-gray-900 justify-center items-center text-zinc-300 mt-24 md:mt-16 gap-5">
+    <div className="flex flex-wrap bg-gray-900 justify-center items-center text-zinc-300 mt-24 md:mt-16 gap-1.5  sm:gap-3">
       {media.map((item:mData) => (
         <Show key={item.id} item={item} onClick={() => handleClick(item)}>
          <div> <Modal>
-            <Modal.open opens="Showinfo">
-              <button
-                className="absolute bottom-8 left-1/2 transform -translate-x-1/2 text-white py-1 px-4 rounded opacity-0 transition-opacity duration-300 group-hover:opacity-100"
-                onClick={() => handleClick(item)}
-              >
-                <RiInformation2Fill className="h-10 w-10 text-yellow-400 opacity-80" />
-              </button>
-            </Modal.open>
+                 <Modal.open opens="Showinfo">
+                   <button
+                     className="absolute bottom-1/2 left-1/2 transform -translate-x-1/2 text-white rounded opacity-0 transition-opacity duration-300 group-hover:opacity-100"
+                     onClick={()=>handleClick(item)}
+                   >
+                     <RiInformation2Fill className="text-5xl text-yellow-400 opacity-80" />
+                   </button>
+                 </Modal.open>
             <Modal.window name="Showinfo">
-              <Showinfo movie={MovieInfo} />
+              <ShowInfo movie={MovieInfo} />
             </Modal.window>
           </Modal>
           </div>

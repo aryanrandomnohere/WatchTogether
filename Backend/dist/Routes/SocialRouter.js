@@ -17,7 +17,8 @@ const AuthMiddleware_1 = __importDefault(require("../AuthMiddleware"));
 const client_1 = require("@prisma/client");
 const SocialRouter = express_1.default.Router();
 const prisma = new client_1.PrismaClient();
-SocialRouter.put("/rejectrequest", AuthMiddleware_1.default, (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+SocialRouter.use(AuthMiddleware_1.default);
+SocialRouter.put("/rejectrequest", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     //@ts-ignore
     const toId = req.userId;
     const { from } = req.body;
@@ -46,5 +47,50 @@ SocialRouter.put("/rejectrequest", AuthMiddleware_1.default, (req, res) => __awa
         console.error("Error rejecting friend request:", error);
         res.status(500).json({ msg: "An error occurred while rejecting the request" });
     }
+}));
+SocialRouter.get("/friends", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    //@ts-ignore
+    const userId = req.userId;
+    const userFriends = yield prisma.friendship.findMany({
+        where: {
+            userId
+        },
+        select: {
+            friendId: true
+        }
+    });
+    const friendIds = userFriends.map(f => f.friendId);
+    const mutualFriends = yield prisma.friendship.findMany({
+        where: {
+            userId: { in: friendIds },
+            friendId: userId,
+        },
+        include: {
+            user: {
+                select: {
+                    username: true,
+                    id: true,
+                    firstname: true,
+                    lastname: false,
+                    status: true,
+                },
+            },
+        },
+    });
+    const actualFriends = mutualFriends.map(f => f.user);
+    res.json({ actualFriends });
+    return;
+}));
+SocialRouter.get('/loadrequests', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    //@ts-ignore
+    const userId = req.userId;
+    const noti = yield prisma.friendRequests.findMany({
+        where: { toId: userId },
+        select: { from: true,
+            fromUsername: true,
+        }
+    });
+    res.json({ noti });
+    return;
 }));
 exports.default = SocialRouter;

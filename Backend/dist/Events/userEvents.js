@@ -11,6 +11,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.default = userEvents;
 const client_1 = require("@prisma/client");
+const console_1 = require("console");
 const prisma = new client_1.PrismaClient();
 function userEvents(io, socket) {
     // Handle user registration
@@ -29,29 +30,41 @@ function userEvents(io, socket) {
                 }
             });
             io.to(userId).emit("load-noti", noti);
-            const friendIds = userFriends.map(f => f.friendId);
-            const mutualFriends = yield prisma.friendship.findMany({
-                where: {
-                    userId: { in: friendIds },
-                    friendId: userId,
-                },
-                include: {
-                    user: {
-                        select: {
-                            username: true,
-                            id: true, // Select specific fields
-                            firstname: true,
-                            lastname: false,
-                            status: true, // Exclude specific fields
-                        },
-                    },
-                },
-            });
-            const actualFriends = mutualFriends.map(f => f.user);
-            io.to(userId).emit("load-friends", actualFriends);
         }
         catch (error) {
             console.error("Error in register event:", error);
+        }
+    }));
+    //End
+    //Handle Update Friend Status 
+    socket.on("update-status", (userId, newStatus) => __awaiter(this, void 0, void 0, function* () {
+        try {
+            //Updating status in db
+            (0, console_1.log)(userId, newStatus);
+            yield prisma.user.update({
+                where: {
+                    id: userId
+                },
+                data: {
+                    status: newStatus
+                }
+            });
+            // Fetch the user's friends
+            const userFriends = yield prisma.friendship.findMany({
+                where: { userId },
+                select: { friendId: true },
+            });
+            const friendIds = userFriends.map((f) => f.friendId);
+            // Notify all friends by broadcasting to their rooms
+            friendIds.forEach((friendId) => {
+                io.to(friendId).emit("friend-status-update", {
+                    userId,
+                    newStatus, // e.g., 'online', 'offline', etc.
+                });
+            });
+        }
+        catch (error) {
+            console.error("Error updating status:", error);
         }
     }));
     // Handle sending friend requests
