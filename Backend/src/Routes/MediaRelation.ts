@@ -2,7 +2,6 @@ import express, { Request, Response } from "express";
 import AuthMiddleware from "../AuthMiddleware";
 import { Prisma, PrismaClient } from "@prisma/client";
 import { reverse } from "dns";
-import { log } from "console";
 
 const MediaRouter = express.Router();
 const prismaClient = new PrismaClient();
@@ -56,7 +55,6 @@ MediaRouter.get("/allmedia", AuthMiddleware, async (req: Request, res: Response)
       },
 
     });
-    console.log(userMedia);
     
 
     res.status(200).json({ message: "User media retrieved successfully.", data: userMedia });
@@ -96,7 +94,6 @@ MediaRouter.post("/mediaaction", AuthMiddleware, async (req: Request, res: Respo
     const userId = req.userId;
     const { movie, listType } = req.body;
 
-    console.log(userId, movie, listType);
 
     // Validate the input
     if (!userId || !movie || !listType) {
@@ -237,7 +234,6 @@ MediaRouter.post("/mediaaction", AuthMiddleware, async (req: Request, res: Respo
         return 
       }
 
-      log(`Updating Recently Watched: userId=${userId}, movieId=${movie_Id}, episode=${episode}, season=${season}`);
 
       // Attempt to update the entry
       const response = await prismaClient.userMovieList.findUnique({

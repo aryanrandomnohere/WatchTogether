@@ -18,7 +18,7 @@ export default function UserDisplay() {
             <div className="flex justify-between items-center w-full mt-1">
                 <div className="flex flex-col justify-center">
                     <h1 className="text-lg font-bold text-yellow-600">{user.username}</h1>
-                    <h5 className="font-extralight text-base text-white">{user.email}</h5>
+                    <h5 className="font-extralight text-sm text-white">{user.email}</h5>
                 </div>
                 <MdUnfoldMore className="text-xl text-white font-bold" />
             </div>

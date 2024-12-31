@@ -6,8 +6,7 @@ import JWT_SECRET from "../JWT_SECRET";
 import zod from 'zod'
 
 const signUpSchema = zod.object({
-    firstname: zod.string(),
-    lastname:  zod.string(),
+    displayname: zod.string(),
     username:  zod.string(),
     password:  zod.string(),
     email:     zod.string().email(),
@@ -25,8 +24,8 @@ const SALT_ROUNDS = 10; // Number of salt rounds for bcrypt
 // Signup endpoint
 //@ts-ignore
 authRouter.post("/signup", async (req: Request, res: Response) => {
-   const  {email,firstname,lastname,password,username} = req.body;
-    const credentials = {email,firstname,lastname,password,username}
+   const  {email,displayname,password,username} = req.body;
+    const credentials = {email,displayname,password,username}
     const { success, data } = signUpSchema.safeParse(credentials);
     if (!success) return res.status(400).json({ msg: "Invalid Input" });
 
@@ -42,8 +41,7 @@ authRouter.post("/signup", async (req: Request, res: Response) => {
         const newUser = await prisma.user.create({
             data: {
                 email: data.email,
-                firstname: data.firstname,
-                lastname: data.lastname,
+                displayname : data.displayname,
                 password: hashedPassword, // Store the hashed password
                 username: data.username,
             }

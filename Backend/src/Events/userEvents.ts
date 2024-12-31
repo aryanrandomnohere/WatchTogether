@@ -1,5 +1,4 @@
 import { PrismaClient } from "@prisma/client";
-import { log } from "console";
 import { Server, Socket } from "socket.io";
 
 const prisma = new PrismaClient();
@@ -9,7 +8,6 @@ export default function userEvents(io: Server, socket: Socket) {
     socket.on('register', async (userId: string) => {
         try {
             socket.join(userId);
-            console.log(`User ${userId} joined room ${userId}`);
             const userFriends = await prisma.friendship.findMany({
                 where: { userId },
                 select: { friendId: true },
@@ -37,7 +35,6 @@ export default function userEvents(io: Server, socket: Socket) {
     socket.on("update-status", async (userId: string, newStatus: string) => {
         try {
           //Updating status in db
-          log(userId,newStatus)
           await prisma.user.update({
             where:{
                 id:userId
@@ -62,7 +59,7 @@ export default function userEvents(io: Server, socket: Socket) {
             });
           });
         } catch (error) {
-          console.error("Error updating status:", error);
+          console.error("1");
         }
       });
       
@@ -94,7 +91,6 @@ export default function userEvents(io: Server, socket: Socket) {
                     senderUsername
                 });
 
-                console.log(`Friend request sent from ${senderId} to ${receiverId}`);
             }
         } catch (error) {
             console.error("Error in send-friend-request event:", error);
@@ -104,7 +100,6 @@ export default function userEvents(io: Server, socket: Socket) {
     // Handle accepting friend requests
     socket.on("accept-friend-request", async ({userId, friendId}:{userId:string, friendId:string}) => {
         try {
-            console.log(userId,friendId);
             
             await prisma.$transaction(async (tx) => {
                 await tx.friendship.createMany({
@@ -117,11 +112,11 @@ export default function userEvents(io: Server, socket: Socket) {
                 const [friendInfo, userInfo] = await Promise.all([
                     tx.user.findUnique({
                         where: { id: friendId },
-                        select: { id: true, username: true, firstname: true, lastname: true,status:true },
+                        select: { id: true, username: true, displayname:true,status:true },
                     }),
                     tx.user.findUnique({
                         where: { id: userId },
-                        select: { id: true, username: true, firstname: true, lastname: true,status:true  },
+                        select: { id: true, username: true,displayname:true,status:true  },
                     }),
                 ]);
 

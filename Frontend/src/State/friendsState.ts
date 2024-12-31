@@ -3,8 +3,7 @@ import { atom } from "recoil";
 interface Friend {
     id:string;
     status:string;
-    firstname:string;
-    lastname:string;
+    displayname:string;
     username:string
 }
 export const Friends = atom<Friend[]>({

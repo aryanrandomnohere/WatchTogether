@@ -22,10 +22,9 @@ interface UserInfoType {
   id: string;
   username: string;
   email: string;
-  firsname: string;
-  lastname: string;
+  displayname:string;
 }
-const socket = io("http://192.168.0.106:5000")
+const socket = io(`${import.meta.env.VITE_BACKEND_APP_API_BASE_URl}`)
 export default function Navbar() {
   const navigate = useNavigate();
   const [query, setQuery] = useState("");
@@ -41,17 +40,17 @@ export default function Navbar() {
 
 
     async function loadRequests() {
-      const response =   await axios.get("http://192.168.0.106:5000/api/v1/social/loadrequests", {
+      const response =   await axios.get(`${import.meta.env.VITE_BACKEND_APP_API_BASE_URl}/api/v1/social/loadrequests`, {
         headers: {
           authorization: localStorage.getItem("token"),
         },
       })
-       setFriendRequests(response.data.noti);
+      setFriendRequests(response.data.noti);
     }
     loadRequests();
 
         async function loadFriends(){
-      const response =   await axios.get("http://192.168.0.106:5000/api/v1/social/friends", {
+      const response =   await axios.get(`${import.meta.env.VITE_BACKEND_APP_API_BASE_URl}/api/v1/social/friends`, {
           headers: {
             authorization: localStorage.getItem("token"),
           },
@@ -63,14 +62,14 @@ export default function Navbar() {
  
           async function fetchUserData() {
           try {
-          const response = await axios.get("http://192.168.0.106:5000/api/v1/user/getuser", {
+          const response = await axios.get(`${import.meta.env.VITE_BACKEND_APP_API_BASE_URl}/api/v1/user/getuser`, {
             headers: {
               authorization: localStorage.getItem("token") || ""
             }
           });
           socket.emit("update-status",UserInfo.id, "ONLINE")
-          const { id, username, email, firsname, lastname }: UserInfoType = response.data.userWithMovies;
-          setUserInfo({ id, username, email, firsname, lastname });
+          const { id, username, email, displayname }: UserInfoType = response.data.userWithMovies;
+          setUserInfo({ id, username, email, displayname });
         } catch (error) {
           console.error("Error fetching user data:", error);
         }
@@ -86,9 +85,9 @@ export default function Navbar() {
 
   return (
     <div className="relative">
-      <div className="flex flex-col sm:flex-row items-center justify-center w-full bg-slate-950 text-yellow-600 font-bold shadow-yellow-950 shadow-md mb-10 z-10 fixed">
+      <div className="flex flex-col sm:flex-row items-center justify-center w-full bg-slate-950 bg-op text-yellow-600 font-bold shadow-yellow-950 shadow-md mb-10 z-10 fixed">
         
-          <div className="flex w-full items-center mb-2 sm:mb-0 my-2 sm:my-0 justify-between">
+          <div className="flex w-full items-center mb-2 sm:mb-0 my-2 sm:my-0 justify-between">  
          
             <div className="flex w-full justify-between items-center ">
             <Link to="/"> <div className="flex items-center"><img src={n} alt="Logo" className="h-10 w-10 sm:h-12 sm:w-12 ml-2 sm:ml-8" /><p className="ml-2 text-2xl sm:text-3xl font-comic ">WatchAlong</p></div></Link>

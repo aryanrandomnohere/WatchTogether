@@ -4,7 +4,7 @@ import axios from "axios";
 import { useParams } from "react-router-dom";
 import { io } from "socket.io-client";
 import { userInfo } from "../State/userState";
-const socket = io("http://192.168.0.106:5000")
+const socket = io(`${import.meta.env.VITE_BACKEND_APP_API_BASE_URl}`)
 interface EpisodeType {
     episode_number: number;
     episode_type: string;
@@ -34,7 +34,7 @@ export default function EpisodeBox({ episodes }: { episodes: EpisodeType[] }) {
         console.log("Token:", token);
         
         const response = await axios.put(
-            `http://192.168.0.106:5000/api/v1/media/setmedia`,
+            `${import.meta.env.VITE_BACKEND_APP_API_BASE_URl}/api/v1/media/setmedia`,
             {
                 episode: episode.episode_number,
                 season: episode.season_number,
@@ -62,7 +62,7 @@ export default function EpisodeBox({ episodes }: { episodes: EpisodeType[] }) {
 
     return (
         <div className="flex justify-center items-center w-full pt-2">
-            <div className="flex-wrap flex w-full gap-2.7 justify-start">
+            <div className="flex-wrap flex w-full gap-1.5 sm:gap-2 justify-center">
                 {episodes.map((episode) => {
                     const paddingClass =
                         episode.episode_number.toString().length > 2
@@ -72,15 +72,15 @@ export default function EpisodeBox({ episodes }: { episodes: EpisodeType[] }) {
                             : "px-3.5";
                     const activeClass =
                         episode.episode_number === Ep.episode_number && episode.season_number === Ep.season_number
-                            ? "bg-yellow-900"
-                            : "bg-yellow-600";
+                            ? "bg-gray-900 "
+                            : "bg-gray-700 hover:bg-gray-500";
 
                     return (
                         <div
                             key={episode.id}
                             onClick={() => handleEpisodeClick(episode)}
                             aria-label={`Episode ${episode.episode_number}`}
-                            className={`p-1.5 ${paddingClass} ${activeClass} text-white rounded-md text-sm font-bold hover:cursor-pointer`}
+                            className={`p-1.5 ${paddingClass} ${activeClass} text-yellow-300  rounded-sm text-sm font-bold hover:cursor-pointer`}
                         >
                             {episode.episode_number}
                         </div>

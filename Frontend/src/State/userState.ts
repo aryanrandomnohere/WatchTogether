@@ -4,8 +4,7 @@ interface UserInfoType {
     id:string,
     username:string,
     email:string,
-    firsname:string,
-    lastname:string,
+    displayname:string,
 }
 
 export const userInfo = atom<UserInfoType>({
@@ -14,7 +13,6 @@ export const userInfo = atom<UserInfoType>({
     id:"",
     username:"",
     email:"",
-    firsname:"",
-    lastname:"",
+    displayname:"",
    }
 })

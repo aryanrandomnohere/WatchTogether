@@ -16,7 +16,7 @@ interface seasonType {
 
 
 
-export default function SeasonBox({tvId = 60059}:{tvId?:string|number}) {
+export default function SeasonBox({tvId }:{tvId?:string|number}) {
   const [isOpen, setIsOpen] = useState<number| string | null>(null);
   const [seasonInfo, setSeasonInfo] = useState<seasonType[]>();
 const [isLoading, setIsLoading] = useState(false)
@@ -53,7 +53,7 @@ useEffect( ()=>{
 if(isLoading ||  !seasonInfo) return <div className="flex justify-center items-center h-full w-full border-yellow-600"> <span className="loading loading-dots loading-lg"></span></div>
 
   return (
-    <div className="flex flex-wrap items-center justify-between w-full rounded-md px-1 pb-4 gap-2 shadow-yellow-600 bg-slate-950 shadow-sm max-h-96 md:max-h-[650px] overflow-y-auto scrollbar-thin">
+    <div className="flex flex-wrap items-center justify-between w-full border-l border-t border-b border-white/20  gap-2  bg-slate-950  max-h-96 md:max-h-[650px] overflow-y-auto scrollbar-thin">
   {seasonInfo.map((s: seasonType) => (
     <SeasonList
       key={s.season_number} // Add a unique key if not already done

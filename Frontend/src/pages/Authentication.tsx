@@ -12,8 +12,7 @@ interface AuthenticationProps {
 export default function Authentication({ close }: AuthenticationProps) {
   const [isSignup, setIsSignup] = useState(false);
   const [email, setEmail] = useState("");
-  const [firstname, setFirstName] = useState("");
-  const [lastname, setLastName] = useState("");
+  const [displayname, setdisplayName] = useState("");
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [isLoading, setIsLoading] =useState<boolean>(false);
@@ -27,11 +26,11 @@ export default function Authentication({ close }: AuthenticationProps) {
     event.preventDefault();
 setIsLoading(true);
     const url = isSignup
-      ? "http://192.168.0.106:5000/api/v1/Auth/signup"
-      : "http://192.168.0.106:5000/api/v1/Auth/login";
+      ? `${import.meta.env.VITE_BACKEND_APP_API_BASE_URl}/api/v1/Auth/signup`
+      : `${import.meta.env.VITE_BACKEND_APP_API_BASE_URl}/api/v1/Auth/login`;
       
     const data = isSignup
-      ? { email, firstname, lastname, username, password } // Send all fields for signup
+      ? { email, displayname, username, password } // Send all fields for signup
       : { email, password }; // Send only email and password for login
 
     try {
@@ -53,7 +52,7 @@ setIsLoading(true);
       setIsLoading(false);
       if (close) close();
     } catch (error) {
-      //@ts-ignore
+      //@ts-expect-error noidea
       toast.error(`${isSignup ? "Signup" : "Login"} Failed: ${error.response.data.msg}`);
       setIsLoading(false);  
       // Handle errors accordingly, e.g., show a message to the user
@@ -98,10 +97,10 @@ setIsLoading(true);
             <div className="mb-6">
               <input
                 type="text"
-                value={firstname}
-                onChange={(e) => setFirstName(e.target.value)}
+                value={displayname}
+                onChange={(e) => setdisplayName(e.target.value)}
                 className="peer block  w-full px-4 py-2 rounded bg-transparent outline-none border border-neutral-300 transition-all duration-200 ease-linear focus:border-yellow-500 text-white"
-                placeholder="First Name"
+                placeholder="Display Name"
                 disabled={isLoading}
                 required
               />
@@ -109,19 +108,7 @@ setIsLoading(true);
           )}
 
           {/* Last Name Input (only for signup) */}
-          {isSignup && (
-            <div className="mb-6">
-              <input
-                type="text"
-                value={lastname}
-                onChange={(e) => setLastName(e.target.value)}
-                className="peer block w-full px-4 py-2 rounded bg-transparent outline-none border border-neutral-300 transition-all duration-200 ease-linear focus:border-yellow-500 text-white"
-                placeholder="Last Name"
-                disabled={isLoading}
-                required
-              />
-            </div>
-          )}</div>
+        
 
           {/* Username Input (only for signup) */}
           {isSignup && (
@@ -136,7 +123,7 @@ setIsLoading(true);
                 required
               />
             </div>
-          )}
+          )}</div>
 
           {/* Password Input */}
           <div className="relative mb-6">

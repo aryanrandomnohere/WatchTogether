@@ -1,7 +1,9 @@
 import { Dispatch, SetStateAction, useEffect, useState } from "react";
-import { SlArrowRight } from "react-icons/sl"
 import EpisodeBox from "./EpisodeBox";
 import axios from "axios";
+import { epState } from "../State/epState";
+import { useRecoilValue } from "recoil";
+import { FaLongArrowAltRight } from "react-icons/fa";
 
 interface seasonType {
     name:string,
@@ -25,7 +27,7 @@ interface seasonType {
   const TOKEN = "eyJhbGciOiJIUzI1NiJ9.eyJhdWQiOiI0NzI5NmMxNjY1NWI1NGE1MzU0MTA4NzIyZWVmMjFhNSIsIm5iZiI6MTczMDkyMTU4My44NzM5OTk4LCJzdWIiOiI2NzJiYzQ2ZjQzM2M4MmVhMjY3ZWExNWEiLCJzY29wZXMiOlsiYXBpX3JlYWQiXSwidmVyc2lvbiI6MX0.T9tYHXZGv0OisrEbFuVodRU7ppPEKLvLAsKMbmJElkA";  
 
 export default function SeasonList({seasonInfo, tvId, isOpen, setIsOpen}:{seasonInfo:seasonType, tvId:string|number, isOpen:number | string| null, setIsOpen:Dispatch<SetStateAction<number | string | null>>}) {
-   
+    const Ep = useRecoilValue(epState);
     const [episodes, setEpisodes] = useState<EpisodeType[]>()
     useEffect(() => {
         async function getEpisodes() {
@@ -66,17 +68,17 @@ export default function SeasonList({seasonInfo, tvId, isOpen, setIsOpen}:{season
 if(seasonInfo.name ==="Specials") return null
 
     return (
-        <div className="flex flex-col items-center w-full px-2 pt-2 gap-1">
+        <div className={`flex flex-col   items-center w-full px-1 pt-1.5 `}>
   {/* Season Header */}
   <div 
-    className="flex items-center  px-4 py-3 sm:px-2 sm:pt-2 sm:pb-1 w-full justify-between border-b border-yellow-600/30 hover:cursor-pointer transition duration-200" 
+    className={`flex items-center px-2 py-3 sm:px-2 sm:pt-1.5  w-full justify-between border-b border-yellow-600/30 hover:cursor-pointer transition duration-200`} 
     onClick={() => setIsOpen((is) => (is === seasonInfo.season_number ? "" : seasonInfo.season_number))}
   >
-    <h1 className="text-sm md:text-base font-bold text-white ">
+    <h1 className={`${Ep.season_number === Number(seasonInfo.season_number) ? "text-yellow-600 border-yellow-600":""} text-sm md:text-base max-w-56 font-bold   text-white mb-1`}>
       {seasonInfo.name}
     </h1>
-    <SlArrowRight
-      className={`text-xs transform transition-transform ${
+    <FaLongArrowAltRight
+      className={`text-2xl border ${Ep.season_number === Number(seasonInfo.season_number) ? "text-yellow-600 border-yellow-600":""} rounded-full p-1  m-1 transform transition-transform ${
         isOpen === seasonInfo.season_number ? "rotate-90" : ""
       }`}
     />

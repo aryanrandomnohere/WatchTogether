@@ -4,7 +4,7 @@ import { useRecoilValue } from "recoil";
 import { userInfo } from "../State/userState";
 import { io } from "socket.io-client";
 
-const socket = io("http://192.168.0.106:5000", { autoConnect: true });
+const socket = io(`${import.meta.env.VITE_BACKEND_APP_API_BASE_URl}`, { autoConnect: true });
 
 export default function FriendActions({to}:{to:string}) {
  const userInfovalue = useRecoilValue(userInfo);

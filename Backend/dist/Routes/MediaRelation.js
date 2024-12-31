@@ -15,7 +15,6 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const express_1 = __importDefault(require("express"));
 const AuthMiddleware_1 = __importDefault(require("../AuthMiddleware"));
 const client_1 = require("@prisma/client");
-const console_1 = require("console");
 const MediaRouter = express_1.default.Router();
 const prismaClient = new client_1.PrismaClient();
 const VALID_LIST_TYPES = ["Favourite", "Recently Watched", "Watch Later"];
@@ -63,7 +62,6 @@ MediaRouter.get("/allmedia", AuthMiddleware_1.default, (req, res) => __awaiter(v
                 createdAt: "desc", // Dynamically set based on `reverse`
             },
         });
-        console.log(userMedia);
         res.status(200).json({ message: "User media retrieved successfully.", data: userMedia });
     }
     catch (error) {
@@ -99,7 +97,6 @@ MediaRouter.post("/mediaaction", AuthMiddleware_1.default, (req, res) => __await
         //@ts-ignore
         const userId = req.userId;
         const { movie, listType } = req.body;
-        console.log(userId, movie, listType);
         // Validate the input
         if (!userId || !movie || !listType) {
             res.status(400).json({ msg: "Missing required fields: userId, movie, or listType." });
@@ -216,7 +213,6 @@ MediaRouter.put("/setmedia", AuthMiddleware_1.default, (req, res) => __awaiter(v
             res.status(400).json({ success: false, message: "Invalid input: episode, season, and movieId are required and must be valid numbers." });
             return;
         }
-        (0, console_1.log)(`Updating Recently Watched: userId=${userId}, movieId=${movie_Id}, episode=${episode}, season=${season}`);
         // Attempt to update the entry
         const response = yield prismaClient.userMovieList.findUnique({
             where: {

@@ -19,8 +19,7 @@ const bcrypt_1 = __importDefault(require("bcrypt"));
 const JWT_SECRET_1 = __importDefault(require("../JWT_SECRET"));
 const zod_1 = __importDefault(require("zod"));
 const signUpSchema = zod_1.default.object({
-    firstname: zod_1.default.string(),
-    lastname: zod_1.default.string(),
+    displayname: zod_1.default.string(),
     username: zod_1.default.string(),
     password: zod_1.default.string(),
     email: zod_1.default.string().email(),
@@ -35,8 +34,8 @@ const SALT_ROUNDS = 10; // Number of salt rounds for bcrypt
 // Signup endpoint
 //@ts-ignore
 authRouter.post("/signup", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    const { email, firstname, lastname, password, username } = req.body;
-    const credentials = { email, firstname, lastname, password, username };
+    const { email, displayname, password, username } = req.body;
+    const credentials = { email, displayname, password, username };
     const { success, data } = signUpSchema.safeParse(credentials);
     if (!success)
         return res.status(400).json({ msg: "Invalid Input" });
@@ -51,8 +50,7 @@ authRouter.post("/signup", (req, res) => __awaiter(void 0, void 0, void 0, funct
         const newUser = yield prisma.user.create({
             data: {
                 email: data.email,
-                firstname: data.firstname,
-                lastname: data.lastname,
+                displayname: data.displayname,
                 password: hashedPassword, // Store the hashed password
                 username: data.username,
             }

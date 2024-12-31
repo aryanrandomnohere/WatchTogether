@@ -36,41 +36,15 @@ const io = new socket_io_1.Server(server, {
     }
 });
 io.on("connection", (socket) => {
-    console.log(`A user connected: ${socket.id}`);
-    socket.on("join-room", (userId) => __awaiter(void 0, void 0, void 0, function* () {
-        socket.join(userId);
+    socket.on("join-room", (roomId) => __awaiter(void 0, void 0, void 0, function* () {
+        socket.join(roomId);
         // Add the user to the room
-        if (!rooms[userId]) {
-            rooms[userId] = new Set();
+        if (!rooms[roomId]) {
+            rooms[roomId] = new Set();
         }
-        rooms[userId].add(socket.id);
+        rooms[roomId].add(socket.id);
         // Emit the user count for the room
-        io.to(userId).emit("room-user-count", rooms[userId].size);
-        try {
-            const oldMessages = yield prisma.chat.findMany({
-                where: { userId },
-                orderBy: { createdAt: "desc" },
-                take: 10,
-                select: { name: true, time: true, message: true }
-            });
-            const playing = yield prisma.room.findFirst({
-                where: {
-                    userId
-                },
-                select: {
-                    playingId: true,
-                    playingTitle: true,
-                    playingType: true,
-                    playingAnimeId: true
-                }
-            });
-            socket.emit("load-messages", oldMessages.reverse());
-            socket.emit("load-playing", playing);
-        }
-        catch (error) {
-            console.error("Error fetching messages:", error);
-            socket.emit("error-loading-messages", "Failed to load previous messages.");
-        }
+        io.to(roomId).emit("room-user-count", rooms[roomId].size);
     }));
     (0, userEvents_1.default)(io, socket);
     (0, videoEvents_1.default)(io, socket);
@@ -78,7 +52,6 @@ io.on("connection", (socket) => {
     (0, FriendActionsEvent_1.default)(io, socket);
     // Handle disconnection
     socket.on("disconnect", () => {
-        console.log(`User disconnected: ${socket.id}`);
         // Remove the user from any room they were in
         for (const roomId in rooms) {
             rooms[roomId].delete(socket.id);

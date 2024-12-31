@@ -70,8 +70,7 @@ SocialRouter.get("/friends", (req, res) => __awaiter(void 0, void 0, void 0, fun
                 select: {
                     username: true,
                     id: true,
-                    firstname: true,
-                    lastname: false,
+                    displayname: true,
                     status: true,
                 },
             },

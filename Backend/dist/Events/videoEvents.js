@@ -57,4 +57,40 @@ function videoEvents(io, socket) {
             (0, console_1.log)(`Error while changing ep ${error}`);
         }
     }));
+    socket.on("playPause", (_a) => __awaiter(this, [_a], void 0, function* ({ isPlaying, roomId }) {
+        const playingState = yield prisma.room.update({
+            where: {
+                userId: roomId
+            },
+            data: {
+                isPlaying
+            },
+            select: {
+                isPlaying: true,
+            }
+        });
+        const playerRoom = roomId + "'s Player";
+        io.to(playerRoom).emit("receivePlayPause", playingState === null || playingState === void 0 ? void 0 : playingState.isPlaying);
+        return;
+    }));
+    socket.on("seek", (_a) => __awaiter(this, [_a], void 0, function* ({ currentTime, roomId }) {
+        const timeState = yield prisma.room.update({
+            where: {
+                userId: roomId
+            },
+            data: {
+                currentTime
+            },
+            select: {
+                currentTime: true
+            }
+        });
+        (0, console_1.log)(`Sending updated time ${timeState.currentTime}`);
+        const playerRoom = roomId + "'s Player";
+        io.to(playerRoom).emit("receiveSeek", { currentTime: timeState.currentTime });
+    }));
+    socket.on("join-player", ({ roomId }) => {
+        const playerRoom = roomId + "'s Player";
+        socket.join(playerRoom);
+    });
 }

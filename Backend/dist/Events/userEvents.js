@@ -11,14 +11,12 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.default = userEvents;
 const client_1 = require("@prisma/client");
-const console_1 = require("console");
 const prisma = new client_1.PrismaClient();
 function userEvents(io, socket) {
     // Handle user registration
     socket.on('register', (userId) => __awaiter(this, void 0, void 0, function* () {
         try {
             socket.join(userId);
-            console.log(`User ${userId} joined room ${userId}`);
             const userFriends = yield prisma.friendship.findMany({
                 where: { userId },
                 select: { friendId: true },
@@ -40,7 +38,6 @@ function userEvents(io, socket) {
     socket.on("update-status", (userId, newStatus) => __awaiter(this, void 0, void 0, function* () {
         try {
             //Updating status in db
-            (0, console_1.log)(userId, newStatus);
             yield prisma.user.update({
                 where: {
                     id: userId
@@ -64,7 +61,7 @@ function userEvents(io, socket) {
             });
         }
         catch (error) {
-            console.error("Error updating status:", error);
+            console.error("1");
         }
     }));
     // Handle sending friend requests
@@ -92,7 +89,6 @@ function userEvents(io, socket) {
                     senderId,
                     senderUsername
                 });
-                console.log(`Friend request sent from ${senderId} to ${receiverId}`);
             }
         }
         catch (error) {
@@ -102,7 +98,6 @@ function userEvents(io, socket) {
     // Handle accepting friend requests
     socket.on("accept-friend-request", (_a) => __awaiter(this, [_a], void 0, function* ({ userId, friendId }) {
         try {
-            console.log(userId, friendId);
             yield prisma.$transaction((tx) => __awaiter(this, void 0, void 0, function* () {
                 yield tx.friendship.createMany({
                     data: [
@@ -113,11 +108,11 @@ function userEvents(io, socket) {
                 const [friendInfo, userInfo] = yield Promise.all([
                     tx.user.findUnique({
                         where: { id: friendId },
-                        select: { id: true, username: true, firstname: true, lastname: true, status: true },
+                        select: { id: true, username: true, displayname: true, status: true },
                     }),
                     tx.user.findUnique({
                         where: { id: userId },
-                        select: { id: true, username: true, firstname: true, lastname: true, status: true },
+                        select: { id: true, username: true, displayname: true, status: true },
                     }),
                 ]);
                 // Emit updated friend lists
