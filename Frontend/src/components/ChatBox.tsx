@@ -1,11 +1,46 @@
 import { useEffect, useRef } from "react";
 import Chats from "./Chats";
-
+import Polls from "./Polls";
 interface Message {
-  name: string;
+  id: number;
+  type:string;
+  displayname: string;
+  edited: boolean;
+  multipleVotes: boolean;
   time: string;
   message: string;
+  options?: Option[]; 
+  replyTo?: Reply | null; 
 }
+
+interface Option {
+  chatId:number;
+  option: string;
+  id: number;
+  votes?: Vote[]|null; 
+}
+
+  interface Vote {
+    chatId:number;
+    id: number;
+    userId:string;
+    optionId: number;
+    user: User;
+  }
+  interface Reply {
+    id: number;
+    displayname: string;
+    edited: boolean;
+    time: string;
+    message: string;
+  }
+
+interface User {
+    id: string;
+    displayname: string;
+    username: string; 
+  }
+
 
 export default function ChatBox({ messages }: { messages: Message[] }) {
   // Create a reference for the scrollable container
@@ -23,11 +58,12 @@ export default function ChatBox({ messages }: { messages: Message[] }) {
       {/* Chats section */}
       <div
         ref={chatContainerRef}
-        className="flex flex-col w-full justify-start items-start p-2 space-y-2 overflow-y-auto h-64 md:h-[35rem] scrollbar scrollbar-thin scrollbar-track-black  scrollbar-track-yellow-600 "
+        className="flex flex-col w-full justify-start items-start p-2 space-y-1.5 overflow-y-auto h-64 md:h-[35rem] scrollbar-thin  scrollbar-track-yellow-600 "
       >
-        {messages.map((message, index) => (
-          <Chats key={index} chat={message} />
-        ))}
+        {messages.map((message, index) =>
+         message.type === "normal" ? <Chats key={index} chat={message} /> : <Polls key={index} poll={message}/>
+)}
+
       </div>
     </div>
   );

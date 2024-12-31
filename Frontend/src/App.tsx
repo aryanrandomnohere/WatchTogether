@@ -10,13 +10,15 @@ import { useEffect } from "react";
 import { io } from "socket.io-client";
 import { FriendRequests } from "./State/FriendRequests";
 import { Friends } from "./State/friendsState";
+import { isAuthenticatedState } from "./State/authState";
 
 
 
-const socket = io("http://192.168.0.106:5000", { autoConnect: true });
+const socket = io(`${import.meta.env.VITE_BACKEND_APP_API_BASE_URl}`, { autoConnect: true });
 export default function App() {
 const setFriendRequests = useSetRecoilState(FriendRequests);
 const [friends, setFriends] = useRecoilState(Friends);
+  const isAuthenticated = useRecoilValue(isAuthenticatedState);
  const userInfoState = useRecoilValue(userInfo);
  const userId = userInfoState.id;
  const navigate =useNavigate();
@@ -24,6 +26,7 @@ const [friends, setFriends] = useRecoilState(Friends);
 
 
   useEffect(() => {
+    if(!isAuthenticated) return
     socket.connect();
     socket.emit("register", userId);
     window.addEventListener("beforeunload", () => {
@@ -141,7 +144,7 @@ const [friends, setFriends] = useRecoilState(Friends);
     );}
   
     function handleFriendStatuUpdate({userId, newStatus}:{userId:string, newStatus:string}){
-      console.log(newStatus);
+     
       
       const updatedStatusFriend = friends.map((f)=>{
         if(f.id === userId){
@@ -167,7 +170,7 @@ const [friends, setFriends] = useRecoilState(Friends);
         socket.off("receive-friend");
         socket.off("receive-invite-request");
         socket.off("receive-join-request");
-        socket.disconnect();
+        // socket.disconnect();
     };
 }, [userId,navigate,friends,setFriendRequests,setFriends]); // Add dependencies here to handle changes in socket or userId
 

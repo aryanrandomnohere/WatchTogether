@@ -1,14 +1,163 @@
 import { useRecoilValue } from "recoil";
 import { epState } from "../State/epState";
+import  { useEffect, useRef, useState } from 'react';
+import { CgMediaLive } from 'react-icons/cg';
+import { useParams } from 'react-router-dom';
+import { io } from 'socket.io-client';
+import { userInfo } from '../State/userState';
+import axios from "axios";
 
 
+
+const socket = io(`${import.meta.env.VITE_BACKEND_APP_API_BASE_URl}`); 
 
 export default function Series({id ,type,title, animeId="" }: {id: number | string,type:string, title:string | undefined, animeId?:string }) {
-    console.log(title);
+    const videoRef = useRef<HTMLVideoElement>(null);
+    const [isPlay, setIsPlaying] = useState(false);
+    const [lastTime, setLastTime] = useState(0);
+    const [hasAccess,setHasAccess] = useState(false);
+  const Info = useRecoilValue(userInfo)    
+    const {roomId} = useParams()
+
+
+    useEffect(() => {
+        if (videoRef.current) {
+            // videoRef.current.load(); // Reload the video when the source changes
+            const video = videoRef.current;
+            const handlePlayPause = (isPlaying: boolean) => {
+                if (isPlaying) {
+                    videoRef.current?.play();
+                } else {
+                    videoRef.current?.pause();
+                }
+    
+                // Synchronize local state with the received state
+                setIsPlaying(isPlaying);
+            };
+
+            const handleTimeUpdate = () => {
+                console.log(videoRef.current?.currentTime);
+                if (videoRef?.current) {
+                    const currentTime = videoRef.current?.currentTime;
+                    const timeDifference = Math.abs(currentTime - lastTime);
+        
+                    // Detect skip (e.g., time jump > 2 seconds)
+                    if (timeDifference > 2) {
+                        if (currentTime !== undefined) {
+                            const timeString = new Date().toLocaleTimeString([], {
+                                hour: '2-digit',
+                                minute: '2-digit',
+                            });
+            
+                            socket.emit('seek', { currentTime, roomId});
+                            socket.emit("send-message", {
+                                type: "normal",
+                                displayname: Info.displayname || Info.username,
+                                time: timeString,
+                                message: `Skipped to ${currentTime.toFixed(2)} seconds`,
+                                roomId: roomId,
+                            });
+                        }
+                        console.log(`User skipped to ${currentTime.toFixed(2)} seconds.`);
+                    }
+        
+                    setLastTime(()=>currentTime);
+                }
+            };
+        
+            const handleplaypause = () => {
+                const isCurrentlyPlaying = !videoRef.current?.paused;
+                setIsPlaying(isCurrentlyPlaying);
+            
+                const time = new Date().toLocaleTimeString([], {
+                    hour: "2-digit",
+                    minute: "2-digit",
+                });
+            
+                // Emit play/pause event
+                socket.emit("playPause", { isPlaying: isCurrentlyPlaying, roomId });
+                const currentTime = Math.abs(videoRef.current?.currentTime || 0);
+
+                // Convert to minutes and hours as needed
+                const minutes = Math.floor(currentTime / 60); // Minutes part
+                const seconds = Math.floor(currentTime % 60); // Seconds part
+                
+                // Format as "x min y sec" or "x hour y min"
+                let formattedTime: string;
+                
+                if (minutes >= 60) {
+                  const hours = Math.floor(minutes / 60);
+                  const remainingMinutes = minutes % 60;
+                  formattedTime = `${hours} hr ${remainingMinutes} min`; // Display hours if more than 60 minutes
+                } else {
+                  formattedTime = `${minutes} min ${seconds} sec`; // Display minutes and seconds
+                }
+                // Emit message to the chat
+                socket.emit("send-message", {
+                    type: "normal",
+                    displayname: Info.displayname || Info.username,
+                    time,
+                    message: `${isCurrentlyPlaying ? "Started" : "Paused"} the video at ${formattedTime}`,
+                    roomId,
+                });
+            };
+            
+    
+            function handleSeek({currentTime}:{currentTime:number}){
+                console.log("Seek Received");
+                
+             video.currentTime = currentTime;
+            }
+           
+
+          
+    
+            // Socket event listener
+            socket.on("receivePlayPause", handlePlayPause);
+            socket.on("receiveSeek",handleSeek)
+
+            // Video element event listener
+            video.addEventListener('timeupdate', handleTimeUpdate);
+            video.addEventListener('play', handleplaypause);
+            video.addEventListener('pause', handleplaypause);
+            // Cleanup on component unmount or dependency change
+            return () => {
+                socket.off("receivePlayPause", handlePlayPause);
+                socket.off("receiveSeek",handleSeek)
+                 
+                // Remove video event listener
+                video.removeEventListener('timeupdate', handleTimeUpdate);
+                video.removeEventListener("play",handleplaypause)
+                video.removeEventListener("pause",handleplaypause)
+
+            };
+        }
+    }, [id, roomId, Info.displayname, Info.username,lastTime, hasAccess]);
+    
+    const handleAccessClick = async () => {
+        setHasAccess(true);
+        socket.emit("join-player",{roomId})
+        const response = await axios.get(`${import.meta.env.VITE_BACKEND_APP_API_BASE_URl}/api/v1/room/currentState/${roomId}`,
+            {
+                headers:{
+                    authorization: localStorage.getItem("token")
+                }
+            })
+            console.log(response);
+            
+        const {isPlaying,currentTime} = response.data
+      console.log(isPlaying);
+        if (videoRef.current && currentTime) {
+          videoRef.current.currentTime = currentTime; 
+          if (isPlaying) {
+            videoRef.current.play(); // Restore play state
+          }
+        }
+      };
     
     const {episode_number, season_number} = useRecoilValue(epState);
     if (id && type==="Anime" || type === "AniMov") {
-        console.log(animeId);
+   
             
         return (
               <iframe 
@@ -19,7 +168,9 @@ export default function Series({id ,type,title, animeId="" }: {id: number | stri
                   allowFullScreen
               ></iframe>
           );
-      }
+     
+        
+        };
 
       if (id && type==="Series") {
         
@@ -49,7 +200,7 @@ export default function Series({id ,type,title, animeId="" }: {id: number | stri
         
         return (
               <iframe 
-                 className="w-screen h-56 lg:h-[600px]  sm:h-full rounded"
+                 className="w-screen h-52 lg:h-[525px] rounded sm:h-full "
                   src={`https://www.2embed.cc/embed/${id}`}
                   frameBorder="0"
                   allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
@@ -58,12 +209,51 @@ export default function Series({id ,type,title, animeId="" }: {id: number | stri
               ></iframe>
           );
       } else {
-          return (
-              <video controls className="w-screen h-56 lg:h-[600px]  sm:h-full rounded">
-                  <source src={id.toString()} type="video/mp4" />
-                  Your browser does not support the video tag.
-              </video>
+        return id ? (
+            <div>
+              {type === "Movie" ? (
+                <iframe
+                  className="w-screen h-[190px] lg:h-[525px] rounded sm:h-full"
+                  src={`https://www.2embed.cc/embed/${id}`}
+                  frameBorder="0"
+                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                  allowFullScreen
+                ></iframe>
+              ) : (
+                <div>
+                  {!hasAccess ? (
+                    <button
+                      onClick={handleAccessClick} // Add a handler for interaction
+                      className="px-4 py-2 bg-orange-600 text-white rounded"
+                    >
+                      Get Access to the Video
+                    </button>
+                  ) : (
+                    <div>
+                      <video
+                        ref={videoRef}
+                        controls
+                        className="h-64 lg:h-[600px] sm:h-full"
+                      >
+                        <source src={id.toString()} type="video/mp4" />
+                        Your browser does not support the video tag.
+                      </video>
+                      <div className="flex gap-2 text-base border sm:py-1 py-[0.5px] h-8 px-1 sm:mt-2.5 w-20 text-orange-600 border-orange-600 justify-center items-center">
+                        Live <CgMediaLive className="text-1xl" />
+                      </div>
+                    </div>
+                  )}
+                </div>
+              )}
+            </div>
+          ) : (
+            <div className="flex justify-center items-center text-lg md:text-2xl lg:text-3xl mt-36 lg:mt-72 text-center px-4 font-medium text-zinc-600">
+              There is no media link or any IMDb ID present
+            </div>
           );
       }
   }
 }
+
+
+  

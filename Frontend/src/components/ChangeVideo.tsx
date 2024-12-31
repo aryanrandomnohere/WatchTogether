@@ -5,7 +5,7 @@ import { io } from "socket.io-client";
 import { userInfo } from "../State/userState";
 import { useParams } from "react-router-dom";
 
-const socket = io("http://192.168.0.106:5000")
+const socket = io(`${import.meta.env.VITE_BACKEND_APP_API_BASE_URl}`)
 interface isPlayingType {
     id:number | string;
     title: string | undefined;
@@ -30,14 +30,15 @@ export default function ChangeVideo() {
         hour: '2-digit',
         minute: '2-digit'
     });
-            console.log(inputPlaying);
+            
             
     socket.emit("change-video", {playing:{id:inputPlaying.id.toString(), title:inputPlaying.title, type:inputPlaying.type, animeId:inputPlaying.animeId }, roomId})
     socket.emit("send-message", {
-        name:Info.username,
+        type:"normal",
+        displayname:Info.displayname || Info.username,
         time: currentTime,
         message: `Changed the video to ${inputPlaying?.title}`,
-        userId: roomId
+        roomId: roomId
     });
     socket.emit("update-status",Info.id,`Watching ${inputPlaying.title}`)
   }
@@ -61,7 +62,7 @@ export default function ChangeVideo() {
                </div>
                <div>
                <h1 className="text-sm text-yellow-600">Media Type</h1>
-               <select className="text-xs rounded-lg py-1 px-3 font-medium w-36 bg-opacity-20 text-white  focus:outline-none" onChange={(e) => handleInputChange({type: e.target.value})} value={inputPlaying.type}  required={true}><option>AniMov</option><option>Url<option/></option><option>Movie</option><option>Series</option><option>Anime</option></select>
+               <select className="text-xs rounded-lg py-1 px-3 font-medium w-36 bg-opacity-20 text-white  focus:outline-none" onChange={(e) => handleInputChange({type: e.target.value})} value={inputPlaying.type}  required={true}><option>AniMov</option><option>Url</option><option>Movie</option><option>Series</option><option>Anime</option><option>AnimeUrl</option></select>
                </div></div><button className="p-1 text-sm hover:bg-yellow-600 border-l px-3 border-yellow-600 hover:text-white font-bold ">Change</button></form>
   )
 }

@@ -63,8 +63,7 @@ const mutualFriends = await prisma.friendship.findMany({
         select: {
             username:true,
           id: true, 
-          firstname: true,
-          lastname: false,
+          displayname: true,
           status:true, 
         },
       },

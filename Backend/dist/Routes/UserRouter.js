@@ -29,8 +29,7 @@ UserRouter.get("/getuser", AuthMiddleware_1.default, (req, res) => __awaiter(voi
                 id: true,
                 username: true,
                 email: true,
-                firstname: true,
-                lastname: true,
+                displayname: true,
                 Movies: {
                     select: {
                         listType: true,

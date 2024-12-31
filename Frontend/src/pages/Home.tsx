@@ -49,7 +49,7 @@ useEffect(() => {
   const fetchData = async () => {
     try {
       // Fetching media data
-      const mediaResponse = await axios.get("http://192.168.0.106:5000/api/v1/media/allmedia", {
+      const mediaResponse = await axios.get(`${import.meta.env.VITE_BACKEND_APP_API_BASE_URl}/api/v1/media/allmedia`, {
         headers: { authorization: localStorage.getItem("token") },
       });
       setAllMedia(mediaResponse.data.data);
