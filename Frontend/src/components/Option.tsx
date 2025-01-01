@@ -25,7 +25,7 @@ interface User {
   username: string;
 }
 
-const socket = io(`${import.meta.env.VITE_BACKEND_APP_API_BASE_URl}`, { autoConnect: true });
+const socket = io(`http://192.168.0.104:3000`, { autoConnect: true });
 
 export default function Option({ option,totalVotes }: { option: Option,totalVotes:number }) {
   const Info = useRecoilValue(userInfo);

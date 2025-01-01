@@ -9,7 +9,7 @@ import axios from "axios";
 
 
 
-const socket = io(`${import.meta.env.VITE_BACKEND_APP_API_BASE_URl}`); 
+const socket = io(`http://192.168.0.104:3000`); 
 
 export default function Series({id ,type,title, animeId="" }: {id: number | string,type:string, title:string | undefined, animeId?:string }) {
     const videoRef = useRef<HTMLVideoElement>(null);
@@ -137,7 +137,7 @@ export default function Series({id ,type,title, animeId="" }: {id: number | stri
     const handleAccessClick = async () => {
         setHasAccess(true);
         socket.emit("join-player",{roomId})
-        const response = await axios.get(`${import.meta.env.VITE_BACKEND_APP_API_BASE_URl}/api/v1/room/currentState/${roomId}`,
+        const response = await axios.get(`http://192.168.0.104:3000/api/v1/room/currentState/${roomId}`,
             {
                 headers:{
                     authorization: localStorage.getItem("token")
@@ -161,7 +161,7 @@ export default function Series({id ,type,title, animeId="" }: {id: number | stri
             
         return (
               <iframe 
-                 className="w-screen h-56 sm:h-[600px] rounded"
+                 className="w-screen h-56 sm:h-full rounded"
                   src={`https://2anime.xyz/embed/${animeId}-episode-${episode_number}`}
                   frameBorder="0"
                   allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"

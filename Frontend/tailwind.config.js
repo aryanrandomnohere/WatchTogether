@@ -1,3 +1,6 @@
+
+import daisyui from 'daisyui'
+import tailwindScrollbar from "tailwind-scrollbar"
 /** @type {import('tailwindcss').Config} */
 export default {
   content: [
@@ -36,8 +39,8 @@ export default {
   },
   },
   plugins: [
-    require('daisyui'),    
-    require('tailwind-scrollbar')
+    daisyui,
+    tailwindScrollbar
   ],
 }
 

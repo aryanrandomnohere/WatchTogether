@@ -24,7 +24,7 @@ interface UserInfoType {
   email: string;
   displayname:string;
 }
-const socket = io(`${import.meta.env.VITE_BACKEND_APP_API_BASE_URl}`)
+const socket = io(`http://192.168.0.104:3000`)
 export default function Navbar() {
   const navigate = useNavigate();
   const [query, setQuery] = useState("");
@@ -40,7 +40,7 @@ export default function Navbar() {
 
 
     async function loadRequests() {
-      const response =   await axios.get(`${import.meta.env.VITE_BACKEND_APP_API_BASE_URl}/api/v1/social/loadrequests`, {
+      const response =   await axios.get(`http://192.168.0.104:3000/api/v1/social/loadrequests`, {
         headers: {
           authorization: localStorage.getItem("token"),
         },
@@ -50,7 +50,7 @@ export default function Navbar() {
     loadRequests();
 
         async function loadFriends(){
-      const response =   await axios.get(`${import.meta.env.VITE_BACKEND_APP_API_BASE_URl}/api/v1/social/friends`, {
+      const response =   await axios.get(`http://192.168.0.104:3000/api/v1/social/friends`, {
           headers: {
             authorization: localStorage.getItem("token"),
           },
@@ -62,7 +62,7 @@ export default function Navbar() {
  
           async function fetchUserData() {
           try {
-          const response = await axios.get(`${import.meta.env.VITE_BACKEND_APP_API_BASE_URl}/api/v1/user/getuser`, {
+          const response = await axios.get(`http://192.168.0.104:3000/api/v1/user/getuser`, {
             headers: {
               authorization: localStorage.getItem("token") || ""
             }
