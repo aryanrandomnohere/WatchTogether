@@ -4,7 +4,7 @@ import axios from "axios";
 import { useParams } from "react-router-dom";
 import { io } from "socket.io-client";
 import { userInfo } from "../State/userState";
-const socket = io(`${import.meta.env.VITE_BACKEND_APP_API_BASE_URl}`)
+const socket = io(`http://192.168.0.104:3000`)
 interface EpisodeType {
     episode_number: number;
     episode_type: string;
@@ -34,7 +34,7 @@ export default function EpisodeBox({ episodes }: { episodes: EpisodeType[] }) {
         console.log("Token:", token);
         
         const response = await axios.put(
-            `${import.meta.env.VITE_BACKEND_APP_API_BASE_URl}/api/v1/media/setmedia`,
+            `http://192.168.0.104:3000/api/v1/media/setmedia`,
             {
                 episode: episode.episode_number,
                 season: episode.season_number,
@@ -62,7 +62,7 @@ export default function EpisodeBox({ episodes }: { episodes: EpisodeType[] }) {
 
     return (
         <div className="flex justify-center items-center w-full pt-2">
-            <div className="flex-wrap flex w-full gap-1.5 sm:gap-2 justify-center">
+            <div className="flex-wrap flex w-full   gap-1.5 sm:gap-1 justify-between">
                 {episodes.map((episode) => {
                     const paddingClass =
                         episode.episode_number.toString().length > 2
@@ -80,7 +80,7 @@ export default function EpisodeBox({ episodes }: { episodes: EpisodeType[] }) {
                             key={episode.id}
                             onClick={() => handleEpisodeClick(episode)}
                             aria-label={`Episode ${episode.episode_number}`}
-                            className={`p-1.5 ${paddingClass} ${activeClass} text-yellow-300  rounded-sm text-sm font-bold hover:cursor-pointer`}
+                            className={`p-1.5 ${paddingClass} ${activeClass} text-yellow-300 rounded-sm text-sm font-bold hover:cursor-pointer`}
                         >
                             {episode.episode_number}
                         </div>

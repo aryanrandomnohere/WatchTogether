@@ -18,7 +18,7 @@ import axios from "axios";
 import { isAuthenticatedState } from "../State/authState";
 import ChatWindow from "../components/ChatWindow";
 
-const socket = io(`${import.meta.env.VITE_BACKEND_APP_API_BASE_URl}`)
+const socket = io(`http://192.168.0.104:3000`)
 
 interface Message {
     id: number;
@@ -78,7 +78,7 @@ export default function Room() {
    const [isOpen, setIsOpen] = useState(false);
     const isAuthenticated = useRecoilValue(isAuthenticatedState);
     const controlledInput =useSetRecoilState(controlledPlaying)
-    // const ChatType = useRecoilValue(chatType) 
+    // const ChatType = useRecoilState(chatType) 
     const Info = useRecoilValue(userInfo)
     const { roomId } = useParams();
     const setWasPlaying = useSetRecoilState(wasPlaying);
@@ -92,7 +92,7 @@ export default function Room() {
         if (!roomId || !isAuthenticated) return;
         
         const handleLoadState = async () => {   
-            const response = await axios.get(`${import.meta.env.VITE_BACKEND_APP_API_BASE_URl}/api/v1/room/loadstate/${roomId}`,
+            const response = await axios.get(`http://192.168.0.104:3000/api/v1/room/loadstate/${roomId}`,
         {
             headers:{
                 authorization: localStorage.getItem("token")
@@ -240,7 +240,7 @@ setMessages(newMessages)
 
     return (
         <div className="bg-gray-900 min-h-screen flex flex-col  px-4 pt-4 mt-22 md:mt-12 items-start">
-            <div className="flex gap-2 items-center"><div  onClick={()=>setIsOpen(!isOpen)}><TfiViewList className={`hover:cursor-pointer text-2xl font-bold  ml-2 ${isOpen?"text-yellow-600" :""}`}/></div>
+            <div className="flex gap-2 mb-4 items-center"><div  onClick={()=>setIsOpen(!isOpen)} className={` `}><TfiViewList className={`hover:cursor-pointer text-2xl font-bold  ml-2 ${isOpen?"text-yellow-600" :""}`}/></div>
                 <div>
                     <Modal><Modal.open opens="changeVideo"><RiExchangeLine className="hover:cursor-pointer text-4xl "/></Modal.open><Modal.window name="changeVideo"><ChangeVideo  /></Modal.window></Modal>
                 </div>
@@ -251,17 +251,17 @@ setMessages(newMessages)
             </div>
 
             <div className="flex flex-col w-full md:flex-row gap-2.5 mt-0">
-            <div className="w-full md:w-1/6">
+            <div className="w-full md:w-2/6">
   {isOpen && ["Series", "Anime"].includes(isPlaying.type) && (
     <SeasonBox tvId={isPlaying.id}  />
   )}
 </div>
 
-                <div className="flex w-full md:w-3/5 justify-center items-center  bg-zinc-950/80 border border-white/20 p-1.5 ">
+                <div className={`flex w-full ${isOpen ? "md:w-3/5": "md:w-4/5"} transition-all duration-700 ease-in-out justify-center items-center  bg-zinc-950/80 border border-white/20 p-1.5`}>
 
                     <Series id={isPlaying.id} type={isPlaying.type} title={isPlaying.title}  animeId={isPlaying.animeId} />
                 </div>
-                <div className="flex flex-col justify-between border-b border-l border-r border-white/20 bg-slate-900  w-full md:w-128 h-fit  md:h-auto">
+                <div className="flex flex-col justify-between border-b border-l border-r border-white/20 bg-slate-900  w-full md:w-3/5 h-fit mr-72  md:h-auto">
                  
                     <ChatNav />
                    <ChatWindow/>
@@ -285,7 +285,7 @@ function ChatNav() {
 
     return (
         <div className="flex bg-slate-950 rounded-s-md text-yellow-600 justify-center gap-32  py-2  sm:py-3 px-5 md:text-md">
-            <h1 className="hover:cursor-pointer">Chat</h1>
+            <h1 className="hover:cursor-pointer" >Chat</h1>
             <div className="flex gap-2">
             <div className="rounded-full px-2 text-white bg-yellow-600">{connectionCount}</div>
                 <h1 className="hover:cursor-pointer">People</h1>

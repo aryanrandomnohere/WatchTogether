@@ -5,7 +5,7 @@ import { io } from "socket.io-client";
 import { userInfo } from "../State/userState";
 import { useParams } from "react-router-dom";
 
-const socket = io(`${import.meta.env.VITE_BACKEND_APP_API_BASE_URl}`)
+const socket = io(`http://192.168.0.104:3000`)
 interface isPlayingType {
     id:number | string;
     title: string | undefined;

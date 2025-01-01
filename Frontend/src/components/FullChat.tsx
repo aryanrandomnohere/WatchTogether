@@ -10,7 +10,7 @@ import { userInfo } from "../State/userState";
 import { BiSend } from "react-icons/bi";
 import ChatAction from "./ChatAction";
 
-const socket = io(`${import.meta.env.VITE_BACKEND_APP_API_BASE_URl}`)
+const socket = io(`http://192.168.0.104:3000`)
 
 export default function FullChat() {
 const [chatOptionIsOpen, setChatOptionIsOpen] = useState<boolean>(false);
