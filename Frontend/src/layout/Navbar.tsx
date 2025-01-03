@@ -90,7 +90,7 @@ export default function Navbar() {
           <div className="flex w-full items-center mb-2 sm:mb-0 my-2 sm:my-0 justify-between">  
          
             <div className="flex w-full justify-between items-center ">
-            <Link to="/"> <div className="flex items-center"><img src={n} alt="Logo" className="h-10 w-10 sm:h-12 sm:w-12 ml-2 sm:ml-8" /><p className="ml-2 text-2xl sm:text-3xl font-comic ">WatchAlong</p></div></Link>
+            <Link to="/"> <div className="flex items-center"><img src={n} alt="Logo" className="h-10 w-10 sm:h-12 sm:w-12 ml-2 sm:ml-8" /><p className="ml-2 text-2xl sm:text-3xl font-comic font-light ">WatchAlong</p></div></Link>
             <div className="sm:hidden right-11 mr-2.5">
               {!isAuthenticated ?<div>
             <Modal>

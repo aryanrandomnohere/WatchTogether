@@ -7,9 +7,10 @@ import { useParams } from "react-router-dom";
 
 const socket = io(`http://192.168.0.104:3000`)
 interface isPlayingType {
-    id:number | string;
-    title: string | undefined;
-    type:string;
+  id:number | string;
+  title: string | undefined;
+  type:string;
+  animeId?:string | undefined;
 }
 
 
@@ -45,7 +46,16 @@ export default function ChangeVideo() {
 
 
   return (<form onSubmit={handleChangeVideo} className="flex" >
-    <div className="flex flex-col gap-2 p-6"><div>
+    <div className="flex flex-col gap-2 p-6">
+    <div>
+               <h1 className="text-sm text-yellow-600">Media Type</h1>
+               <select className="text-xs rounded-lg py-1 px-3 font-medium w-36 bg-opacity-20 text-white  focus:outline-none" onChange={(e) => handleInputChange({type: e.target.value})} value={inputPlaying.type}  required={true}><option>AniMov</option><option>Url</option><option>Movie</option><option>Series</option><option>Anime</option><option>AnimeUrl</option></select>
+               </div>
+               {inputPlaying.type === "AnimeUrl" && <div>
+               <h1 className="text-sm text-yellow-600">Enter Anime Url </h1>
+               <input className="text-xs rounded-lg py-1 px-3 font-medium w-36 bg-white bg-opacity-20 text-zinc-300 placeholder-gray-500 focus:outline-none" value={inputPlaying.animeId} onChange={(e) => handleInputChange({ animeId: e.target.value})}   required={true} placeholder="Src Url" />
+               </div> }
+      <div>
       <h1 className="text-sm text-yellow-600">Enter Id</h1>
       <input
                    className="text-xs rounded-lg py-1 px-3 font-medium w-36 bg-white bg-opacity-20 text-zinc-300 placeholder-gray-500 focus:outline-none"
@@ -60,9 +70,6 @@ export default function ChangeVideo() {
                <h1 className="text-sm text-yellow-600">Enter Show Name</h1>
                <input className="text-xs rounded-lg py-1 px-3 font-medium w-36 bg-white bg-opacity-20 text-zinc-300 placeholder-gray-500 focus:outline-none" value={inputPlaying.title} onChange={(e) => handleInputChange({ title: e.target.value})}   required={true} />
                </div>
-               <div>
-               <h1 className="text-sm text-yellow-600">Media Type</h1>
-               <select className="text-xs rounded-lg py-1 px-3 font-medium w-36 bg-opacity-20 text-white  focus:outline-none" onChange={(e) => handleInputChange({type: e.target.value})} value={inputPlaying.type}  required={true}><option>AniMov</option><option>Url</option><option>Movie</option><option>Series</option><option>Anime</option><option>AnimeUrl</option></select>
-               </div></div><button className="p-1 text-sm hover:bg-yellow-600 border-l px-3 border-yellow-600 hover:text-white font-bold ">Change</button></form>
+               </div><button className="p-1 text-sm hover:bg-yellow-600 border-l px-3 border-yellow-600 hover:text-white font-bold ">Change</button></form>
   )
 }

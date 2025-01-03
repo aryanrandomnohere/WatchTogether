@@ -58,7 +58,7 @@ export default function ChatBox({ messages }: { messages: Message[] }) {
       {/* Chats section */}
       <div
         ref={chatContainerRef}
-        className="flex flex-col w-full justify-start items-start p-2 space-y-1.5 overflow-y-auto h-64 md:h-[35rem] scrollbar-thin  scrollbar-track-yellow-600 "
+        className="flex flex-col w-full justify-start items-start p-2 space-y-1.5 overflow-y-auto h-64 md:h-[35rem] scrollbar-thin   scrollbar-track-yellow-600 "
       >
         {messages.map((message, index) =>
          message.type === "normal" ? <Chats key={index} chat={message} /> : <Polls key={index} poll={message}/>

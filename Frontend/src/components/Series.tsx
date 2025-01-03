@@ -6,6 +6,7 @@ import { useParams } from 'react-router-dom';
 import { io } from 'socket.io-client';
 import { userInfo } from '../State/userState';
 import axios from "axios";
+import { lefSideIsOpen } from "../State/leftRoomSpace";
 
 
 
@@ -14,6 +15,7 @@ const socket = io(`http://192.168.0.104:3000`);
 export default function Series({id ,type,title, animeId="" }: {id: number | string,type:string, title:string | undefined, animeId?:string }) {
     const videoRef = useRef<HTMLVideoElement>(null);
     const [isPlay, setIsPlaying] = useState(false);
+    const leftIsOpen = useRecoilValue(lefSideIsOpen)
     const [lastTime, setLastTime] = useState(0);
     const [hasAccess,setHasAccess] = useState(false);
   const Info = useRecoilValue(userInfo)    
@@ -159,9 +161,10 @@ export default function Series({id ,type,title, animeId="" }: {id: number | stri
     if (id && type==="Anime" || type === "AniMov") {
    
             
+            
         return (
               <iframe 
-                 className="w-screen h-56 sm:h-full rounded"
+                 className={` ${leftIsOpen?"sm:h-128": "sm:h-full"} w-screen h-56  rounded `}
                   src={`https://2anime.xyz/embed/${animeId}-episode-${episode_number}`}
                   frameBorder="0"
                   allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
@@ -235,7 +238,7 @@ export default function Series({id ,type,title, animeId="" }: {id: number | stri
                         controls
                         className="h-64 lg:h-[600px] sm:h-full"
                       >
-                        <source src={id.toString()} type="video/mp4" />
+                        <source src={animeId.toString() || id.toString()} type="video/mp4" />
                         Your browser does not support the video tag.
                       </video>
                       <div className="flex gap-2 text-base border sm:py-1 py-[0.5px] h-8 px-1 sm:mt-2.5 w-20 text-orange-600 border-orange-600 justify-center items-center">
