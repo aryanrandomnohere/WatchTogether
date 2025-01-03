@@ -59,7 +59,7 @@ export default function PollWindow() {
        setChatType(ChatType.CHATS)
      }
 
-    return <div className="w-full justify-between h-full mt-2"><div className="mx-3 mb-10 hover:cursor-pointer" onClick={goBack}><IoArrowBackCircleSharp className="text-3xl hover:text-yellow-600" /></div> <form onSubmit={handleSendPoll} className="flex flex-col my-2 md:my-9 justify-between h-full mx-7 w-76 lg:w-96 gap-2">
+    return <div className="w-32 justify-between h-full mt-2"><div className="mx-3 mb-10 hover:cursor-pointer" onClick={goBack}><IoArrowBackCircleSharp className="text-3xl hover:text-yellow-600" /></div> <form onSubmit={handleSendPoll} className="flex flex-col my-2 md:my-9 justify-between h-full mx-7 w-76 lg:w-96 gap-2">
     <div className="w-full h-full flex flex-col "><div className="w-full"><h1 className="text-yellow-600 font-bold">Question</h1>
     <input
       value={question}

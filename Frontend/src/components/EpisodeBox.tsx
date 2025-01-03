@@ -62,14 +62,14 @@ export default function EpisodeBox({ episodes }: { episodes: EpisodeType[] }) {
 
     return (
         <div className="flex justify-center items-center w-full pt-2">
-            <div className="flex-wrap flex w-full   gap-1.5 sm:gap-1 justify-between">
+            <div className="flex-wrap flex w-full max-w-96  gap-1.5 sm:gap-1 justify-center">
                 {episodes.map((episode) => {
                     const paddingClass =
                         episode.episode_number.toString().length > 2
                             ? "px-1.5"
                             : episode.episode_number.toString().length > 1
-                            ? "px-2.5"
-                            : "px-3.5";
+                            ? "px-2.5" 
+                            : "px-3";
                     const activeClass =
                         episode.episode_number === Ep.episode_number && episode.season_number === Ep.season_number
                             ? "bg-gray-900 "

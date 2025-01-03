@@ -197,7 +197,7 @@ const handleAddFavourite = async ()=>{
   <img
     src={`https://image.tmdb.org/t/p/w500/${movie.backdrop_path}`}
     alt={`${movie.name} poster`}
-    className=" h-51  sm:h-80 sm:min-h-full object-cover rounded-lg shadow-md filter brightness-90"
+    className=" h-51  sm:h-80 sm:min-h-full object-cover  shadow-md filter brightness-90"
   />
   <div className="flex justify-between w-full items-center absolute left-0 bottom-0  px-4 py-2 rounded-lg">
     <h1 className="  md:text-3xl text-xl sm:text-2xl   font-extrabold text-white font-stencil">

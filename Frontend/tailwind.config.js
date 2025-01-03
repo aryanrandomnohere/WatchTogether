@@ -31,6 +31,9 @@ export default {
     '22': '85px',
     '26': '102px'
     },
+    padding:{
+    '2.7':'11px'
+    },
    
   fontFamily:{
     stencil:['"Stencil Std"', 'fantasy'], 
