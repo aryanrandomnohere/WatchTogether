@@ -15,10 +15,10 @@ function handleCreatePoll() {
 setChatType(ChatType.POLL)
 }
   return (
-    <div className="h-fit bg-slate-950 w-fit opacity-90 rounded text-white border border-yellow-600/20">
-      <div className="flex flex-col p-2 justify-between h-full">
+    <div className="h-fit bg-slate-950 w-fit opacity-90 rounded-md text-white border border-yellow-600/20">
+      <div className="flex flex-col p-1 justify-between h-full">
         <Actions handleClick={handleCreatePoll}>
-        <div className="flex gap-1 justify-center items-center">    <BiPoll />       Create Pol</div>
+        <div className="flex gap-1 justify-center items-center text-sm min-w-24">    <BiPoll />       Create Pol</div>
         </Actions>
       </div>
     </div>

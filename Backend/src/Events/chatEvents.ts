@@ -1,4 +1,6 @@
 import { PrismaClient } from "@prisma/client";
+import { log } from "console";
+import { SocketAddress } from "net";
 import { Server, Socket } from "socket.io";
 
 const prisma = new PrismaClient();
@@ -88,8 +90,6 @@ interface isPlayingType {
       select: {
         id: true,
         displayname: true,
-        edited: true,
-        time: true,
         message: true,
       },
     },
@@ -103,7 +103,7 @@ interface isPlayingType {
       message,
       options,
       roomId,
-      multipleVotes,
+      multipleVotes= false,
       replyTo,
       displayname,
     }: {
@@ -117,7 +117,16 @@ interface isPlayingType {
       message: string;
       roomId: string;
     }) => {
-        
+        log({
+          type,
+          time,
+          message,
+          options,
+          roomId,
+          multipleVotes,
+          replyTo,
+          displayname,
+    })
       try {
         if (type === "normal") {
           const newMessage = await prisma.chat.create({
@@ -161,8 +170,27 @@ interface isPlayingType {
               "Failed to create poll or options."
             );
           }
-        } else {
+        } else { 
+          if(type == "replyTo" && replyTo){
+            log("Its an Reply to message")
+         try{   const newMessage =  await prisma.chat.create({
+              data:{
+               message,
+               time,
+               roomId,
+               replyToId:replyTo,
+               type,
+               displayname
+              },
+              select:messageSelect
+            }) 
+           io.to(roomId).emit("receive-message",newMessage) } catch(error){
+            console.error("Error saving message:", error);
+            socket.emit("error-saving-message", "Failed to save message.");
+           }
+        }else{
           socket.emit("error-saving-message", "Invalid message type or data.");
+        }
         }
       } catch (error) {
         console.error("Error saving message:", error);
@@ -170,6 +198,8 @@ interface isPlayingType {
       }
     }
   );
+
+
   socket.on(
     "new-vote",
     async ({ chatId, optionId, userId, roomId }: { chatId: number; optionId: number; userId: string; roomId: string }) => {
@@ -311,8 +341,28 @@ interface isPlayingType {
       }
     }
   );
+  socket.on("deleteMessage", async ({roomId, chatId}:{roomId:string,chatId:number})=>{
+    log(roomId,chatId)
+  try {const deletedMessage = await prisma.chat.delete({
+    where:{
+      id:chatId
+    },
+    select:{
+      id:true,
+    }
+  })
   
+  io.to(roomId).emit("receive-deletedMessage", deletedMessage.id)
+  
+}catch(error){ 
+
+  log("Something went wrong while deleting msg",error)
 }
+  })
+}
+
+
+
 
 
 

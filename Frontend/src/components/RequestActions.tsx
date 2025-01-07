@@ -7,7 +7,7 @@ import toast from "react-hot-toast";
 import { io } from "socket.io-client";
 import { userInfo } from "../State/userState";
 
-const socket = io(`http://192.168.0.104:3000`, { autoConnect: true });
+const socket = io(`${import.meta.env.VITE_BACKEND_APP_API_BASE_URL}`, { autoConnect: true });
 export default function RequestActions({id, fromUsername}:{id:string, fromUsername:string}) {
   const [requests, setFriendRequests] = useRecoilState(FriendRequests)
   const  UserInfo = useRecoilValue(userInfo);
@@ -15,7 +15,7 @@ export default function RequestActions({id, fromUsername}:{id:string, fromUserna
   async function handleRejection() {
     try {
       await axios.put(
-        `http://192.168.0.104:3000/api/v1/social/rejectrequest`,
+        `${import.meta.env.VITE_BACKEND_APP_API_BASE_URL}/api/v1/social/rejectrequest`,
         { from: id },
         {
           headers: {
@@ -43,7 +43,7 @@ export default function RequestActions({id, fromUsername}:{id:string, fromUserna
    socket.emit("accept-friend-request",acceptdata);
       const afterDeletion = requests.filter((req) => req.fromUsername !== fromUsername); // Fixed line
       await axios.put(
-        `http://192.168.0.104:3000/api/v1/social/rejectrequest`,
+        `${import.meta.env.VITE_BACKEND_APP_API_BASE_URL}/api/v1/social/rejectrequest`,
         { from: id },
         {
           headers: {

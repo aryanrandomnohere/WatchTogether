@@ -52,7 +52,7 @@ interface ShowInfoProps {
   season?:number;
 }
 
-const socket = io(`http://192.168.0.104:3000`, { autoConnect: true });
+const socket = io(`${import.meta.env.VITE_BACKEND_APP_API_BASE_URL}`, { autoConnect: true });
 const ShowInfo: React.FC<ShowInfoProps> = ({ movie, ep=1, season=1 }) => {
   const navigate = useNavigate();
   const setNowPlaying = useSetRecoilState(nowPlaying);
@@ -87,7 +87,7 @@ const ShowInfo: React.FC<ShowInfoProps> = ({ movie, ep=1, season=1 }) => {
  try {
   const filteredMedia = Media?.filter((m)=> !(m.movie.id === movie.id && m.listType === "Favourite") ) || null;
   setMedia(filteredMedia);
- const response = await axios.put(`http://192.168.0.104:3000/api/v1/media/removefavourite`,{ 
+ const response = await axios.put(`${import.meta.env.VITE_BACKEND_APP_API_BASE_URL}/api/v1/media/removefavourite`,{ 
   movieId:movie.id,
   listType:"Favourite"
 },{
@@ -108,7 +108,7 @@ const handleAddFavourite = async ()=>{
     toast.success("Added to Favourites")
   const newFavourite:mediaData = {listType:"Favourite", episode:1,season:1,movie}
     setMedia((m)=>[...m,newFavourite])
-   await axios.post(`http://192.168.0.104:3000/api/v1/media/mediaaction`,{
+   await axios.post(`${import.meta.env.VITE_BACKEND_APP_API_BASE_URL}/api/v1/media/mediaaction`,{
    movie,
    listType:"Favourite" 
  },{
@@ -123,7 +123,7 @@ const handleAddFavourite = async ()=>{
 }
  async function handleWatchNow() {
   
-  axios.post(`http://192.168.0.104:3000/api/v1/media/mediaaction`,{
+  axios.post(`${import.meta.env.VITE_BACKEND_APP_API_BASE_URL}/api/v1/media/mediaaction`,{
     userId:UserInfo.id,
     movie,
     listType:"Recently Watched"

@@ -18,8 +18,11 @@ import axios from "axios";
 import { isAuthenticatedState } from "../State/authState";
 import ChatWindow from "../components/ChatWindow";
 import { lefSideIsOpen } from "../State/leftRoomSpace";
+import Actions from "../components/Actions";
+import { CgProfile } from "react-icons/cg";
+import ProfileAction from "../components/ProfileActions";
 
-const socket = io(`http://192.168.0.104:3000`)
+const socket = io(`${import.meta.env.VITE_BACKEND_APP_API_BASE_URL}`)
 
 interface Message {
     id: number;
@@ -57,8 +60,6 @@ interface Message {
   interface Reply {
     id: number;
     displayname: string;
-    edited: boolean;
-    time: string;
     message: string;
   }
 
@@ -93,12 +94,14 @@ const { roomId } = useParams();
         if (!roomId || !isAuthenticated) return;
         
         const handleLoadState = async () => {   
-            const response = await axios.get(`http://192.168.0.104:3000/api/v1/room/loadstate/${roomId}`,
+            const response = await axios.get(`${import.meta.env.VITE_BACKEND_APP_API_BASE_URL}/api/v1/room/loadstate/${roomId}`,
         {
             headers:{
                 authorization: localStorage.getItem("token")
             }
         })
+        console.log(response.data.oldMessages);
+        
         setMessages(response.data.oldMessages)
         const { playingId: id, playingTitle: title, playingType: type, playingAnimeId: animeId } = response.data.playing;
         setWasPlaying({ id, title, type, animeId });
@@ -241,35 +244,61 @@ setMessages(newMessages)
 
     return (
         <div className="bg-gray-900 min-h-screen flex flex-col  px-4 pt-4 mt-22 md:mt-14 items-start">
-            <div className="flex gap-2 mb-4 items-center"><div  onClick={()=>setIsOpen(!isOpen)} className={` `}><TfiViewList className={`hover:cursor-pointer text-2xl font-bold  ml-2 ${isOpen?"text-yellow-600" :""}`}/></div>
+            <div className="flex gap-2 mb-4 items-center"><div  onClick={()=>{if(["Series", "Anime","AnimeUrl"].includes(isPlaying.type)){
+            setIsOpen(!isOpen)
+            return}
+              return
+            }} className={` `}><TfiViewList className={`hover:cursor-pointer text-2xl font-bold  ml-2 ${isOpen && ["Series", "Anime","AnimeUrl"].includes(isPlaying.type)?"text-yellow-600" :""}`}/></div>
                 <div>
-                    <Modal><Modal.open opens="changeVideo"><RiExchangeLine className="hover:cursor-pointer text-4xl "/></Modal.open><Modal.window name="changeVideo"><ChangeVideo  /></Modal.window></Modal>
-                </div>
-               
-      
+    <Modal>
+        <Modal.open opens="changeVideo">
+            <div><RiExchangeLine className="hover:cursor-pointer text-4xl "/></div>
+        </Modal.open>
+        <Modal.window name="changeVideo">
+            <ChangeVideo />
+        </Modal.window>
+    </Modal>
+</div>
+
+<div>
+    <Modal>
+        <Modal.open opens="profile">
+           <div className="flex justify-center items-center gap-2"><CgProfile />
+                <span>Profile</span>
+           </div>
+                
+        </Modal.open>
+        <Modal.window name="profile">
+            <Actions>
+                <ProfileAction />
+                </Actions>
+        </Modal.window>
+    </Modal>
+</div>
+
            
             
             </div>
 
             <div className={`flex flex-col w-full md:grid ${
-    isOpen ? "md:grid-cols-4" : "md:grid-cols-4"
+    isOpen && ["Series", "Anime","AnimeUrl"].includes(isPlaying.type) ? "md:grid-cols-4" : "md:grid-cols-4"
   } gap-2.5 mt-0`}>
   {/* Left Sidebar */}
-  <div className={`w-full md:col-span-1  ${isOpen ? "" : "hidden"}`}>
+  <div className={`w-full md:col-span-1  ${isOpen && ["Series", "Anime","AnimeUrl"].includes(isPlaying.type) ? "" : "hidden"}`}>
     {["Series", "Anime","AnimeUrl"].includes(isPlaying.type) && <SeasonBox tvId={isPlaying.id} />}
   </div>
 
   {/* Middle Content */}
   <div
     className={`flex w-full ${
-      isOpen ? "md:col-span-2" : "md:col-span-3"
+      isOpen && ["Series", "Anime","AnimeUrl"].includes(isPlaying.type) ? "md:col-span-2" : "md:col-span-3"
     } transition-all duration-700 ease-in-out justify-center items-center bg-zinc-950  border border-white/20 p-1.5 h-full`}
   >
     <Series id={isPlaying.id} type={isPlaying.type} title={isPlaying.title} animeId={isPlaying.animeId} />
   </div>
 
   {/* Right Sidebar */}
-  <div className="flex flex-col justify-between border-b border-l border-r border-white/20 bg-slate-900 w-full md:col-span-1 h-fit md:h-auto">
+  <div className="flex flex-col justify-between border-white/20 bg-slate-900 w-full md:col-span-1 h-fit md:h-auto">
     <ChatNav />
     <ChatWindow />
   </div>
@@ -292,7 +321,7 @@ function ChatNav() {
 }, []);
 
     return (
-        <div className="flex bg-slate-950 rounded-s-md text-yellow-600 justify-center gap-32  py-2  sm:py-3 px-5 md:text-md">
+        <div className="flex bg-slate-950 rounded-s-md text-yellow-600 justify-center gap-32  py-2  sm:py-2 px-5 md:text-md">
             <h1 className="hover:cursor-pointer" >Chat</h1>
             <div className="flex gap-2">
             <div className="rounded-full px-2 text-white bg-yellow-600">{connectionCount}</div>

@@ -7,6 +7,7 @@ import { LiaUserFriendsSolid } from "react-icons/lia";
 import Modal from "../ui/Modal";
 import Notifications from "./Notifications";
 import Actions from "./Actions";
+import ProfileAction from "./ProfileActions";
 
 
 
@@ -14,10 +15,13 @@ export default function UserActions() {
   const {logout} = useAuth();
   return (
     <div className="h-40 bg-slate-950 w-40 opacity-90 rounded-xl text-white shadow shadow-yellow-600"><div className="flex flex-col p-2 pl-4 pb-3 justify-between h-full ">
-     <Actions><CgProfile />Profile</Actions>
+     <div><Modal><Modal.open opens="profile"><Actions><CgProfile />Profile</Actions></Modal.open><Modal.window name="profile"><ProfileAction/></Modal.window></Modal></div>
       <Actions><div><Modal> <Modal.open opens="noti"><div className="flex items-center justify-center gap-2"><LiaUserFriendsSolid className="text-lg" />Notifications</div></Modal.open><Modal.window name="noti"><Notifications/></Modal.window></Modal></div></Actions>
     <Actions><IoSettingsOutline />Setting</Actions>
     <Actions handleClick={logout}><LuLogOut /> Logout</Actions>
     </div></div>
   )
 }
+
+
+

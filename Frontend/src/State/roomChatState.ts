@@ -35,8 +35,6 @@ interface User {
 interface Reply {
   id: number;
   displayname: string;
-  edited: boolean;
-  time: string;
   message: string;
 }
   

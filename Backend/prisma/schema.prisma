@@ -12,6 +12,7 @@ model User {
   email            String          @unique
   username         String          @unique
   password         String
+  avatar           String          @default("")
   status           String         @default("OFFLINE")
   createdAt        DateTime        @default(now())
   Movies           UserMovieList[] 
@@ -57,7 +58,6 @@ model Friendship {
   userId         String  @unique
 }
 
-
 model Chat {
   id               Int           @id @default(autoincrement())
   type             String
@@ -65,7 +65,7 @@ model Chat {
   time             String
   createdAt        DateTime      @default(now())
   message          String        // Question in case of a poll, normal message otherwise
-  options          pollOptions[] // Relation to pollOptions
+  options          pollOptions[] 
   roomId           String
   user             User          @relation(fields: [roomId], references: [id])
   multipleVotes    Boolean       @default(false)
@@ -80,14 +80,14 @@ model Chat {
   @@index([replyToId]) // Index for performance on replies
 }
 
-
 model pollOptions {
   id      Int    @id @default(autoincrement())
   option  String // Poll option text
   chatId  Int
-  chat    Chat   @relation(fields: [chatId], references: [id])
-  votes   Vote[] // Relation to track votes for this option
+  chat    Chat   @relation(fields: [chatId], references: [id], onDelete: Cascade) // Cascade delete
+  votes   Vote[] // Relation to track votes for this option`
 }
+
 
 model Vote {
   id        Int         @id @default(autoincrement())
@@ -96,7 +96,7 @@ model Vote {
   optionId  Int
   option    pollOptions @relation(fields: [optionId], references: [id])
   chatId    Int
-  chat      Chat        @relation(fields: [chatId], references: [id])
+  chat      Chat        @relation(fields: [chatId], references: [id], onDelete: Cascade)
   @@unique([optionId,userId])
 }
 

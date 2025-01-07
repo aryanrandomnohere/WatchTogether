@@ -21,10 +21,11 @@ import { io } from "socket.io-client";
 interface UserInfoType {
   id: string;
   username: string;
+  avatar:string;
   email: string;
   displayname:string;
 }
-const socket = io(`http://192.168.0.104:3000`)
+const socket = io(`${import.meta.env.VITE_BACKEND_APP_API_BASE_URL}`)
 export default function Navbar() {
   const navigate = useNavigate();
   const [query, setQuery] = useState("");
@@ -40,7 +41,7 @@ export default function Navbar() {
 
 
     async function loadRequests() {
-      const response =   await axios.get(`http://192.168.0.104:3000/api/v1/social/loadrequests`, {
+      const response =   await axios.get(`${import.meta.env.VITE_BACKEND_APP_API_BASE_URL}/api/v1/social/loadrequests`, {
         headers: {
           authorization: localStorage.getItem("token"),
         },
@@ -50,7 +51,7 @@ export default function Navbar() {
     loadRequests();
 
         async function loadFriends(){
-      const response =   await axios.get(`http://192.168.0.104:3000/api/v1/social/friends`, {
+      const response =   await axios.get(`${import.meta.env.VITE_BACKEND_APP_API_BASE_URL}/api/v1/social/friends`, {
           headers: {
             authorization: localStorage.getItem("token"),
           },
@@ -62,14 +63,14 @@ export default function Navbar() {
  
           async function fetchUserData() {
           try {
-          const response = await axios.get(`http://192.168.0.104:3000/api/v1/user/getuser`, {
+          const response = await axios.get(`${import.meta.env.VITE_BACKEND_APP_API_BASE_URL}/api/v1/user/getuser`, {
             headers: {
               authorization: localStorage.getItem("token") || ""
             }
           });
           socket.emit("update-status",UserInfo.id, "ONLINE")
-          const { id, username, email, displayname }: UserInfoType = response.data.userWithMovies;
-          setUserInfo({ id, username, email, displayname });
+          const { id, username, email, displayname,avatar }: UserInfoType = response.data.userWithMovies;
+          setUserInfo({ id, username, email, displayname,avatar });
         } catch (error) {
           console.error("Error fetching user data:", error);
         }
