@@ -83,7 +83,9 @@ export default function ShowsDisplay() {
 
   return (
     <div className="flex flex-wrap bg-gray-900 justify-center items-center text-zinc-300 mt-24 md:mt-16 gap-1.5  sm:gap-3">
-      {media.map((item:mData) => (
+      {media.map((item:mData) => {
+        if(!item.backdrop_path || !item.poster_path) return
+      return (
         <Show key={item.id} item={item} onClick={() => handleClick(item)}>
          <div> <Modal>
                  <Modal.open opens="Showinfo">
@@ -100,7 +102,7 @@ export default function ShowsDisplay() {
           </Modal>
           </div>
         </Show>
-      ))}
+      )})}
     </div>
   );
 }

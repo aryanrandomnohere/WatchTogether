@@ -26,8 +26,8 @@ export default function Authentication({ close }: AuthenticationProps) {
     event.preventDefault();
 setIsLoading(true);
     const url = isSignup
-      ? `http://192.168.0.104:3000/api/v1/Auth/signup`
-      : `http://192.168.0.104:3000/api/v1/Auth/login`;
+      ? `${import.meta.env.VITE_BACKEND_APP_API_BASE_URL}/api/v1/Auth/signup`
+      : `${import.meta.env.VITE_BACKEND_APP_API_BASE_URL}/api/v1/Auth/login`;
       
     const data = isSignup
       ? { email, displayname, username, password } // Send all fields for signup

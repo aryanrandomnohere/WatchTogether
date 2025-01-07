@@ -10,7 +10,7 @@ import { lefSideIsOpen } from "../State/leftRoomSpace";
 
 
 
-const socket = io(`http://192.168.0.104:3000`); 
+const socket = io(`${import.meta.env.VITE_BACKEND_APP_API_BASE_URL}`); 
 
 export default function Series({id ,type,title, animeId="" }: {id: number | string,type:string, title:string | undefined, animeId?:string }) {
     const videoRef = useRef<HTMLVideoElement>(null);
@@ -139,7 +139,7 @@ export default function Series({id ,type,title, animeId="" }: {id: number | stri
     const handleAccessClick = async () => {
         setHasAccess(true);
         socket.emit("join-player",{roomId})
-        const response = await axios.get(`http://192.168.0.104:3000/api/v1/room/currentState/${roomId}`,
+        const response = await axios.get(`${import.meta.env.VITE_BACKEND_APP_API_BASE_URL}/api/v1/room/currentState/${roomId}`,
             {
                 headers:{
                     authorization: localStorage.getItem("token")

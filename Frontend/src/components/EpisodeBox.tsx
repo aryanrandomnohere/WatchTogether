@@ -4,7 +4,7 @@ import axios from "axios";
 import { useParams } from "react-router-dom";
 import { io } from "socket.io-client";
 import { userInfo } from "../State/userState";
-const socket = io(`http://192.168.0.104:3000`)
+const socket = io(`${import.meta.env.VITE_BACKEND_APP_API_BASE_URL}`)
 interface EpisodeType {
     episode_number: number;
     episode_type: string;
@@ -34,7 +34,7 @@ export default function EpisodeBox({ episodes }: { episodes: EpisodeType[] }) {
         console.log("Token:", token);
         
         const response = await axios.put(
-            `http://192.168.0.104:3000/api/v1/media/setmedia`,
+            `${import.meta.env.VITE_BACKEND_APP_API_BASE_URL}/api/v1/media/setmedia`,
             {
                 episode: episode.episode_number,
                 season: episode.season_number,

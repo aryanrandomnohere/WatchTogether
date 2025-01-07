@@ -4,11 +4,15 @@ import { userInfo } from "../State/userState";
 import { useRecoilValue } from "recoil";
 import { useState } from "react";
 import UserActions from "./UserActions";
+import { useOutsideClick } from "../hooks/useOutsideClick";
 
 export default function UserDisplay() {
     const user = useRecoilValue(userInfo)
     const [isOpen, setIsOpen] = useState(false);
-
+    const handleCloseModal =  () => {
+     setIsOpen(false)
+    }
+    const ref = useOutsideClick(handleCloseModal)
     return (
         <div 
             onClick={() => setIsOpen(!isOpen)} 
@@ -24,8 +28,8 @@ export default function UserDisplay() {
             </div>
             
             {isOpen && (
-                <div className="absolute left-0 bottom-full ">
-                    <UserActions />
+                <div ref={ref} className="absolute left-0 bottom-full ">
+                    <UserActions  />
                 </div>
             )}
         </div>

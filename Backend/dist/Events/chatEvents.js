@@ -11,6 +11,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.default = chatEvents;
 const client_1 = require("@prisma/client");
+const console_1 = require("console");
 const prisma = new client_1.PrismaClient();
 function chatEvents(io, socket) {
     // Shared select clause for message fetching
@@ -47,13 +48,21 @@ function chatEvents(io, socket) {
             select: {
                 id: true,
                 displayname: true,
-                edited: true,
-                time: true,
                 message: true,
             },
         },
     };
-    socket.on("send-message", (_a) => __awaiter(this, [_a], void 0, function* ({ type, time, message, options, roomId, multipleVotes, replyTo, displayname, }) {
+    socket.on("send-message", (_a) => __awaiter(this, [_a], void 0, function* ({ type, time, message, options, roomId, multipleVotes = false, replyTo, displayname, }) {
+        (0, console_1.log)({
+            type,
+            time,
+            message,
+            options,
+            roomId,
+            multipleVotes,
+            replyTo,
+            displayname,
+        });
         try {
             if (type === "normal") {
                 const newMessage = yield prisma.chat.create({
@@ -90,7 +99,30 @@ function chatEvents(io, socket) {
                 }
             }
             else {
-                socket.emit("error-saving-message", "Invalid message type or data.");
+                if (type == "replyTo" && replyTo) {
+                    (0, console_1.log)("Its an Reply to message");
+                    try {
+                        const newMessage = yield prisma.chat.create({
+                            data: {
+                                message,
+                                time,
+                                roomId,
+                                replyToId: replyTo,
+                                type,
+                                displayname
+                            },
+                            select: messageSelect
+                        });
+                        io.to(roomId).emit("receive-message", newMessage);
+                    }
+                    catch (error) {
+                        console.error("Error saving message:", error);
+                        socket.emit("error-saving-message", "Failed to save message.");
+                    }
+                }
+                else {
+                    socket.emit("error-saving-message", "Invalid message type or data.");
+                }
             }
         }
         catch (error) {
@@ -222,6 +254,23 @@ function chatEvents(io, socket) {
         catch (error) {
             console.error("Error handling new vote:", error);
             socket.emit("error", "Failed to process vote.");
+        }
+    }));
+    socket.on("deleteMessage", (_a) => __awaiter(this, [_a], void 0, function* ({ roomId, chatId }) {
+        (0, console_1.log)(roomId, chatId);
+        try {
+            const deletedMessage = yield prisma.chat.delete({
+                where: {
+                    id: chatId
+                },
+                select: {
+                    id: true,
+                }
+            });
+            io.to(roomId).emit("receive-deletedMessage", deletedMessage.id);
+        }
+        catch (error) {
+            (0, console_1.log)("Something went wrong while deleting msg", error);
         }
     }));
 }

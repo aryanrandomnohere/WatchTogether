@@ -25,7 +25,7 @@ interface User {
   username: string;
 }
 
-const socket = io(`http://192.168.0.104:3000`, { autoConnect: true });
+const socket = io(`${import.meta.env.VITE_BACKEND_APP_API_BASE_URL}`, { autoConnect: true });
 
 export default function Option({ option,totalVotes }: { option: Option,totalVotes:number }) {
   const Info = useRecoilValue(userInfo);
@@ -56,13 +56,13 @@ export default function Option({ option,totalVotes }: { option: Option,totalVote
         {isSelected ? <FaCheckCircle className="text-xl text-yellow-600" /> : <FaRegCircle className="text-xl text-yellow-600" />}
       </div>
       <div className="flex flex-col justify-center w-full">
-        <div className="flex justify-between items-center w-68 sm:w-92">
+        <div className="flex justify-between items-center w-68">
           <label htmlFor={`option-${option.id}`} className="ml-2">
             {option.option}
           </label>
           <div className="text-xs">{votesForOption}</div>
         </div>
-       <div className="relative w-68 sm:w-92 h-2 bg-gray-800  rounded-full ml-2"><div className="absolute h-full bg-yellow-100 transition-all duration-700 ease-in-out rounded-full" style={{width:`${votePercentage}%`}}></div></div>
+       <div className="relative  w-68 h-2 bg-gray-800  rounded-full ml-2"><div className="absolute h-full bg-yellow-100 transition-all duration-700 ease-in-out rounded-full" style={{width:`${votePercentage}%`}}></div></div>
       </div>
     </div>
   );
