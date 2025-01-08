@@ -13,7 +13,7 @@ export const userInfo = atom<UserInfoType>({
    default: {
     id:"",
     username:"",
-    avatar:"",
+    avatar:"../../assets/avatars/avatar5.png",
     email:"",
     displayname:"",
    }

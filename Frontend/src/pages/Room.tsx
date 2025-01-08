@@ -13,15 +13,16 @@ import SeasonBox from "../components/SeasonBox";
 import { TfiViewList } from "react-icons/tfi";
 import { epState } from "../State/epState";
 
-import axios from "axios";
+import axios from "axios";  
 // import { chatType } from "../State/chatWindowState";
 import { isAuthenticatedState } from "../State/authState";
 import ChatWindow from "../components/ChatWindow";
 import { lefSideIsOpen } from "../State/leftRoomSpace";
 import Actions from "../components/Actions";
 import { CgProfile } from "react-icons/cg";
-import ProfileAction from "../components/ProfileActions";
+import ProfileActions from "../components/Profile/ProfileActions";
 
+//@ts-ignore
 const socket = io(`${import.meta.env.VITE_BACKEND_APP_API_BASE_URL}`)
 
 interface Message {
@@ -94,6 +95,7 @@ const { roomId } = useParams();
         if (!roomId || !isAuthenticated) return;
         
         const handleLoadState = async () => {   
+          //@ts-ignore
             const response = await axios.get(`${import.meta.env.VITE_BACKEND_APP_API_BASE_URL}/api/v1/room/loadstate/${roomId}`,
         {
             headers:{
@@ -263,15 +265,15 @@ setMessages(newMessages)
 <div>
     <Modal>
         <Modal.open opens="profile">
-           <div className="flex justify-center items-center gap-2"><CgProfile />
+          <div className="flex justify-center items-center gap-2"><CgProfile />
                 <span>Profile</span>
            </div>
-                
+          
         </Modal.open>
         <Modal.window name="profile">
-            <Actions>
-                <ProfileAction />
-                </Actions>
+           
+                <ProfileActions />
+               
         </Modal.window>
     </Modal>
 </div>
