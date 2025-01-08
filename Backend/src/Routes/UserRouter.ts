@@ -18,6 +18,7 @@ const userWithMovies = await prisma.user.findUnique({
       id: true,
       username:true,
       email:true,
+      avatar:true,
       displayname: true,
       Movies: {
         select: {
