@@ -8,7 +8,7 @@ import Root from './Root.tsx'
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
     <RecoilRoot>
-      <div className=''>
+      <div className="overflow-hidden">
         <Root />
       </div>
     </RecoilRoot>

@@ -2,7 +2,7 @@ import React, { cloneElement, createContext, ReactNode, useContext, useState } f
 import { createPortal } from "react-dom";
 import { TbLayoutSidebarRight } from "react-icons/tb";
 import { useOutsideClick } from "../hooks/useOutsideClick";
-
+import {motion} from "framer-motion"
 
 interface ModalContextType {
   isOpen: boolean;
@@ -55,28 +55,32 @@ function Window({ children }: WindowProps) {
   if (!isOpen) return null;
 
   return createPortal(
-    <div className="fixed inset-0 h-screen z-10 flex justify-end px-1 pb-1">
+    <motion.div
+      className="fixed inset-0 h-screen z-10 flex justify-end px-1 pb-1"
+      initial={{ x: '50%' }} // Start off-screen from the right
+      animate={{ x: isOpen ? 0 : '50%' }} // Move in from the right when open, and back when closed
+      
+      exit={{ x: '100%' }} // Ensure it goes fully off-screen to the right
+      transition={{ type: 'string', stiffness: 300, damping: 10, duration:0.5}} // Smooth spring effect
+    >
       {/* Sidebar Panel with smoother sliding animation */}
       <div
         ref={ref} // Attach ref to the main container to detect outside clicks
-        className={`flex flex-col border-l border-yellow-600 overflow-hidden w-80 h-screen max-w-full max-h-screen bg-gray-900 rounded-xl shadow-lg z-20 transform transition-all duration-1000 ease-out ${
-          isOpen ? "translate-y-0" : "-translate-y-full"
-        }`}
+        className={`flex flex-col border-l border-yellow-600 overflow-hidden w-80 h-screen max-w-full max-h-screen bg-gray-900 rounded-xl shadow-lg z-20`}
       >
         <div
           className="flex w-full justify-between self-start p-2 text-orange-600 text-3xl cursor-pointer"
-          
         >
           <div onClick={toggle}><TbLayoutSidebarRight /></div>
         </div>
         <div className="px-0">
-          {cloneElement(children as React.ReactElement, { toggle })}
+          {React.cloneElement(children as React.ReactElement, { toggle })}
         </div>
       </div>
 
       {/* Transparent Overlay */}
-      <div className="absolute inset-0 bg-black opacity-30 z-10 pointer-events-none"></div>
-    </div>,
+      <div className="absolute inset-0 z-10 pointer-events-none"></div>
+    </motion.div>,
     document.body
   );
 }

@@ -49,10 +49,10 @@ export default function ShowsList({shows, title}:{shows: mediaData[] | mData[] |
 
   return (
     <div className="flex flex-col">
-  <div className="text-white font-bold text-2xl sm:text-3xl self-start ml-2 sm:ml-3  w-full">
+  <div className="text-white font-bold text-2xl sm:text-3xl self-start  w-full">
     {title}
   </div>
-  <div className="flex items-center justify-start overflow-x-auto sm:overflow-x-visible overflow-y-hidden mb-3 h-68 sm:h-80 space-x-1.5 scrollbar-none">
+  <div className="flex items-center justify-start overflow-x-auto sm:overflow-x-visible overflow-y-hidden mb-3 h-68 sm:h-80 space-x-3 scrollbar-none">
     {shows &&
       shows.map((item) => (
         <Show key={item?.movie?.id ?? item?.id} item={item?.movie || item} onClick={() => handleClick(item?.movie || item)}>

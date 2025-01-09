@@ -3,7 +3,7 @@ import n from "./n.png";
 import axios from "axios";
 import toast from "react-hot-toast";
 import useAuth from "../hooks/useAuth";
-
+import Turnstile, { useTurnstile } from "react-turnstile";
 interface AuthenticationProps {
   close?: () => void;
 }
@@ -17,21 +17,25 @@ export default function Authentication({ close }: AuthenticationProps) {
   const [password, setPassword] = useState("");
   const [isLoading, setIsLoading] =useState<boolean>(false);
   const {login} = useAuth();
+  const [captchaToken, setCaptchaToken] = useState("")
   
   const handleToggle = () => {
     setIsSignup((prev) => !prev);
   };
 
   const handleSubmit = async (event: FormEvent) => {
-    event.preventDefault();
+    if(!captchaToken) {
+      toast.error("User not verified")
+      return} 
+    event.preventDefault(); 
 setIsLoading(true);
     const url = isSignup
       ? `${import.meta.env.VITE_BACKEND_APP_API_BASE_URL}/api/v1/Auth/signup`
       : `${import.meta.env.VITE_BACKEND_APP_API_BASE_URL}/api/v1/Auth/login`;
       
     const data = isSignup
-      ? { email, displayname, username, password } // Send all fields for signup
-      : { email, password }; // Send only email and password for login
+      ? { email, displayname, username, password, token:captchaToken } // Send all fields for signup
+      : { email, password, token:captchaToken }; // Send only email and password for login
 
     try {
       console.log(data);
@@ -112,7 +116,7 @@ setIsLoading(true);
 
           {/* Username Input (only for signup) */}
           {isSignup && (
-            <div className="mb-6">
+            <div className="mb-3">
               <input
                 type="text"
                 value={username}
@@ -126,21 +130,28 @@ setIsLoading(true);
           )}</div>
 
           {/* Password Input */}
-          <div className="relative mb-6">
+          <div className="relative mb-3">
             <input
               type="password"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
-              className="peer mb-8 block min-w-72 md:min-w-96  w-full px-4 py-2 rounded bg-transparent outline-none border border-neutral-300 transition-all duration-200 ease-linear focus:border-yellow-500 text-white"
+              className="peer mb-3 block min-w-72 md:min-w-96  w-full px-4 py-2 rounded bg-transparent outline-none border border-neutral-300 transition-all duration-200 ease-linear focus:border-yellow-500 text-white"
               placeholder="Password"
               disabled={isLoading}
               required
             />
-          </div>
+          </div><div className="">
+  <Turnstile
+    sitekey="0x4AAAAAAA47fgDHD7J2vdoc"
+    onVerify={(token) => setCaptchaToken(token)}
+    className="w-full"
+  />
+</div>
 
           {/* Login/Signup Button */}
           <div className="text-center mb-6">
             <button
+            disabled={captchaToken === ""? true :false }
               type="submit"
               className="w-full px-6 py-3 rounded text-xs font-medium uppercase text-white transition duration-150 ease-in-out"
               style={{

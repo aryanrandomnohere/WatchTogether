@@ -5,8 +5,9 @@ import SlideShow from "../components/SlideShow";
 import { useEffect, useState } from "react";
 import ShowsList from "../components/Showlist";
 import { useRecoilValue, useSetRecoilState } from "recoil";
-import { recentlyWatched, userMedia } from "../State/allMedia";
+import { Favourite, recentlyWatched, userMedia } from "../State/allMedia";
 import axios from "axios";
+import Recommendation from "../components/Recommendation";
 
 interface mData {
   adult: boolean;
@@ -40,11 +41,11 @@ interface genreId {
 export default function Home() {
 const isAuthenticated = useRecoilValue(isAuthenticatedState);
   const recentlywatched = useRecoilValue(recentlyWatched);
- 
+ const favourites = useRecoilValue(Favourite)
   const [popular, setPopular] = useState<mData[]>([]);
   const setAllMedia = useSetRecoilState(userMedia); 
   // const lastWatched: mData[] | undefined  = recentlywatched?.map((item)=> item.movie);
-  console.log(recentlywatched);
+  
 useEffect(() => {
   const fetchData = async () => {
     try {
@@ -80,7 +81,9 @@ useEffect(() => {
   fetchData();
 }, [setAllMedia]);
 
-  return  <div className="flex flex-col sm:mt-20 mt-28 placeholder:bg-gray-900 h-screen   pl-2 w-full ">
+  return  <div className="flex flex-col  placeholder:bg-gray-900 h-screen overflow-y-auto scrollbar-none   pl-2 w-full ">
+     <div className="sm:mt-20 mt-28"></div>
+     <Recommendation/>
     <div className="hidden"><SlideShow/></div>
      
               <ShowsList title="Popular" shows={popular} />
@@ -88,7 +91,8 @@ useEffect(() => {
         <div className="bg-gray-900 h-screen flex flex-col  pl-2 w-full ">
               <ShowsList title="Recently Watched" shows={recentlywatched?.slice(0,9)}  /></div>
               
-            
+              <div className="bg-gray-900 h-screen flex flex-col  pl-2 w-full ">
+              <ShowsList title="Favourites" shows={favourites?.slice(0,9)}  /></div>
 
   
     </div>

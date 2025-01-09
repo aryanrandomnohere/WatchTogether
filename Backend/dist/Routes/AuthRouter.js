@@ -18,6 +18,7 @@ const jsonwebtoken_1 = require("jsonwebtoken");
 const bcrypt_1 = __importDefault(require("bcrypt"));
 const JWT_SECRET_1 = __importDefault(require("../JWT_SECRET"));
 const zod_1 = __importDefault(require("zod"));
+const express_rate_limit_1 = __importDefault(require("express-rate-limit"));
 const signUpSchema = zod_1.default.object({
     displayname: zod_1.default.string(),
     username: zod_1.default.string(),
@@ -28,15 +29,23 @@ const logInSchema = zod_1.default.object({
     email: zod_1.default.string(),
     password: zod_1.default.string(),
 });
+const authLimiter = (0, express_rate_limit_1.default)({
+    windowMs: 15 * 60 * 1000, // 15 minutes
+    limit: 10, // ⬅️ Reduced to 5 requests per 15 minutes
+    message: { msg: "Too many login attempts. Please try again later." },
+    standardHeaders: true, // ⬅️ Use latest standard headers
+    legacyHeaders: false,
+    skipSuccessfulRequests: true, // ⬅️ Allows users to log in/signup again if they succeed
+});
 const authRouter = express_1.default.Router();
 const prisma = new client_1.PrismaClient();
 const SALT_ROUNDS = 10; // Number of salt rounds for bcrypt
+authRouter.use(authLimiter);
 // Signup endpoint
 //@ts-ignore
 authRouter.post("/signup", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const { email, displayname, password, username } = req.body;
-    const credentials = { email, displayname, password, username };
-    const { success, data } = signUpSchema.safeParse(credentials);
+    const { success, data } = signUpSchema.safeParse({ email, displayname, password, username });
     if (!success)
         return res.status(400).json({ msg: "Invalid Input" });
     try {
@@ -69,8 +78,22 @@ authRouter.post("/signup", (req, res) => __awaiter(void 0, void 0, void 0, funct
 // Login endpoint
 //@ts-ignore
 authRouter.post("/login", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    const { email, password } = req.body;
+    const { email, password, token } = req.body;
     const credential = { email, password };
+    const url = "https://challenges.cloudflare.com/turnstile/v0/siteverify";
+    let formData = new FormData();
+    formData.append('secret', "0x4AAAAAAA47flf41n5hLQ3Uwq5ESAzDfHY");
+    formData.append('response', token);
+    const result = yield fetch(url, {
+        body: formData,
+        method: "POST"
+    });
+    const validCaptcha = yield result.json();
+    console.log(validCaptcha);
+    if (!validCaptcha.success) {
+        res.status(400).json({ msg: "Invalid reCaptcha request" });
+        return;
+    }
     const { success, data } = logInSchema.safeParse(credential);
     if (!success)
         return res.status(400).json({ msg: "Invalid Input" });

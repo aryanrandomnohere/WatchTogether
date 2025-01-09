@@ -4,6 +4,7 @@ import { sign } from "jsonwebtoken";
 import bcrypt from "bcrypt";
 import JWT_SECRET from "../JWT_SECRET";
 import zod from 'zod'
+import rateLimit from "express-rate-limit";
 
 const signUpSchema = zod.object({
     displayname: zod.string(),
@@ -16,17 +17,23 @@ const logInSchema =zod.object({
     email: zod.string(),
     password:zod.string(),
 })
-
+const authLimiter = rateLimit({
+    windowMs: 15 * 60 * 1000, // 15 minutes
+    limit: 10,  // ⬅️ Reduced to 5 requests per 15 minutes
+    message: { msg: "Too many login attempts. Please try again later." },
+    standardHeaders: true, // ⬅️ Use latest standard headers
+    legacyHeaders: false,
+    skipSuccessfulRequests: true, // ⬅️ Allows users to log in/signup again if they succeed
+});
 const authRouter = express.Router();
 const prisma = new PrismaClient();
 const SALT_ROUNDS = 10; // Number of salt rounds for bcrypt
-
+authRouter.use(authLimiter);
 // Signup endpoint
 //@ts-ignore
 authRouter.post("/signup", async (req: Request, res: Response) => {
    const  {email,displayname,password,username} = req.body;
-    const credentials = {email,displayname,password,username}
-    const { success, data } = signUpSchema.safeParse(credentials);
+    const { success, data } = signUpSchema.safeParse({email,displayname,password,username});
     if (!success) return res.status(400).json({ msg: "Invalid Input" });
 
     try {
@@ -62,11 +69,26 @@ authRouter.post("/signup", async (req: Request, res: Response) => {
 // Login endpoint
 //@ts-ignore
 authRouter.post("/login", async (req: Request, res: Response) => {
-const {email, password} = req.body;
+const {email, password, token} = req.body;
     const credential = {email, password}
+    const url = "https://challenges.cloudflare.com/turnstile/v0/siteverify"
+    let formData= new FormData()
+    formData.append('secret',"0x4AAAAAAA47flf41n5hLQ3Uwq5ESAzDfHY")
+    formData.append('response',token)
+    const result = await fetch(url,{
+     body:formData,
+     method:"POST"
+    })
+    const validCaptcha = await result.json()
+    console.log(validCaptcha);
+    
+    if(!validCaptcha.success){
+        res.status(400).json({msg:"Invalid reCaptcha request"})
+        return 
+    }
     const { success, data } = logInSchema.safeParse(credential);
-    if (!success) return res.status(400).json({ msg: "Invalid Input" });
-
+    
+    if (!success) return res.status(400).json({ msg: "Invalid Input" })
     try {
         const user = await prisma.user.findUnique({ where: { email: data.email } });
         if (!user) return res.status(401).json({ msg: "Email does not exists" });
