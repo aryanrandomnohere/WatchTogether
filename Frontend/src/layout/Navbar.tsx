@@ -86,7 +86,7 @@ export default function Navbar() {
 
   return (
     <div className="relative">
-      <div className="flex flex-col sm:flex-row items-center justify-center w-full bg-slate-950 bg-op text-yellow-600 font-bold shadow-yellow-950 shadow-md mb-10 z-10 fixed">
+      <div className="flex flex-col sm:flex-row items-center justify-center w-full bg-slate-950  text-yellow-600 font-bold shadow-yellow-950 mb-10 z-10 fixed">
         
           <div className="flex w-full items-center mb-2 sm:mb-0 my-2 sm:my-0 justify-between">  
          

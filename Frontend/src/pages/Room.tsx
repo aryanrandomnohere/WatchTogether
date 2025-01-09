@@ -245,7 +245,8 @@ setMessages(newMessages)
     
 
     return (
-        <div className="bg-gray-900 min-h-screen flex flex-col  px-4 pt-4 mt-22 md:mt-14 items-start">
+        <div className="bg-gray-900 min-h-screen flex flex-col  px-4 pt-4 items-start">
+           <div className="sm:mt-20 mt-28"></div>
             <div className="flex gap-2 mb-4 items-center"><div  onClick={()=>{if(["Series", "Anime","AnimeUrl"].includes(isPlaying.type)){
             setIsOpen(!isOpen)
             return}

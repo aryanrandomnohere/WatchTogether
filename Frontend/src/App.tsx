@@ -177,7 +177,7 @@ const [friends, setFriends] = useRecoilState(Friends);
 
   return (
    
-      <div className="w-screen  bg-slate-900">
+      <div className="w-screen  bg-slate-900 overflow-hidden">
         <Toaster />
         <Routes>
           <Route path="/" element={<Applayout />}>

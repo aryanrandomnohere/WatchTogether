@@ -49,24 +49,7 @@
 //         setAllMedia(mediaResponse.data.data);
   
 //         // Fetching trending data
-//         const trendingResponse = await fetch("https://api.themoviedb.org/3/movie/top_rated?language=en-US&page=1", {
-//           method: "GET",
-//           headers: {
-//             accept: "application/json",
-//             Authorization: `Bearer eyJhbGciOiJIUzI1NiJ9.eyJhdWQiOiI0NzI5NmMxNjY1NWI1NGE1MzU0MTA4NzIyZWVmMjFhNSIsIm5iZiI6MTczMDkyMTU4My44NzM5OTk4LCJzdWIiOiI2NzJiYzQ2ZjQzM2M4MmVhMjY3ZWExNWEiLCJzY29wZXMiOlsiYXBpX3JlYWQiXSwidmVyc2lvbiI6MX0.T9tYHXZGv0OisrEbFuVodRU7ppPEKLvLAsKMbmJElkA`,
-//           },
-//         });
-//         const trendingData = await trendingResponse.json();
-  
-//         // Save only the first 8 objects
-//         const limitedTrendingData = trendingData.results.slice(0, 9).map((pop: mData) => {
-//           return {
-//             ...pop, // Correct spread operator
-//             media_type: "movie", // Add or overwrite the `media_type` field
-//           };
-//         });
-        
-//         setPopular(limitedTrendingData);
+//         
 //       } catch (error) {
 //         console.error("Error fetching data:", error);
 //       }
