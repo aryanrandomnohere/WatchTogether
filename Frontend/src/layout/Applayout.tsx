@@ -6,7 +6,7 @@ export default function Applayout() {
     <div className="flex flex-col">
       <div><Navbar/></div>
      
-    <div className="bg-gray-900 h-screen w-full "><Outlet/></div>
+    <div className="bg-gray-900 h-screen w-full overflow-y-auto "><Outlet/></div>
     </div>
   )
 }

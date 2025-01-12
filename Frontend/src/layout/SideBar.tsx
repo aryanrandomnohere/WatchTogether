@@ -5,21 +5,23 @@ import UserDisplay from "../components/UserDisplay";
 import AddFriend from "../components/AddFriend";
 import Notifications from "../components/Notifications";
 import AllFriends from "../components/AllFriends";
-
+import { Link } from "react-router-dom";
+import { useRecoilValue } from "recoil";
+import { userInfo } from "../State/userState";
 
 
 
 export default function SideBar() {
- 
+   const Info = useRecoilValue(userInfo)
    const [fOpen, setfOpen] = useState(false);
    
    
   return (
     <div className="flex flex-col h-screen w-full  justify-between">
   {/* Header with toggle button */}
-  <div className=" flex py-2 items-center max-w-72 justify-between bg-transparent mx-3 p-2 border border-white/20 hover:text-yellow-600 hover:cursor-pointer  px-3 ">
-   <div> Go to your room</div><div><FaArrowsTurnRight /></div>
-  </div>
+  <Link to={`/watch/${!Info.id ? "guest" : Info.id}`} className=" flex py-2 items-center max-w-[18.5rem] justify-between bg-transparent mx-3 p-2 border hover:border-yellow-600    border-white/20 hover:text-yellow-600 hover:cursor-pointer  px-3 ">
+   <div className=""> Go to your room</div><div><FaArrowsTurnRight /></div>
+  </Link>
   <div className="flex border-b border-b-yellow-600  justify-between mx-3 items-center rounded-md py-2 px-3 hover:bg-slate-950 hover:bg-opacity-40 mb-4 mt-5">
     <button className="flex justify-between w-full items-center text-yellow-600" onClick={() => setfOpen(!fOpen)}>
    <div className="flex items-center justify-center "><div className="` text-white text-lg">Friends</div> </div><MdArrowForwardIos  className={`text-sm ${fOpen? "rotate-90": ""}`} />

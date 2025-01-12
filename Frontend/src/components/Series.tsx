@@ -164,7 +164,7 @@ export default function Series({id ,type,title, animeId="" }: {id: number | stri
             
         return (
               <iframe 
-                 className={` ${leftIsOpen?"sm:h-128": "sm:h-full"} w-screen h-56  rounded `}
+                 className={` ${leftIsOpen?"sm:h-128": "sm:h-full"} w-screen h-16 max-w-[73rem]  rounded `}
                   src={`https://2anime.xyz/embed/${animeId}-episode-${episode_number}`}
                   frameBorder="0"
                   allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"

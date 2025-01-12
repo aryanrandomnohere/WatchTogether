@@ -9,7 +9,7 @@ interface mData {
     id: number;
     media_type?: string;
     name?: string;
-    release_date:string;
+    release_date?:string;
     origin_country?: string[] | originalCountry[];
     original_language?: string;
     original_name: string;
@@ -29,9 +29,7 @@ interface mData {
     genre_id: number;
   }
 
-export default function RecommendationFrame({show}:{show:mData}) {
-  console.log(show);
-  
+export default function RecommendationFrame({show}:{show:mData}) {  
     if(!show) return <></>
   return (
 <div className="relative w-full h-full text-white flex items-center">
@@ -40,7 +38,7 @@ export default function RecommendationFrame({show}:{show:mData}) {
     <div className="relative w-2/3 h-full">
       {/* Image */}
       <img
-        src={`https://image.tmdb.org/t/p/w500/${show.backdrop_path}`}
+        src={`https://image.tmdb.org/t/p/original/${show.backdrop_path}`}
         className="w-full h-full object-cover"
       />
 
@@ -64,7 +62,7 @@ export default function RecommendationFrame({show}:{show:mData}) {
     <p className="max-w-80 md:max-w-2xl md:text-base font-comic text-xs">
       {show.overview}
     </p>
-    <div className=" p-2 bg-yellow-600 mt-10 w-32 flex justify-center font-extrabold rounded-md">Watch Now</div>
+    <div className="border-yellow-600 p-2 text-yellow-60 hover:bg-yellow-600 text-yellow-600 hover:text-white hover:cursor-pointer border mt-10 w-32 flex justify-center font-extrabold rounded font-comic">Watch Now</div>
   </div>
 </div>
 

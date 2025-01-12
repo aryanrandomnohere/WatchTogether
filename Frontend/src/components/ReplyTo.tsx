@@ -48,7 +48,7 @@ export default function ReplyTo({ replyTo }: { replyTo: Message }) {
     <div className="w-full min-w-full shadow-md">
       <div
         className={`flex p-2 pb-1 flex-col w-full rounded border border-stone-700 h-fit shadow-md ${
-          replyTo.displayname !== Info.displayname ? "bg-stone-900" : "bg-slate-800"
+          replyTo.displayname !== Info.displayname ? "bg-slate-800" : "bg-slate-800"
         }`}
       >
         {/* Header: Display Name & Actions */}

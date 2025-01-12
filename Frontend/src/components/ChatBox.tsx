@@ -68,7 +68,7 @@ export default function ChatBox({ messages }: { messages: Message[] }) {
     <div>
       <div
         ref={chatContainerRef}
-        className="flex flex-col w-full justify-start  items-start max-h-64 sm:max-h-full px-2 space-y-2.5 overflow-y-auto h-full md:h-[35rem] md:min-h-[32rem] scrollbar-thin scrollbar-track-yellow-600"
+        className="flex flex-col w-full justify-start  items-start max-h-64 sm:max-h-full px-2 space-y-2.5 overflow-y-auto h-full md:h-[37rem] md:min-h-[32rem] scrollbar-thin scrollbar-track-yellow-600"
       >
         {messages.map((message, index) =>
           message.type === "normal" ? (
