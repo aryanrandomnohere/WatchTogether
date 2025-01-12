@@ -82,7 +82,7 @@ useEffect(() => {
 }, [setAllMedia]);
 
   return  <div className="flex flex-col  placeholder:bg-gray-900 h-screen overflow-y-auto scrollbar-none   pl-2 w-full ">
-     <div className="sm:mt-20 mt-28"></div>
+     <div className="sm:mt-14 mt-28"></div>
      <Recommendation/>
     <div className="hidden"><SlideShow/></div>
      
@@ -91,8 +91,8 @@ useEffect(() => {
         <div className="bg-gray-900 h-screen flex flex-col  pl-2 w-full ">
               <ShowsList title="Recently Watched" shows={recentlywatched?.slice(0,9)}  /></div>
               
-              <div className="bg-gray-900 h-screen flex flex-col  pl-2 w-full ">
-              <ShowsList title="Favourites" shows={favourites?.slice(0,9)}  /></div>
+              {favourites && favourites?.length > 0 && <div className="bg-gray-900 h-screen flex flex-col  pl-2 w-full ">
+              <ShowsList title="Favourites" shows={favourites?.slice(0,9)}  /></div> }
 
   
     </div>

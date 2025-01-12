@@ -145,7 +145,7 @@ export default function Recommendation() {
 
   return (
     <div className="relative md:min-h-[35rem] min-h-52 w-full bg-gray-900 flex justify-center items-center overflow-hidden">
-      <div className="relative w-full h-full flex justify-center mx-5 items-center">
+      <div className="relative w-full h-full flex justify-center items-center">
         <AnimatePresence custom={direction} mode="popLayout">
           {popular.length > 0 && (
             <>
@@ -178,7 +178,7 @@ export default function Recommendation() {
       </div>
 
       {/* Navigation Buttons (Stacked) */}
-      <div className="absolute bottom-6 right-6 mr-3 flex flex-col space-y-2">
+      <div className="absolute bottom-6 right-6 sm:mr-3 flex flex-col space-y-2">
        
         <button
           onClick={nextSlide}
