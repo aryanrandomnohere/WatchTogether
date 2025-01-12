@@ -59,10 +59,10 @@ export default function RecommendationFrame({show}:{show:mData}) {
       <div className=" bg-yellow-600/20 p-1">{show.original_language}</div>
       <div className="bg-yellow-600/20 p-1">{show.vote_average}</div>
     </div>
-    <p className="max-w-80 md:max-w-2xl md:text-base font-comic text-xs">
+    <p className="max-w-80 md:max-w-2xl md:text-base font-comic text-xs hidden md:block">
       {show.overview}
     </p>
-    <div className="border-yellow-600 p-2 text-yellow-60 hover:bg-yellow-600 text-yellow-600 hover:text-white hover:cursor-pointer border mt-10 w-32 flex justify-center font-extrabold rounded font-comic">Watch Now</div>
+    <div className="border-yellow-600 p-0.5 md:p-2 text-yellow-60 hover:bg-yellow-600 text-yellow-600 hover:text-white hover:cursor-pointer border mt-10 w-32 flex justify-center text-sm md:text-base font-extrabold rounded font-comic">Watch Now</div>
   </div>
 </div>
 

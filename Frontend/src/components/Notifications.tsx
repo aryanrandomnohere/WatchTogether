@@ -8,7 +8,7 @@ export default function Notifications() {
   const FriendRequestValue = useRecoilValue(FriendRequests);
 
   if (!FriendRequestValue || FriendRequestValue.length === 0) {
-    return <div>Empty</div>;
+    return <div></div>;
   }
 
   return (

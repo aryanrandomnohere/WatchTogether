@@ -56,7 +56,7 @@ function Window({ children }: WindowProps) {
 
   return createPortal(
     <motion.div
-      className="fixed inset-0 h-screen z-10 flex justify-end px-1 pb-1"
+      className="fixed inset-0 h-screen z-10 flex justify-end  pb-1"
       initial={{ x: '50%' }} // Start off-screen from the right
       animate={{ x: isOpen ? 0 : '50%' }} // Move in from the right when open, and back when closed
       

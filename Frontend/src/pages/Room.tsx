@@ -293,7 +293,7 @@ setMessages(newMessages)
     isOpen && ["Series", "Anime","AnimeUrl"].includes(isPlaying.type) ? "md:grid-cols-4" : "md:grid-cols-4"
   } gap-2.5 mt-0 transition-all  `}>
   {/* Left Sidebar */}
-  <div className={`w-full md:w-80  ${isOpen && ["Series", "Anime","AnimeUrl"].includes(isPlaying.type) ? "" : "hidden"}`}>
+  <div className={`w-full md:w-92  ${isOpen && ["Series", "Anime","AnimeUrl"].includes(isPlaying.type) ? "" : "hidden"}`}>
     {["Series", "Anime","AnimeUrl"].includes(isPlaying.type) && <SeasonBox tvId={isPlaying.id} />}
   </div>
 
