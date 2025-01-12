@@ -64,7 +64,7 @@ function sendMessage(e: FormEvent) {
     }
 
   return (
-    <div className="flex flex-col gap-0"> <ChatBox messages={messages} />
+    <div className="flex flex-col gap-0 h-full"> <ChatBox messages={messages} />
 
                         <div ref={ref} className={`relative ${replyTo ? "" : "mt-0" } flex flex-col h-14 justify-center items-center w-full`}>
                         {replyTo ? <div className="absolute right-0 bottom-[50px] bg-slate-950 border-l border-r border-t border-yellow-600 flex items-center justify-between w-full h-fit  rounded"><div className= "m-3 rounded  w-full  px-2 py-1 h-fit flex flex-col justify-between items-start bg-slate-800"><h1 className="text-sm text-yellow-600">{replyTo.displayname}</h1><h1 className="text-xs">{replyTo.message}</h1></div><div className="hover:cursor-pointer pr-4 pl-2 hover:text-yellow-600" onClick={handleClearReplyTo}><GiCancel/></div></div> : null}

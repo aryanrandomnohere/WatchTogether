@@ -61,6 +61,7 @@ const ShowInfo: React.FC<ShowInfoProps> = ({ movie, ep=1, season=1 }) => {
   const UserInfo =useRecoilValue(userInfo);
   const favourite = useRecoilValue(Favourite);
   const [Media,setMedia] = useRecoilState(userMedia)
+ console.log(movie);
  
  const mType =  movie.media_type === "movie"  ? movie?.original_language === "ja"? "AniMov" : "Movie" : movie?.original_language === "ja" ? "Anime" :"Series";
 
