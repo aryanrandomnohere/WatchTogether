@@ -1,3 +1,7 @@
+import { useRecoilValue, useSetRecoilState } from "recoil";
+import { nowPlaying } from "./State/playingOnState";
+import axios from "axios";
+import { userInfo } from "./State/userState";
 
 interface mData {
     adult: boolean;
@@ -30,6 +34,38 @@ interface mData {
   }
 
 export default function RecommendationFrame({show}:{show:mData}) {  
+  const Info = useRecoilValue(userInfo)
+  const setNowPlaying = useSetRecoilState(nowPlaying)
+  async function getNewNames() {
+    const url = `https://api.themoviedb.org/3/tv/${movie.id}/alternative_titles`;
+    const options = {
+      method: 'GET',
+      headers: {
+        accept: 'application/json',
+        Authorization: 'Bearer eyJhbGciOiJIUzI1NiJ9.eyJhdWQiOiI0NzI5NmMxNjY1NWI1NGE1MzU0MTA4NzIyZWVmMjFhNSIsIm5iZiI6MTczMDkyMTU4My44NzM5OTk4LCJzdWIiOiI2NzJiYzQ2ZjQzM2M4MmVhMjY3ZWExNWEiLCJzY29wZXMiOlsiYXBpX3JlYWQiXSwidmVyc2lvbiI6MX0.T9tYHXZGv0OisrEbFuVodRU7ppPEKLvLAsKMbmJElkA'
+      }
+    };
+    
+    const results = await fetch(url, options)
+      const data = await results.json();    
+      const possibleNames = data.results.filter((name:{iso_3166_1: string;  title: string; type: string;})=> name.type === "Romaji" )   
+      const finalName:string = possibleNames[0].title.replace(/:/g,"")
+      const result = await axios.get(`/api/search?q=${finalName}&page=1`);
+      const FullId = result.data[0]?.link_url;
+     const Id = FullId.split("-episode")[0];
+     return Id
+   }
+  function handleWatchNow(){
+    axios.post(`${import.meta.env.VITE_BACKEND_APP_API_BASE_URL}/api/v1/media/mediaaction`,{
+      userId:Info.id,
+      show,
+      listType:"Recently Watched"
+    },{
+      headers: {
+        authorization: localStorage.getItem("token"),
+      },
+    })
+  }
     if(!show) return <></>
   return (
 <div className="relative w-full h-full text-white flex items-center">
@@ -62,7 +98,7 @@ export default function RecommendationFrame({show}:{show:mData}) {
     <p className="max-w-80 md:max-w-2xl md:text-base font-comic text-xs hidden md:block">
       {show.overview}
     </p>
-    <div className="border-yellow-600 p-0.5 md:p-2 text-yellow-60 hover:bg-yellow-600 text-yellow-600 hover:text-white hover:cursor-pointer border mt-10 w-32 flex justify-center text-sm md:text-base font-extrabold rounded font-comic">Watch Now</div>
+    <div onClick={handleWatchNow} className="border-yellow-600 p-0.5 md:p-2 text-yellow-60 hover:bg-yellow-600 text-yellow-600 hover:text-white hover:cursor-pointer border mt-10 w-32 flex justify-center text-sm md:text-base font-extrabold rounded font-comic">Watch Now</div>
   </div>
 </div>
 
