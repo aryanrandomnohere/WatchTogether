@@ -124,15 +124,15 @@ const handleAddFavourite = async ()=>{
 }
  async function handleWatchNow() {
   
-  axios.post(`${import.meta.env.VITE_BACKEND_APP_API_BASE_URL}/api/v1/media/mediaaction`,{
-    userId:UserInfo.id,
-    movie,
-    listType:"Recently Watched"
-  },{
-    headers: {
-      authorization: localStorage.getItem("token"),
-    },
-  })
+    axios.post(`${import.meta.env.VITE_BACKEND_APP_API_BASE_URL}/api/v1/media/mediaaction`,{
+      userId:UserInfo.id,
+      movie,
+      listType:"Recently Watched"
+    },{
+      headers: {
+        authorization: localStorage.getItem("token"),
+      },
+    })
   try {
     setEp({episode_number:ep ,season_number:season}) 
     if (mType === "Anime" || mType === "AniMov") {

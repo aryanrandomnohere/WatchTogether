@@ -11,7 +11,6 @@ interface ModalContextType {
 }
 
 const sideBarContext = createContext<ModalContextType | undefined>(undefined);
-
 export const useSidebar = () => {
   const context = useContext(sideBarContext);
   if (!context) {
