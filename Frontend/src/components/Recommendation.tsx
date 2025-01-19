@@ -144,7 +144,7 @@ export default function Recommendation() {
   };
 
   return (
-    <div className="relative md:min-h-[35rem] min-h-52 w-full bg-gray-900 flex justify-center items-center overflow-hidden">
+    <div className="relative md:min-h-[35rem] min-h-52 w-full bg-gray-950 flex justify-center items-center overflow-hidden">
       <div className="relative w-full h-full flex justify-center items-center">
         <AnimatePresence custom={direction} mode="popLayout">
           {popular.length > 0 && (
@@ -155,7 +155,7 @@ export default function Recommendation() {
                 initial={{ x: "0%", opacity: 1 }}
                 animate={{ x: direction === 1 ? "-100%" : "100%", opacity: 0 }}
                 exit={{ x: direction === 1 ? "-100%" : "100%", opacity: 0 }}
-                transition={{ duration: 1.5, ease: "easeInOut" }}
+                transition={{ duration: 2, ease: "easeInOut" }}
                 className="absolute w-full h-full flex justify-center"
               >
                 <RecommendationFrame show={popular[currentIndex]} />
@@ -167,7 +167,7 @@ export default function Recommendation() {
                 initial={{ x: direction === 1 ? "100%" : "-100%", opacity: 0 }}
                 animate={{ x: "0%", opacity: 1 }}
                 exit={{ x: "0%", opacity: 1 }}
-                transition={{ duration: 1.5, ease: "easeInOut" }}
+                transition={{ duration: 2, ease: "easeInOut" }}
                 className="absolute w-full h-full flex justify-center"
               >
                 <RecommendationFrame show={popular[(currentIndex + 1) % popular.length]} />

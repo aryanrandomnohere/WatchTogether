@@ -2,7 +2,6 @@
 import { FaLink } from "react-icons/fa";
 import ChatBox from './ChatBox'
 import { FormEvent, useState } from "react";
-import { io } from "socket.io-client";
 import {  useRecoilState, useRecoilValue } from "recoil";
 import { roomMessages } from "../State/roomChatState";
 import { useParams } from "react-router-dom";
@@ -12,8 +11,9 @@ import ChatAction from "./ChatAction";
 import { replyingToState } from "../State/replyingToState";
 import { GiCancel } from "react-icons/gi";
 import { useOutsideClick } from "../hooks/useOutsideClick";
+import getSocket from "../services/getSocket";
 
-const socket = io(`${import.meta.env.VITE_BACKEND_APP_API_BASE_URL}`)
+const socket = getSocket();
 
 export default function FullChat() {
 const [chatOptionIsOpen, setChatOptionIsOpen] = useState<boolean>(false);

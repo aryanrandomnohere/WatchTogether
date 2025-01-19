@@ -4,10 +4,10 @@ import { RxCross2 } from "react-icons/rx";
 import { FriendRequests } from "../State/FriendRequests";
 import { useRecoilState, useRecoilValue } from "recoil";
 import toast from "react-hot-toast";
-import { io } from "socket.io-client";
 import { userInfo } from "../State/userState";
+import getSocket from "../services/getSocket";
 
-const socket = io(`${import.meta.env.VITE_BACKEND_APP_API_BASE_URL}`, { autoConnect: true });
+const socket = getSocket()
 export default function RequestActions({id, fromUsername}:{id:string, fromUsername:string}) {
   const [requests, setFriendRequests] = useRecoilState(FriendRequests)
   const  UserInfo = useRecoilValue(userInfo);

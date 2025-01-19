@@ -1,8 +1,8 @@
 import { FaCheckCircle, FaRegCircle } from "react-icons/fa";
-import { io } from "socket.io-client";
 import { userInfo } from "../State/userState";
 import { useRecoilValue } from "recoil";
 import { useParams } from "react-router-dom";
+import getSocket from "../services/getSocket";
 
 interface Option {
   chatId: number;
@@ -25,7 +25,7 @@ interface User {
   username: string;
 }
 
-const socket = io(`${import.meta.env.VITE_BACKEND_APP_API_BASE_URL}`, { autoConnect: true });
+const socket = getSocket()
 
 export default function Option({ option,totalVotes }: { option: Option,totalVotes:number }) {
   const Info = useRecoilValue(userInfo);

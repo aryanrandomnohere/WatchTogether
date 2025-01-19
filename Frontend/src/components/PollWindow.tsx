@@ -8,7 +8,8 @@ import { useState } from "react";
 import { io } from "socket.io-client";
 import { IoArrowBackCircleSharp } from "react-icons/io5";
 import { chatType } from "../State/chatWindowState";
-const socket = io(`${import.meta.env.VITE_BACKEND_APP_API_BASE_URL}`); 
+import getSocket from "../services/getSocket";
+const socket = getSocket();; 
 
 enum ChatType {
     CHATS,

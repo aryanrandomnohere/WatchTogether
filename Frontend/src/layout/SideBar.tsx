@@ -22,8 +22,8 @@ export default function SideBar() {
   <Link to={`/watch/${!Info.id ? "guest" : Info.id}`} className=" flex py-2 items-center max-w-[18.5rem] justify-between bg-transparent mx-3 p-2 border hover:border-yellow-600    border-white/20 hover:text-yellow-600 hover:cursor-pointer  px-3 ">
    <div className=""> Go to your room</div><div><FaArrowsTurnRight /></div>
   </Link>
-  <div className="flex border-b border-b-yellow-600  justify-between mx-3 items-center rounded-md py-2 px-3 hover:bg-slate-950 hover:bg-opacity-40 mb-4 mt-5">
-    <button className="flex justify-between w-full items-center text-yellow-600" onClick={() => setfOpen(!fOpen)}>
+  <div onClick={() => setfOpen(!fOpen)} className="flex border-b border-b-yellow-600  hover:cursor-pointer justify-between mx-3 items-center rounded-md py-2 px-3 hover:bg-slate-950 hover:bg-opacity-40 mb-4 mt-5">
+    <button className="flex justify-between w-full items-center text-yellow-600" >
    <div className="flex items-center justify-center "><div className="` text-white text-lg">Friends</div> </div><MdArrowForwardIos  className={`text-sm ${fOpen? "rotate-90": ""}`} />
     </button>    
   </div><div className="flex flex-col gap-1 ml-1 px-3 w-full ">

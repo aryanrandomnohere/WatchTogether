@@ -25,7 +25,6 @@ jobs:
             file: ./Backend/Dockerfile
             push: true
             tags: aryanrathore/watchalong_backend:latest
-            
       - name: Deploy to Oracle Ec2
         uses: appleboy/ssh-action@master
         with: 

@@ -7,14 +7,14 @@ import toast, { Toaster } from "react-hot-toast";
 import { useRecoilState, useRecoilValue, useSetRecoilState } from "recoil";
 import { userInfo } from "./State/userState";
 import { useEffect } from "react";
-import { io } from "socket.io-client";
 import { FriendRequests } from "./State/FriendRequests";
 import { Friends } from "./State/friendsState";
 import { isAuthenticatedState } from "./State/authState";
+import getSocket from "./services/getSocket";
 
 
 
-const socket = io(`${import.meta.env.VITE_BACKEND_APP_API_BASE_URL}`, { autoConnect: true });
+const socket = getSocket()
 export default function App() {
 const setFriendRequests = useSetRecoilState(FriendRequests);
 const [friends, setFriends] = useRecoilState(Friends);

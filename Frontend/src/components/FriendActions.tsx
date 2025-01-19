@@ -2,9 +2,9 @@ import { HiPlusSm } from "react-icons/hi";
 import { LiaJointSolid } from "react-icons/lia";
 import { useRecoilValue } from "recoil";
 import { userInfo } from "../State/userState";
-import { io } from "socket.io-client";
+import getSocket from "../services/getSocket";
 
-const socket = io(`${import.meta.env.VITE_BACKEND_APP_API_BASE_URL}`, { autoConnect: true });
+const socket = getSocket()
 
 export default function FriendActions({to}:{to:string}) {
  const userInfovalue = useRecoilValue(userInfo);

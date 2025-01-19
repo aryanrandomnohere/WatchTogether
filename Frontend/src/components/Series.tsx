@@ -7,10 +7,11 @@ import { io } from 'socket.io-client';
 import { userInfo } from '../State/userState';
 import axios from "axios";
 import { lefSideIsOpen } from "../State/leftRoomSpace";
+import getSocket from "../services/getSocket";
 
 
 
-const socket = io(`${import.meta.env.VITE_BACKEND_APP_API_BASE_URL}`); 
+const socket = getSocket();; 
 
 export default function Series({id ,type,title, animeId="" }: {id: number | string,type:string, title:string | undefined, animeId?:string }) {
     const videoRef = useRef<HTMLVideoElement>(null);
