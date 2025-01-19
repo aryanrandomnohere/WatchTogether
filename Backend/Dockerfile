@@ -1,4 +1,4 @@
-FROM node:20    
+FROM --platform=linux/arm64 node:20     
 WORKDIR /app/backend
 COPY package.json /app/backend/
 RUN npm install
