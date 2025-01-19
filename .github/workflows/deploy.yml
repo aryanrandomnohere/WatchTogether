@@ -24,7 +24,7 @@ jobs:
             context: ./Backend
             file: ./Backend/Dockerfile
             push: true
-            platforms: linux/amd64
+            platforms: linux/arm64
             tags: aryanrathore/watchalong_backend:latest
       - name: Deploy to Oracle Ec2
         uses: appleboy/ssh-action@master
@@ -36,7 +36,7 @@ jobs:
               sudo docker pull aryanrathore/watchalong_backend:latest
               sudo docker stop watchalong_backend || true
               sudo docker rm watchalong_backend || true
-              sudo docker run -d -e DATABASE_URL=${{secrets.DB_URL}} --name watchalong_backend -p 80:3000 aryanrathore/watchalong_backend:latest
+              sudo docker run --platform linux/arm64 -d -e DATABASE_URL=${{secrets.DB_URL}} --name watchalong_backend -p 80:3000 aryanrathore/watchalong_backend:latest
 
      
         
