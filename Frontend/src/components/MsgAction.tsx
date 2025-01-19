@@ -6,10 +6,10 @@ import { replyingToState } from "../State/replyingToState";
 import { useOutsideClick } from "../hooks/useOutsideClick";
 import { roomMessages } from "../State/roomChatState";
 import { useParams } from "react-router-dom";
-import { io } from "socket.io-client";
+import getSocket from "../services/getSocket";
 
 
-const socket = io(`${import.meta.env.VITE_BACKEND_APP_API_BASE_URL}`)
+const socket = getSocket();
 
 
 export default function MsgAction({ chatId, message,displayname }: { chatId: number,message:string,displayname:string }) {

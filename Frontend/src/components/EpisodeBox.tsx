@@ -2,9 +2,9 @@ import { useRecoilState, useRecoilValue } from "recoil";
 import { epState } from "../State/epState";
 import axios from "axios";
 import { useParams } from "react-router-dom";
-import { io } from "socket.io-client";
 import { userInfo } from "../State/userState";
-const socket = io(`${import.meta.env.VITE_BACKEND_APP_API_BASE_URL}`)
+import getSocket from "../services/getSocket";
+const socket = getSocket();
 interface EpisodeType {
     episode_number: number;
     episode_type: string;

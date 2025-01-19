@@ -88,10 +88,10 @@ useEffect(() => {
      
               <ShowsList title="Popular" shows={popular} />
             
-        <div className="bg-gray-900 h-screen flex flex-col  pl-2 w-full ">
+        <div className=" h-screen flex flex-col  pl-2 w-full ">
               <ShowsList title="Recently Watched" shows={recentlywatched?.slice(0,9)}  /></div>
               
-              {favourites && favourites?.length > 0 && <div className="bg-gray-900 h-screen flex flex-col  pl-2 w-full ">
+              {favourites && favourites?.length > 0 && <div className="h-screen flex flex-col  pl-2 w-full ">
               <ShowsList title="Favourites" shows={favourites?.slice(0,9)}  /></div> }
 
   

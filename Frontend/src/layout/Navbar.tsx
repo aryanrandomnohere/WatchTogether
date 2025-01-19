@@ -15,7 +15,8 @@ import { isNotiOpen } from "../State/notificationPanel";
 import Notifications from "../components/Notifications";
 import { Friends } from "../State/friendsState";
 import { FriendRequests } from "../State/FriendRequests";
-import { io } from "socket.io-client";
+import getSocket from "../services/getSocket";
+
 
 
 interface UserInfoType {
@@ -25,7 +26,7 @@ interface UserInfoType {
   email: string;
   displayname:string;
 }
-const socket = io(`${import.meta.env.VITE_BACKEND_APP_API_BASE_URL}`)
+const socket = getSocket();
 export default function Navbar() {
   const navigate = useNavigate();
   const [query, setQuery] = useState("");

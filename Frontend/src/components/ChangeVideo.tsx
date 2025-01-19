@@ -1,11 +1,11 @@
 import { FormEvent } from "react";
 import { controlledPlaying, nowPlaying } from "../State/playingOnState";
 import { useRecoilState, useRecoilValue, useSetRecoilState } from "recoil";
-import { io } from "socket.io-client";
 import { userInfo } from "../State/userState";
 import { useParams } from "react-router-dom";
+import getSocket from "../services/getSocket";
 
-const socket = io(`${import.meta.env.VITE_BACKEND_APP_API_BASE_URL}`)
+const socket = getSocket();
 interface isPlayingType {
   id:number | string;
   title: string | undefined;

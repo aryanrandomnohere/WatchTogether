@@ -5,11 +5,11 @@ import { controlledPlaying, nowPlaying } from '../State/playingOnState';
 import { userInfo } from '../State/userState';
 import axios from 'axios';
 import { epState } from '../State/epState';
-import { io } from 'socket.io-client';
 import { BiHeart } from 'react-icons/bi';
 import toast from 'react-hot-toast';
 import { Favourite, userMedia } from '../State/allMedia';
 import { FaHeart } from "react-icons/fa";
+import getSocket from '../services/getSocket';
 interface mData {
     adult: boolean;
     title?: string;
@@ -52,7 +52,7 @@ interface ShowInfoProps {
   season?:number;
 }
 
-const socket = io(`${import.meta.env.VITE_BACKEND_APP_API_BASE_URL}`, { autoConnect: true });
+const socket = getSocket()
 const ShowInfo: React.FC<ShowInfoProps> = ({ movie, ep=1, season=1 }) => {
   const navigate = useNavigate();
   const setNowPlaying = useSetRecoilState(nowPlaying);

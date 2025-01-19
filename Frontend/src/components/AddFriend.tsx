@@ -1,11 +1,11 @@
 import { FormEvent, useState } from "react";
 import { userInfo } from "../State/userState";
-import { io } from "socket.io-client";
 import { useRecoilValue } from "recoil";
 import toast from "react-hot-toast";
 import { MdOutlinePersonAddAlt } from "react-icons/md";
+import getSocket from "../services/getSocket";
 
-const socket = io(`${import.meta.env.VITE_BACKEND_APP_API_BASE_URL}`);
+const socket = getSocket();;
 
 export default function AddFriend() {
   const User = useRecoilValue(userInfo);

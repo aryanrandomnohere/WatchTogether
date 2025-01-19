@@ -6,7 +6,6 @@ import { controlledPlaying, nowPlaying, wasPlaying } from "../State/playingOnSta
 import { userInfo } from "../State/userState";
 import { roomMessages } from "../State/roomChatState";
 import { useParams } from "react-router-dom";
-import { io } from "socket.io-client";
 import Modal from "../ui/Modal";
 import { RiExchangeLine } from "react-icons/ri";
 import SeasonBox from "../components/SeasonBox";
@@ -23,8 +22,9 @@ import { CgProfile } from "react-icons/cg";
 import ProfileActions from "../components/Profile/ProfileActions";
 import { FcInvite } from "react-icons/fc";
 import { TbArrowBarToLeft, TbArrowBarToRight } from "react-icons/tb";
+import getSocket from "../services/getSocket";
 //@ts-ignore
-const socket = io(`${import.meta.env.VITE_BACKEND_APP_API_BASE_URL}`)
+const socket = getSocket();
 
 interface Message {
     id: number;
