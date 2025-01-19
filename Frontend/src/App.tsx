@@ -173,10 +173,7 @@ const [friends, setFriends] = useRecoilState(Friends);
         // socket.disconnect();
     };
 }, [userId,navigate,friends,setFriendRequests,setFriends]); // Add dependencies here to handle changes in socket or userId
-
-
   return (
-  
       <div className="w-screen  bg-slate-900 overflow-hidden">
         <Toaster />
         <Routes>
