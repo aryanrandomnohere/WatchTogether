@@ -110,4 +110,26 @@ roomRouter.get("/currentState/:roomId", (req, res) => __awaiter(void 0, void 0, 
         res.status(400).json({ msg: "Problem faced while loading the last state" });
     }
 }));
+roomRouter.get("/getRoomName/:roomId", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    try {
+        const roomId = req.params.roomId;
+        const roomDetails = yield prisma.user.findFirst({
+            where: {
+                id: roomId
+            },
+            select: {
+                username: true,
+                display: true,
+            }
+        });
+        res.status(200).json({
+            roomDetails
+        });
+    }
+    catch (error) {
+        res.status(400).json({
+            msg: "Either you are not loogedin or internal server error"
+        });
+    }
+}));
 exports.default = roomRouter;

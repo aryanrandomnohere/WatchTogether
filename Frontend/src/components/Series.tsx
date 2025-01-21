@@ -3,7 +3,6 @@ import { epState } from "../State/epState";
 import  { useEffect, useRef, useState } from 'react';
 import { CgMediaLive } from 'react-icons/cg';
 import { useParams } from 'react-router-dom';
-import { io } from 'socket.io-client';
 import { userInfo } from '../State/userState';
 import axios from "axios";
 import { lefSideIsOpen } from "../State/leftRoomSpace";
@@ -165,7 +164,7 @@ export default function Series({id ,type,title, animeId="" }: {id: number | stri
             
         return (
               <iframe 
-                 className={` ${leftIsOpen?"sm:h-128": "sm:h-full"} w-screen h-16 max-w-[73rem]  rounded `}
+                 className={` ${leftIsOpen?"sm:h-24": "sm:h-full"} w-screen h-16 max-w-[73rem]  rounded `}
                   src={`https://2anime.xyz/embed/${animeId}-episode-${episode_number}`}
                   frameBorder="0"
                   allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"

@@ -106,6 +106,28 @@ roomRouter.get("/currentState/:roomId",async (req:ExtendedRequest,res:Response)=
 
 })
 
+roomRouter.get("/getRoomName/:roomId",async (req:Request, res:Response)=>{
+try{const roomId:string = req.params.roomId
+ const roomDetails = await prisma.user.findFirst({
+  where:{
+    id:roomId
+  },
+select:{
+ username:true,
+ display:true, 
+}})
+ res.status(200).json({
+  roomDetails
+ })
+
+}catch(error){
+  res.status(400).json({
+    msg:"Either you are not loogedin or internal server error"
+  })
+}
+
+})
+
 
 
 
