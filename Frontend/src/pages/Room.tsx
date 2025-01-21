@@ -78,6 +78,7 @@ export default function Room() {
     const [playing, setPlaying] = useRecoilState(nowPlaying)
     const wasplaying= useRecoilValue(wasPlaying)
     const [messages, setMessages] = useRecoilState(roomMessages);
+    const [roomName, setRoomName] = useState("")
     // const [newMessage, setNewMessage] = useState("");
    const [isOpen, setIsOpen] = useRecoilState(lefSideIsOpen);
    const [chatIsOpen, setChatIsOpen ] = useState(true)
@@ -96,6 +97,15 @@ const { roomId } = useParams();
     useEffect(() => {
         if (!roomId || !isAuthenticated) return;
         
+        function fetchRoomName() {
+         axios.get(`${import.meta.env.VITE_BACKEND_APP_API_BASE_URL}/room/getRoomName/${roomId}`,{
+          headers:{ 
+            authorization:localStorage.getItem("token")
+          }
+         })
+        }
+        fetchRoomName()
+
         const handleLoadState = async () => {   
           //@ts-ignore
             const response = await axios.get(`${import.meta.env.VITE_BACKEND_APP_API_BASE_URL}/api/v1/room/loadstate/${roomId}`,
