@@ -66,7 +66,7 @@ export default function ShowsDisplay() {
 
   if (!media) {
     return (
-      <div className="flex h-screen bg-gray-900 justify-center items-center">
+      <div className="flex h-screen bg-slate-950 justify-center items-center">
         <div
           className="inline-block h-24 w-24 md:h-36 md:w-36 animate-spin rounded-full text-yellow-600 border-4 border-solid border-current border-r-transparent"
           role="status"
@@ -82,7 +82,7 @@ export default function ShowsDisplay() {
   }
 
   return (
-    <div className="flex flex-wrap bg-gray-900 justify-center items-center text-zinc-300 mt-24 md:mt-16 gap-1.5  sm:gap-3">
+    <div className="flex flex-wrap bg-slate-950 justify-center items-center text-zinc-300 mt-24 md:mt-16 gap-1.5  sm:gap-3">
       {media.map((item:mData) => {
         if(!item.backdrop_path || !item.poster_path) return
       return (
