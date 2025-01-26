@@ -1,5 +1,5 @@
-import express, {Request, Response} from 'express';
-import cors from 'cors';
+import express, { Request, Response } from 'express';
+import cors from 'cors'; // Correct import
 import http from "http";
 import mainRouter from './Routes/index';
 import { Server } from 'socket.io';
@@ -9,28 +9,30 @@ import chatEvents from './Events/chatEvents';
 import userEvents from './Events/userEvents';
 import FriendActionEvents from './Events/FriendActionsEvent';
 import { log } from 'console';
+
 const app = express();
 const prisma = new PrismaClient();
-const cors = require('cors');
+
+// Remove this line: const cors = require('cors'); (it's not needed)
+
 app.use(cors({
   origin: 'https://d2mpu663tz24o9.cloudfront.net', // Allow this origin
-  methods: ['GET', 'POST', 'PUT', 'DELETE'],       // Allow specific HTTP methods
-  credentials: true,                              // If sending cookies or authentication headers
+  methods: ['GET', 'POST', 'PUT', 'DELETE'],    // Allow specific HTTP methods
+  credentials: true,                            // If sending cookies or authentication headers
 }));
 
-app.use(express.json())
+app.use(express.json());
 
-app.use('/api/v1',mainRouter);
+app.use('/api/v1', mainRouter);
 
 const server = http.createServer(app);
 const rooms: Record<string, Set<string>> = {};
 const io = new Server(server, {
   cors: {
-      origin: "*",  // replace with clientâ€™s origin if different
+      origin: "*",  // replace with client’s origin if different
       methods: ["GET", "POST"]
   }
 });
-
 
 io.on("connection", (socket) => {
 
@@ -47,14 +49,11 @@ io.on("connection", (socket) => {
       io.to(roomId).emit("room-user-count", rooms[roomId].size);
   });
 
+  userEvents(io, socket);
+  videoEvents(io, socket);
+  chatEvents(io, socket);
+  FriendActionEvents(io, socket);
 
- 
-
- 
-  userEvents(io,socket);
-  videoEvents(io,socket);
-  chatEvents(io,socket);
-  FriendActionEvents(io,socket);
   // Handle disconnection
   socket.on("disconnect", () => {
 
@@ -72,4 +71,4 @@ io.on("connection", (socket) => {
 
 server.listen(3000, '0.0.0.0', () => {
     console.log('Backend running on http://0.0.0.0:5000');
-  });
+});
