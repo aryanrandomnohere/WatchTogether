@@ -12,7 +12,7 @@ import getSocket from "../services/getSocket";
 
 const socket = getSocket();; 
 
-export default function Series({id ,type,title, animeId="" }: {id: number | string,type:string, title:string | undefined, animeId?:string }) {
+export default function Series({id ,type,title, animeId="" }: {id: number | string,type:string, title?:string | undefined, animeId?:string }) {
     const videoRef = useRef<HTMLVideoElement>(null);
     const [isPlay, setIsPlaying] = useState(false);
     const leftIsOpen = useRecoilValue(lefSideIsOpen)
@@ -20,6 +20,7 @@ export default function Series({id ,type,title, animeId="" }: {id: number | stri
     const [hasAccess,setHasAccess] = useState(false);
   const Info = useRecoilValue(userInfo)    
     const {roomId} = useParams()
+
 
 
     useEffect(() => {
@@ -33,12 +34,12 @@ export default function Series({id ,type,title, animeId="" }: {id: number | stri
                     videoRef.current?.pause();
                 }
     
+
                 // Synchronize local state with the received state
                 setIsPlaying(isPlaying);
             };
 
             const handleTimeUpdate = () => {
-                console.log(videoRef.current?.currentTime);
                 if (videoRef?.current) {
                     const currentTime = videoRef.current?.currentTime;
                     const timeDifference = Math.abs(currentTime - lastTime);
@@ -60,7 +61,7 @@ export default function Series({id ,type,title, animeId="" }: {id: number | stri
                                 roomId: roomId,
                             });
                         }
-                        console.log(`User skipped to ${currentTime.toFixed(2)} seconds.`);
+                
                     }
         
                     setLastTime(()=>currentTime);
@@ -106,7 +107,6 @@ export default function Series({id ,type,title, animeId="" }: {id: number | stri
             
     
             function handleSeek({currentTime}:{currentTime:number}){
-                console.log("Seek Received");
                 
              video.currentTime = currentTime;
             }
@@ -139,16 +139,16 @@ export default function Series({id ,type,title, animeId="" }: {id: number | stri
     const handleAccessClick = async () => {
         setHasAccess(true);
         socket.emit("join-player",{roomId})
+        //@ts-ignore
         const response = await axios.get(`${import.meta.env.VITE_BACKEND_APP_API_BASE_URL}/api/v1/room/currentState/${roomId}`,
             {
                 headers:{
                     authorization: localStorage.getItem("token")
                 }
             })
-            console.log(response);
             
         const {isPlaying,currentTime} = response.data
-      console.log(isPlaying);
+
         if (videoRef.current && currentTime) {
           videoRef.current.currentTime = currentTime; 
           if (isPlaying) {

@@ -12,7 +12,12 @@ import { Friends } from "./State/friendsState";
 import { isAuthenticatedState } from "./State/authState";
 import getSocket from "./services/getSocket";
 
-
+interface Friend {
+  id:string;
+  status:string;
+  displayname:string;
+  username:string
+}
 
 const socket = getSocket()
 export default function App() {
@@ -36,7 +41,7 @@ const [friends, setFriends] = useRecoilState(Friends);
     socket.on("user-not-found", () => {
       toast.error("User does not exist");
     });
-    socket.on("receive-join-request",(from, fromId)=>{
+    socket.on("receive-join-request",(from:string, fromId:string)=>{
       toast.custom((t) => (
         <div
         className={`${
@@ -81,7 +86,7 @@ const [friends, setFriends] = useRecoilState(Friends);
     })
 
 
-    socket.on("receive-invite-request",(from, fromId)=>{
+    socket.on("receive-invite-request",(from:string, fromId:string)=>{
       toast.custom((t) => (
         <div
           className={`${
@@ -127,7 +132,7 @@ const [friends, setFriends] = useRecoilState(Friends);
     
 
 
-  socket.on("receive-friend",(newFriend)=>{
+  socket.on("receive-friend",(newFriend:Friend)=>{
     setFriends((friend)=>[...friend, newFriend])
   })
   function handleReceiveFreq({senderId, senderUsername}:{senderId:string, senderUsername:string}) {

@@ -35,9 +35,11 @@ interface mData {
 
 export default function RecommendationFrame({show}:{show:mData}) {  
   const Info = useRecoilValue(userInfo)
+  //@ts-ignore
   const setNowPlaying = useSetRecoilState(nowPlaying)
+  //@ts-ignore
   async function getNewNames() {
-    const url = `https://api.themoviedb.org/3/tv/${movie.id}/alternative_titles`;
+    const url = `https://api.themoviedb.org/3/tv/${show.id}/alternative_titles`;
     const options = {
       method: 'GET',
       headers: {
@@ -56,6 +58,7 @@ export default function RecommendationFrame({show}:{show:mData}) {
      return Id
    }
   function handleWatchNow(){
+    //@ts-ignore
     axios.post(`${import.meta.env.VITE_BACKEND_APP_API_BASE_URL}/api/v1/media/mediaaction`,{
       userId:Info.id,
       show,

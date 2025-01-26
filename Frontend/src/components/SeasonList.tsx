@@ -26,7 +26,7 @@ interface seasonType {
   
   const TOKEN = "eyJhbGciOiJIUzI1NiJ9.eyJhdWQiOiI0NzI5NmMxNjY1NWI1NGE1MzU0MTA4NzIyZWVmMjFhNSIsIm5iZiI6MTczMDkyMTU4My44NzM5OTk4LCJzdWIiOiI2NzJiYzQ2ZjQzM2M4MmVhMjY3ZWExNWEiLCJzY29wZXMiOlsiYXBpX3JlYWQiXSwidmVyc2lvbiI6MX0.T9tYHXZGv0OisrEbFuVodRU7ppPEKLvLAsKMbmJElkA";  
 
-export default function SeasonList({seasonInfo, tvId, isOpen, setIsOpen}:{seasonInfo:seasonType, tvId:string|number, isOpen:number | string| null, setIsOpen:Dispatch<SetStateAction<number | string | null>>}) {
+export default function SeasonList({seasonInfo, tvId, isOpen, setIsOpen}:{seasonInfo:seasonType, tvId:string|number|undefined, isOpen:number | string| null, setIsOpen:Dispatch<SetStateAction<number | string | null>>}) {
     const Ep = useRecoilValue(epState);
     const [episodes, setEpisodes] = useState<EpisodeType[]>()
     useEffect(() => {
@@ -39,7 +39,7 @@ export default function SeasonList({seasonInfo, tvId, isOpen, setIsOpen}:{season
               },
             });
     
-         
+         //@ts-ignore
             const requiredData = response.data.episodes.map((ep) => ({
               episode_number: ep.episode_number,
               episode_type: ep.episode_type, 

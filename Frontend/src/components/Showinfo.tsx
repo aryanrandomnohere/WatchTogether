@@ -61,7 +61,7 @@ const ShowInfo: React.FC<ShowInfoProps> = ({ movie, ep=1, season=1 }) => {
   const UserInfo =useRecoilValue(userInfo);
   const favourite = useRecoilValue(Favourite);
   const [Media,setMedia] = useRecoilState(userMedia)
- console.log(movie);
+
  
  const mType =  movie.media_type === "movie"  ? movie?.original_language === "ja"? "AniMov" : "Movie" : movie?.original_language === "ja" ? "Anime" :"Series";
 
@@ -88,6 +88,7 @@ const ShowInfo: React.FC<ShowInfoProps> = ({ movie, ep=1, season=1 }) => {
  try {
   const filteredMedia = Media?.filter((m)=> !(m.movie.id === movie.id && m.listType === "Favourite") ) || null;
   setMedia(filteredMedia);
+  //@ts-ignore
  const response = await axios.put(`${import.meta.env.VITE_BACKEND_APP_API_BASE_URL}/api/v1/media/removefavourite`,{ 
   movieId:movie.id,
   listType:"Favourite"
@@ -108,7 +109,9 @@ const handleAddFavourite = async ()=>{
   try {
     toast.success("Added to Favourites")
   const newFavourite:mediaData = {listType:"Favourite", episode:1,season:1,movie}
+  //@ts-ignore
     setMedia((m)=>[...m,newFavourite])
+    //@ts-ignore
    await axios.post(`${import.meta.env.VITE_BACKEND_APP_API_BASE_URL}/api/v1/media/mediaaction`,{
    movie,
    listType:"Favourite" 
@@ -123,7 +126,7 @@ const handleAddFavourite = async ()=>{
 }
 }
  async function handleWatchNow() {
-  
+  //@ts-ignore
     axios.post(`${import.meta.env.VITE_BACKEND_APP_API_BASE_URL}/api/v1/media/mediaaction`,{
       userId:UserInfo.id,
       movie,

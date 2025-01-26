@@ -15,6 +15,7 @@ export default function RequestActions({id, fromUsername}:{id:string, fromUserna
   async function handleRejection() {
     try {
       await axios.put(
+        //@ts-ignore
         `${import.meta.env.VITE_BACKEND_APP_API_BASE_URL}/api/v1/social/rejectrequest`,
         { from: id },
         {
@@ -43,6 +44,7 @@ export default function RequestActions({id, fromUsername}:{id:string, fromUserna
    socket.emit("accept-friend-request",acceptdata);
       const afterDeletion = requests.filter((req) => req.fromUsername !== fromUsername); // Fixed line
       await axios.put(
+        //@ts-ignore
         `${import.meta.env.VITE_BACKEND_APP_API_BASE_URL}/api/v1/social/rejectrequest`,
         { from: id },
         {

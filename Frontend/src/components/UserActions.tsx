@@ -7,7 +7,7 @@ import { LiaUserFriendsSolid } from "react-icons/lia";
 import Modal from "../ui/Modal";
 import Notifications from "./Notifications";
 import Actions from "./Actions";
-import ProfileActions from "./Profile/ProfileActions";
+// import ProfileActions from "./Profile/ProfileActions";
 
 
 
@@ -18,14 +18,14 @@ export default function UserActions() {
     <div>
         <Modal>
             <Modal.open opens="profile">
-              <div className="flex justify-center items-center gap-2"><CgProfile />
+              <Actions><div className="flex justify-center items-center gap-2"><CgProfile />
                     <span>Profile</span>
-               </div>
+               </div></Actions>
               
             </Modal.open>
             <Modal.window name="profile">
-               
-                    <ProfileActions />
+               <></>
+                    {/* <ProfileActions /> */}
                    
             </Modal.window>
         </Modal>

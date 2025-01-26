@@ -19,7 +19,7 @@ export default function MsgAction({ chatId, message,displayname }: { chatId: num
   const ref = useOutsideClick(handleOutsideClick)
   const { roomId } = useParams()
   useEffect(()=>{
-    socket.on("receive-deleteMessage",(id)=>{
+    socket.on("receive-deleteMessage",(id:number)=>{
       const newMessage = messages.filter((msg)=>msg.id !== id)
       setMessages(newMessage)
     })
