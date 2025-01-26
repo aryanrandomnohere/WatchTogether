@@ -11,7 +11,13 @@ import FriendActionEvents from './Events/FriendActionsEvent';
 import { log } from 'console';
 const app = express();
 const prisma = new PrismaClient();
-app.use(cors());
+const cors = require('cors');
+app.use(cors({
+  origin: 'https://d2mpu663tz24o9.cloudfront.net', // Allow this origin
+  methods: ['GET', 'POST', 'PUT', 'DELETE'],       // Allow specific HTTP methods
+  credentials: true,                              // If sending cookies or authentication headers
+}));
+
 app.use(express.json())
 
 app.use('/api/v1',mainRouter);
