@@ -17,9 +17,6 @@ import axios from "axios";
 import { isAuthenticatedState } from "../State/authState";
 import ChatWindow from "../components/ChatWindow";
 import { lefSideIsOpen } from "../State/leftRoomSpace";
-import Actions from "../components/Actions";
-import { CgProfile } from "react-icons/cg";
-import ProfileActions from "../components/Profile/ProfileActions";
 import { FcInvite } from "react-icons/fc";
 import { TbArrowBarToLeft, TbArrowBarToRight } from "react-icons/tb";
 import getSocket from "../services/getSocket";
@@ -97,12 +94,16 @@ const { roomId } = useParams();
     useEffect(() => {
         if (!roomId || !isAuthenticated) return;
         
-        function fetchRoomName() {
-         axios.get(`${import.meta.env.VITE_BACKEND_APP_API_BASE_URL}/room/getRoomName/${roomId}`,{
+        async function fetchRoomName() {
+          //@ts-ignore
+         const response = await axios.get(`${import.meta.env.VITE_BACKEND_APP_API_BASE_URL}/api/v1/room/getRoomName/${roomId}`,{
           headers:{ 
             authorization:localStorage.getItem("token")
           }
          })
+         setRoomName(`${response.data.roomDetails.displayname}'s Room`);
+
+         
         }
         fetchRoomName()
 
@@ -114,7 +115,7 @@ const { roomId } = useParams();
                 authorization: localStorage.getItem("token")
             }
         })
-        console.log(response.data.oldMessages);
+       
         
         setMessages(response.data.oldMessages)
         const { playingId: id, playingTitle: title, playingType: type, playingAnimeId: animeId } = response.data.playing;
@@ -202,7 +203,7 @@ const { roomId } = useParams();
 // };
 
 async function handleAddPoll(message:Message){
-  console.log(message);
+
   
 const newMessages = messages.map((msg)=>{
   if(msg.id === message.id)
@@ -277,6 +278,7 @@ setMessages(newMessages)
     </Modal>
 </div>
 </div>
+<div className="text-xl font-bold ">{roomName}</div>
 <div className="text-lg py-1 px-3 bg-yellow-600 text-white flex justify-between items-center hover:cursor-pointer gap-2 "><FcInvite className="text-xl" />Invite Link</div>
 
 {/* <div>
@@ -342,7 +344,7 @@ setMessages(newMessages)
 function ChatNav() {
     const [connectionCount, setConnectionCount] = useState(0);
     useEffect(() => {
-        socket.on("room-user-count", (data) => {
+        socket.on("room-user-count", (data:number) => {
             setConnectionCount(data);
         });
 

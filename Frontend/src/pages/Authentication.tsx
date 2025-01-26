@@ -1,9 +1,10 @@
 import { FormEvent, useState } from "react";
+//@ts-ignore
 import n from "./n.png";
 import axios from "axios";
 import toast from "react-hot-toast";
 import useAuth from "../hooks/useAuth";
-import Turnstile, { useTurnstile } from "react-turnstile";
+import Turnstile from "react-turnstile";
 interface AuthenticationProps {
   close?: () => void;
 }
@@ -30,7 +31,9 @@ export default function Authentication({ close }: AuthenticationProps) {
     event.preventDefault(); 
 setIsLoading(true);
     const url = isSignup
+    //@ts-ignore
       ? `${import.meta.env.VITE_BACKEND_APP_API_BASE_URL}/api/v1/Auth/signup`
+      //@ts-ignore
       : `${import.meta.env.VITE_BACKEND_APP_API_BASE_URL}/api/v1/Auth/login`;
       
     const data = isSignup
@@ -143,7 +146,7 @@ setIsLoading(true);
           </div><div className="">
   <Turnstile
     sitekey="0x4AAAAAAA47fgDHD7J2vdoc"
-    onVerify={(token) => setCaptchaToken(token)}
+    onVerify={(token:string) => setCaptchaToken(token)}
     className="w-full"
   />
 </div>

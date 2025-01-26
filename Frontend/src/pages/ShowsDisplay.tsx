@@ -53,7 +53,7 @@ export default function ShowsDisplay() {
         //   }
         // );
         const response = await axios.get(`https://api.themoviedb.org/3/search/multi?query=${id}&include_adult=true&language=en-US&page=1`,options)
-        console.log(response.data.results);
+        
         setMedia(response.data.results);
       } catch (error) {
         console.error("Error fetching data:", error);

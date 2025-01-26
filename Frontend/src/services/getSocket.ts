@@ -7,6 +7,7 @@ export default function getSocket() {
     //@ts-ignore
   if (!socketInstance) {
     // Create a new Socket.IO instance if not already created
+    //@ts-ignore
     socketInstance = io(`${import.meta.env.VITE_BACKEND_APP_API_BASE_URL}`, {
       transports: ["websocket"], // Optional, use WebSocket as the transport method
       autoConnect: false, // Optional: Disable auto connection
@@ -14,6 +15,7 @@ export default function getSocket() {
 
     // Add event listeners to the socket instance
     socketInstance.on("connect", () => {
+      //@ts-ignore
       console.log("Socket.IO connected", socketInstance.id);
     });
 

@@ -12,6 +12,8 @@ interface mData {
   first_air_date: string;
   genre_ids: number[] | genreId[];
   id: number;
+  season?:number;
+  episode?:number;
   media_type?: string;
   name?: string;
   origin_country?: string[] | originalCountry[];
@@ -55,11 +57,13 @@ export default function ShowsList({shows, title}:{shows: mediaData[] | mData[] |
   <div className="flex items-center justify-start overflow-x-auto sm:overflow-x-visible overflow-y-hidden mb-3 h-68 sm:h-80 space-x-3 scrollbar-none">
     {shows &&
       shows.map((item) => (
+        //@ts-ignore
         <Show key={item?.movie?.id ?? item?.id} item={item?.movie || item} onClick={() => handleClick(item?.movie || item)}>
           <Modal>
             <Modal.open opens="Showinfo">
               <button
                 className="absolute bottom-1/2 left-1/2 transform -translate-x-1/2 text-white py-1 px-4 rounded opacity-0 transition-opacity duration-300 group-hover:opacity-100"
+              //@ts-ignore
                 onClick={() => handleClick(item?.movie || item)}
               >
                 <RiInformation2Fill className="text-5xl text-yellow-400 opacity-80" />

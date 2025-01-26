@@ -34,6 +34,7 @@ export default function EpisodeBox({ episodes }: { episodes: EpisodeType[] }) {
         console.log("Token:", token);
         
         const response = await axios.put(
+            //@ts-ignore
             `${import.meta.env.VITE_BACKEND_APP_API_BASE_URL}/api/v1/media/setmedia`,
             {
                 episode: episode.episode_number,

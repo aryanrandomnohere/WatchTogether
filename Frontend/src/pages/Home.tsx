@@ -47,9 +47,11 @@ const isAuthenticated = useRecoilValue(isAuthenticatedState);
   // const lastWatched: mData[] | undefined  = recentlywatched?.map((item)=> item.movie);
   
 useEffect(() => {
+  if(!isAuthenticated) return
   const fetchData = async () => {
     try {
       // Fetching media data
+      //@ts-ignore
       const mediaResponse = await axios.get(`${import.meta.env.VITE_BACKEND_APP_API_BASE_URL}/api/v1/media/allmedia`, {
         headers: { authorization: localStorage.getItem("token") },
       });
@@ -81,6 +83,8 @@ useEffect(() => {
   fetchData();
 }, [setAllMedia]);
 
+if(!isAuthenticated) return
+
   return  <div className="flex flex-col  placeholder:bg-gray-900 h-screen overflow-y-auto scrollbar-none   pl-2 w-full ">
      <div className="sm:mt-14 mt-28"></div>
      <Recommendation/>
@@ -92,9 +96,8 @@ useEffect(() => {
               <ShowsList title="Recently Watched" shows={recentlywatched?.slice(0,9)}  /></div>
               
               {favourites && favourites?.length > 0 && <div className="h-screen flex flex-col  pl-2 w-full ">
+           
               <ShowsList title="Favourites" shows={favourites?.slice(0,9)}  /></div> }
-
-  
     </div>
   
 }

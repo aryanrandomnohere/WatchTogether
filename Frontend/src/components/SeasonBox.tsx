@@ -24,6 +24,7 @@ useEffect( ()=>{
   async function getSeriesDetails() {
     try {
       setIsLoading(true);
+      //@ts-ignore
       const response = await fetch(API_URL.replace("{tv_id}", tvId.toString()), {
         headers: {
           Authorization: `Bearer ${TOKEN}`,

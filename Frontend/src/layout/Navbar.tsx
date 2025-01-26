@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
+//@ts-ignore
 import n from "./n.png";
 import Button from "../ui/Button";
 import { useRecoilState, useRecoilValue, useSetRecoilState } from "recoil";
@@ -42,6 +43,7 @@ export default function Navbar() {
 
 
     async function loadRequests() {
+      //@ts-ignore
       const response =   await axios.get(`${import.meta.env.VITE_BACKEND_APP_API_BASE_URL}/api/v1/social/loadrequests`, {
         headers: {
           authorization: localStorage.getItem("token"),
@@ -52,6 +54,7 @@ export default function Navbar() {
     loadRequests();
 
         async function loadFriends(){
+          //@ts-ignore
       const response =   await axios.get(`${import.meta.env.VITE_BACKEND_APP_API_BASE_URL}/api/v1/social/friends`, {
           headers: {
             authorization: localStorage.getItem("token"),
@@ -64,6 +67,7 @@ export default function Navbar() {
  
           async function fetchUserData() {
           try {
+            //@ts-ignore
           const response = await axios.get(`${import.meta.env.VITE_BACKEND_APP_API_BASE_URL}/api/v1/user/getuser`, {
             headers: {
               authorization: localStorage.getItem("token") || ""

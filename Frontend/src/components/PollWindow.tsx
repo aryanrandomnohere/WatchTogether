@@ -5,7 +5,6 @@ import { toast } from "react-hot-toast";
 import {  LuMinusCircle, LuPlusCircle } from "react-icons/lu";
 import { BsSendFill } from "react-icons/bs";
 import { useState } from "react";
-import { io } from "socket.io-client";
 import { IoArrowBackCircleSharp } from "react-icons/io5";
 import { chatType } from "../State/chatWindowState";
 import getSocket from "../services/getSocket";

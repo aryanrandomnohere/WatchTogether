@@ -114,7 +114,7 @@ try{const roomId:string = req.params.roomId
   },
 select:{
  username:true,
- display:true, 
+ displayname:true, 
 }})
  res.status(200).json({
   roomDetails
@@ -122,7 +122,7 @@ select:{
 
 }catch(error){
   res.status(400).json({
-    msg:"Either you are not loogedin or internal server error"
+    msg:"Either you are not looged in or internal server error"
   })
 }
 
