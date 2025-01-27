@@ -83,7 +83,9 @@ useEffect(() => {
   fetchData();
 }, [setAllMedia]);
 
-if(!isAuthenticated) return
+if(!isAuthenticated) return <div className="flex h-screen w-screen justify-center items-center">
+  Hello World
+</div>
 
   return  <div className="flex flex-col  placeholder:bg-gray-900 h-screen overflow-y-auto scrollbar-none   pl-2 w-full ">
      <div className="sm:mt-14 mt-28"></div>

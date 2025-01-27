@@ -84,7 +84,7 @@ export default function Room() {
     // const ChatType = useRecoilState(chatType) 
     const Info = useRecoilValue(userInfo)
 const { roomId } = useParams();
-    const setWasPlaying = useSetRecoilState(wasPlaying);
+   
     const isPlaying: isPlayingType = 
     playing ?? 
     wasplaying ?? 
@@ -107,22 +107,6 @@ const { roomId } = useParams();
         }
         fetchRoomName()
 
-        const handleLoadState = async () => {   
-          //@ts-ignore
-            const response = await axios.get(`${import.meta.env.VITE_BACKEND_APP_API_BASE_URL}/api/v1/room/loadstate/${roomId}`,
-        {
-            headers:{
-                authorization: localStorage.getItem("token")
-            }
-        })
-       
-        
-        setMessages(response.data.oldMessages)
-        const { playingId: id, playingTitle: title, playingType: type, playingAnimeId: animeId } = response.data.playing;
-        setWasPlaying({ id, title, type, animeId });
-        socket.emit("update-status",Info.id,`Watching ${title}`)
-        };
-        handleLoadState()
       
         const handleReceiveMessage = (newMessage: Message) => {
             setMessages((prevMessages) => [...prevMessages, newMessage]);

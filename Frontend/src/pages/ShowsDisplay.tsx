@@ -11,9 +11,12 @@ const options = {
   method: 'GET',
   headers: {
     accept: 'application/json',
-    Authorization: 'Bearer eyJhbGciOiJIUzI1NiJ9.eyJhdWQiOiI0NzI5NmMxNjY1NWI1NGE1MzU0MTA4NzIyZWVmMjFhNSIsIm5iZiI6MTczMDkyMTU4My44NzM5OTk4LCJzdWIiOiI2NzJiYzQ2ZjQzM2M4MmVhMjY3ZWExNWEiLCJzY29wZXMiOlsiYXBpX3JlYWQiXSwidmVyc2lvbiI6MX0.T9tYHXZGv0OisrEbFuVodRU7ppPEKLvLAsKMbmJElkA'
+    //@ts-ignore
+    Authorization: `${import.meta.env.VITE_TMDB_AUTHORIZATION_KEY}`
   }
 };
+console.log(`${import.meta.env.VITE_TMDB_AUTHORIZATION_KEY}`);
+
 interface mData {
   adult: boolean;
   backdrop_path: string;

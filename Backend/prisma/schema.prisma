@@ -78,6 +78,7 @@ model Chat {
   replies          Chat[]        @relation("MessageReplies")
 
   @@index([replyToId]) // Index for performance on replies
+  @@index([roomId])
 }
 
 model pollOptions {
@@ -97,6 +98,7 @@ model Vote {
   option    pollOptions @relation(fields: [optionId], references: [id])
   chatId    Int
   chat      Chat        @relation(fields: [chatId], references: [id], onDelete: Cascade)
+  @@index([chatId, userId, optionId])
   @@unique([optionId,userId])
 }
 
