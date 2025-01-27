@@ -43,7 +43,7 @@ jobs:
               sudo docker pull aryanrathore/watchalong_backend:latest
               sudo docker stop watchalong_backend || true
               sudo docker rm watchalong_backend || true
-              sudo docker run -d -e DATABASE_URL=${{secrets.DB_URL}} --name watchalong_backend -p 80:3000 aryanrathore/watchalong_backend:latest
+              sudo docker run -d -e DATABASE_URL=${{secrets.DB_URL}} --name watchalong_backend -p 3000:3000 aryanrathore/watchalong_backend:latest
 
      
         
