@@ -1,8 +1,8 @@
 
 import { FaLink } from "react-icons/fa";
 import ChatBox from './ChatBox'
-import { FormEvent, useState } from "react";
-import {  useRecoilState, useRecoilValue } from "recoil";
+import { FormEvent, useEffect, useState } from "react";
+import {  useRecoilState, useRecoilValue, useSetRecoilState } from "recoil";
 import { roomMessages } from "../State/roomChatState";
 import { useParams } from "react-router-dom";
 import { userInfo } from "../State/userState";
@@ -12,17 +12,40 @@ import { replyingToState } from "../State/replyingToState";
 import { GiCancel } from "react-icons/gi";
 import { useOutsideClick } from "../hooks/useOutsideClick";
 import getSocket from "../services/getSocket";
+import { wasPlaying } from "../State/playingOnState";
 
 const socket = getSocket();
 
 export default function FullChat() {
 const [chatOptionIsOpen, setChatOptionIsOpen] = useState<boolean>(false);
 const Info = useRecoilValue(userInfo)
-const messages = useRecoilValue(roomMessages);
+const [messages, setMessages]= useRecoilState(roomMessages);
 const { roomId } = useParams();
 const [newMessage, setNewMessage] = useState("");
 const [replyTo, setReplyTo] = useRecoilState(replyingToState)
 const ref = useOutsideClick(handleClearChatOption);
+const setWasPlaying = useSetRecoilState(wasPlaying);
+useEffect(()=>{
+    const handleLoadState = async () => {   
+        //@ts-ignore
+          const response = await axios.get(`${import.meta.env.VITE_BACKEND_APP_API_BASE_URL}/api/v1/room/loadstate/${roomId}`,
+      {
+          headers:{
+              authorization: localStorage.getItem("token")
+          }
+      })
+     
+      
+      setMessages(response.data.oldMessages)
+      const { playingId: id, playingTitle: title, playingType: type, playingAnimeId: animeId } = response.data.playing;
+      setWasPlaying({ id, title, type, animeId });
+      socket.emit("update-status",Info.id,`Watching ${title}`)
+      };
+      handleLoadState()
+    
+},[])
+
+
 function sendMessage(e: FormEvent) {                    
     
         e.preventDefault();
