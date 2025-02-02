@@ -3,6 +3,7 @@ enum ChatType {
     CHATS,
     POLL,
     VOTES,
+    PEOPLE,
 }
 export const chatType = atom<ChatType>({
     key:"chatType",

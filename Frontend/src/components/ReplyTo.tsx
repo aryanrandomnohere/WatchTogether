@@ -43,7 +43,10 @@ interface User {
 
 export default function ReplyTo({ replyTo }: { replyTo: Message }) {
   const Info = useRecoilValue(userInfo);
-
+  const isEmojiOnly = (message: string) => {
+    const emojiRegex = /^([\p{Emoji}\u200d\uFE0F]+)$/u;
+    return emojiRegex.test(message);
+};
   return (
     <div className="w-full min-w-full shadow-md">
       <div
@@ -63,7 +66,7 @@ export default function ReplyTo({ replyTo }: { replyTo: Message }) {
         <div className="flex flex-col rounded-md border-l border-l-yellow-600 bg-slate-700 w-full mb-0.5">
           <div className="px-2 py-1">
             <div className="text-yellow-600 text-sm">{replyTo.replyTo?.displayname}</div>
-            <div className={`text-xs ${replyTo.replyTo?.message ? "text-white" : "font-thin text-zinc-200"}`}>
+            <div className={` ${isEmojiOnly(replyTo.message) ? "text-4xl" : "text-sm"} ${replyTo.replyTo?.message ? "text-white" : "font-thin text-zinc-200"}`}>
               {replyTo.replyTo?.message || "Deleted for everyone"}
             </div>
           </div>

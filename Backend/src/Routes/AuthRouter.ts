@@ -73,14 +73,14 @@ const {email, password, token} = req.body;
     const credential = {email, password}
     const url = "https://challenges.cloudflare.com/turnstile/v0/siteverify"
     let formData= new FormData()
-    formData.append('secret',"0x4AAAAAAA47flf41n5hLQ3Uwq5ESAzDfHY")
+    formData.append('secret',"0x4AAAAAAA69LF326oAaGCpMKqc71-NhlN4")
     formData.append('response',token)
     const result = await fetch(url,{
      body:formData,
      method:"POST"
     })
     const validCaptcha = await result.json()
-    console.log(validCaptcha);
+
     
     if(!validCaptcha.success){
         res.status(400).json({msg:"Invalid reCaptcha request"})

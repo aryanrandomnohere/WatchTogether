@@ -144,8 +144,12 @@ const handleAddFavourite = async ()=>{
       const name = movie.name || movie.title || "";
       const formattedName = name.replace(/ /g, "-").replace(/:/g, "");
       const result = await axios.get(`/api/search?q=${formattedName}&page=1`);
+      console.log(result);
+      
       if (!result?.data[0]?.link_url) {
         alternateNames = await getNewNames();
+        console.log(alternateNames);
+        
       }
 
       const fullId = result.data[0]?.link_url || alternateNames;

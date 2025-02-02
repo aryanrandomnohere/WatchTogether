@@ -16,7 +16,7 @@ export default function getSocket() {
     // Add event listeners to the socket instance
     socketInstance.on("connect", () => {
       //@ts-ignore
-      console.log("Socket.IO connected", socketInstance.id);
+  
     });
 
     socketInstance.on("disconnect", () => {

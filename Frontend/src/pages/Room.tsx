@@ -4,14 +4,12 @@ import ChangeVideo from "../components/ChangeVideo";
 import { useRecoilState, useRecoilValue, useSetRecoilState} from "recoil";
 import { controlledPlaying, nowPlaying, wasPlaying } from "../State/playingOnState";
 import { userInfo } from "../State/userState";
-import { roomMessages } from "../State/roomChatState";
 import { useParams } from "react-router-dom";
 import Modal from "../ui/Modal";
 import { RiExchangeLine } from "react-icons/ri";
 import SeasonBox from "../components/SeasonBox";
 import { TfiViewList } from "react-icons/tfi";
 import { epState } from "../State/epState";
-
 import axios from "axios";  
 // import { chatType } from "../State/chatWindowState";
 import { isAuthenticatedState } from "../State/authState";
@@ -20,47 +18,11 @@ import { lefSideIsOpen } from "../State/leftRoomSpace";
 import { FcInvite } from "react-icons/fc";
 import { TbArrowBarToLeft, TbArrowBarToRight } from "react-icons/tb";
 import getSocket from "../services/getSocket";
+import ChatNav from "../components/Chatnav";
+import AlertBox from "../ui/AlertBox";
 //@ts-ignore
 const socket = getSocket();
 
-interface Message {
-    id: number;
-    type:string;
-    displayname: string;
-    edited: boolean;
-    multipleVotes: boolean;
-    time: string;
-    message: string;
-    options?: Option[]; 
-    replyTo?: Reply | null; 
-  }
-  
-  interface Option {
-    chatId:number;
-    option: string;
-    id: number;
-    votes?: Vote[]|null; 
-  }
-  
-  interface Vote {
-    chatId:number;
-    userId:string;
-    id: number;
-    optionId: number;
-    user: User;
-  }
-  
-  interface User {
-    id: string;
-    displayname: string;
-    username: string; 
-  }
-  
-  interface Reply {
-    id: number;
-    displayname: string;
-    message: string;
-  }
 
   interface isPlayingType {
       id:number | string;
@@ -74,7 +36,6 @@ export default function Room() {
     const setEp = useSetRecoilState(epState);
     const [playing, setPlaying] = useRecoilState(nowPlaying)
     const wasplaying= useRecoilValue(wasPlaying)
-    const [messages, setMessages] = useRecoilState(roomMessages);
     const [roomName, setRoomName] = useState("")
     // const [newMessage, setNewMessage] = useState("");
    const [isOpen, setIsOpen] = useRecoilState(lefSideIsOpen);
@@ -108,9 +69,7 @@ const { roomId } = useParams();
         fetchRoomName()
 
       
-        const handleReceiveMessage = (newMessage: Message) => {
-            setMessages((prevMessages) => [...prevMessages, newMessage]);
-        };
+       
     
         const handleReceivePlaying = (playing: { playingId: string, playingTitle: string, playingType: string, playingAnimeId:string }) => {
             
@@ -127,118 +86,23 @@ const { roomId } = useParams();
             }));
             
              }
+           
 
-//             const handleAddVote = ({
-//   chatId,
-//   optionId,
-//   id,
-//   userId,
-//   user,
-// }: {
-//   chatId: number;
-//   optionId: number;
-//   id: number;
-//   userId: string;
-//   user: User;
-// }) => {
-//   const updatedMessages = messages.map((message: Message) => {
-//     if (message.id === chatId) {
-//       const updatedOptions = message.options?.map((option) => {
-//         if (option.id === optionId) {
-//           // Remove any existing vote by the user and add the new vote
-//           const updatedVotes = (option.votes || []).filter((vote) => vote.userId !== userId);
-//           const finalVotes = [...updatedVotes, { id, userId, chatId, optionId, user }];
-//           return { ...option, votes: finalVotes };
-//         }
-//         return option;
-//       });
-//       return { ...message, options: updatedOptions };
-//     }
-//     return message;
-//   });
-
-//   setMessages(updatedMessages);
-// };
-
-// const handleDeleteVote = ({
-//   chatId,
-//   optionId,
-//   id,
-// }: {
-//   chatId: number;
-//   optionId: number;
-//   id: number;
-// }) => {
-//   const updatedMessages = messages.map((message: Message) => {
-//     if (message.id === chatId) {
-//       const updatedOptions = message.options?.map((option) => {
-//         if (option.id === optionId) {
-//           const updatedVotes = (option.votes || []).filter((vote) => vote.id !== id);
-//           return { ...option, votes: updatedVotes };
-//         }
-//         return option;
-//       });
-//       return { ...message, options: updatedOptions };
-//     }
-//     return message;
-//   });
-
-//   setMessages(updatedMessages);
-// };
-
-async function handleAddPoll(message:Message){
-
-  
-const newMessages = messages.map((msg)=>{
-  if(msg.id === message.id)
-  {
-   return message
-  }
-  return msg
-})
-setMessages(newMessages)
-}              
-
-        socket.emit("join-room", roomId);
+        socket.emit("join-room", roomId, {displayname:Info.displayname,username:Info.username,userId:Info.id,avatar:Info.avatar});
         socket.on("receive-ep",handleChangeEp)
-   
-        socket.on("receive-message", handleReceiveMessage);
         socket.on("receive-playing", handleReceivePlaying);
-        socket.on("new-poll", handleAddPoll)
        
         return () => {
             // setPlaying({id:"",animeId:"",title:"",type:""})
            if(isAuthenticated) socket.emit("update-status",Info.id,"ONLINE")
             socket.off("receive-ep",handleChangeEp)
-            socket.off("receive-message", handleReceiveMessage);
             socket.off("receive-playing", handleReceivePlaying);
             socket.emit("leave-room", roomId);
-            socket.off("new-poll", handleAddPoll);
         };
     }, [roomId,Info]); 
     
  
     
-    // function sendMessage(e: FormEvent) {
-    
-    //     e.preventDefault();
-        
-    //     const currentTime = new Date().toLocaleTimeString([], {
-    //         hour: '2-digit',
-    //         minute: '2-digit'
-    //     });
-    
-    //     socket.emit("send-message", {
-    //         displayname:Info.username,
-    //         type:"normal",
-    //         time: currentTime,
-    //         message: newMessage,
-    //         roomId: roomId
-    //     });
-    
-    //     setNewMessage("");
-    // }
-
     
 
     return (
@@ -263,26 +127,7 @@ setMessages(newMessages)
 </div>
 </div>
 <div className="text-xl font-bold ">{roomName}</div>
-<div className="text-lg py-1 px-3 bg-yellow-600 text-white flex justify-between items-center hover:cursor-pointer gap-2 "><FcInvite className="text-xl" />Invite Link</div>
-
-{/* <div>
-    <Modal>
-        <Modal.open opens="profile">
-          <div className="flex justify-center items-center gap-2"><CgProfile />
-                <span>Profile</span>
-           </div>
-          
-        </Modal.open>
-        <Modal.window name="profile">
-           
-                <ProfileActions />
-               
-        </Modal.window>
-    </Modal>
-</div> */}
-
-           
-            
+<AlertBox><AlertBox.open opens="inviteLink"><div className="text-lg py-1 px-3 bg-yellow-600 text-white flex justify-between items-center hover:cursor-pointer gap-2 "><FcInvite className="text-xl" />Invite Link</div></AlertBox.open><AlertBox.window name="inviteLink"><div className="h-44 px-16 py-10">Copy your invite link and share it to your friends to watch togethre</div></AlertBox.window></AlertBox>
             </div>
 
             <div className={`flex flex-col w-full md:grid ${
@@ -325,26 +170,3 @@ setMessages(newMessages)
 }
 
 
-function ChatNav() {
-    const [connectionCount, setConnectionCount] = useState(0);
-    useEffect(() => {
-        socket.on("room-user-count", (data:number) => {
-            setConnectionCount(data);
-        });
-
-        return () => {
-            socket.off("room-user-count");}
-}, []);
-
-    return (
-        <div className="flex bg-slate-950 rounded-s-md text-yellow-600 justify-center gap-32  py-2  sm:py-2 px-5 md:text-md">
-            <h1 className="hover:cursor-pointer" >Chat</h1>
-            <div className="flex gap-2">
-            <div className="rounded-full px-2 text-white bg-yellow-600">{connectionCount}</div>
-                <h1 className="hover:cursor-pointer">People</h1>
-                
-            </div>
-          
-        </div>
-    );
-}

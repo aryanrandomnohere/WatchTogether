@@ -13,6 +13,51 @@ import { GiCancel } from "react-icons/gi";
 import { useOutsideClick } from "../hooks/useOutsideClick";
 import getSocket from "../services/getSocket";
 import { wasPlaying } from "../State/playingOnState";
+import axios from "axios";
+import toast from "react-hot-toast";
+
+
+interface Message {
+    id: number;
+    type:string;
+    displayname: string;
+    edited: boolean;
+    multipleVotes: boolean;
+    time: string;
+    message: string;
+    options?: Option[]; 
+    replyTo?: Reply | null; 
+  }
+  
+  interface Option {
+    chatId:number;
+    option: string; 
+    id: number;
+    votes?: Vote[]|null; 
+  }
+  
+  interface Vote {
+    chatId:number;
+    userId:string;
+    id: number;
+    optionId: number;
+    user: User;
+  }
+  
+  interface User {
+    id: string;
+    displayname: string;
+    username: string; 
+  }
+  
+  interface Reply {
+    id: number;
+    displayname: string;
+    message: string;
+  }
+
+
+
 
 const socket = getSocket();
 
@@ -25,31 +70,57 @@ const [newMessage, setNewMessage] = useState("");
 const [replyTo, setReplyTo] = useRecoilState(replyingToState)
 const ref = useOutsideClick(handleClearChatOption);
 const setWasPlaying = useSetRecoilState(wasPlaying);
-useEffect(()=>{
-    const handleLoadState = async () => {   
-        //@ts-ignore
-          const response = await axios.get(`${import.meta.env.VITE_BACKEND_APP_API_BASE_URL}/api/v1/room/loadstate/${roomId}`,
-      {
-          headers:{
-              authorization: localStorage.getItem("token")
-          }
-      })
-     
-      
-      setMessages(response.data.oldMessages)
-      const { playingId: id, playingTitle: title, playingType: type, playingAnimeId: animeId } = response.data.playing;
-      setWasPlaying({ id, title, type, animeId });
-      socket.emit("update-status",Info.id,`Watching ${title}`)
-      };
-      handleLoadState()
-    
-},[])
+const handleLoadState = async () => {
+  try {
+    const response = await axios.get(`${import.meta.env.VITE_BACKEND_APP_API_BASE_URL}/api/v1/room/loadstate/${roomId}`, {
+      headers: { authorization: localStorage.getItem("token") },
+    });
+
+    setMessages(response.data.oldMessages); // State updates are async
+
+    const { playingId: id, playingTitle: title, playingType: type, playingAnimeId: animeId } = response.data.playing;
+    setWasPlaying({ id, title, type, animeId });
+
+    socket.emit("update-status", Info.id, `Watching ${title}`);
+  } catch (error) {
+    console.error("Error loading state:", error);
+  }
+};
+
+// Message & Poll Handlers
+const handleReceiveMessage = (newMessage: Message) => {
+  setMessages((prevMessages) => [...prevMessages, newMessage]); // Function-based update
+};
+
+const handleAddPoll = (newPoll: Message) => {
+  setMessages((prevMessages) =>
+    prevMessages.map((msg) => (msg.id === newPoll.id ? newPoll : msg))
+  );
+};
+
+// Fetch initial data only once
+useEffect(() => {
+  handleLoadState();
+}, []);
+
+// Handle socket events (runs only once)
+useEffect(() => {
+  socket.on("receive-message", handleReceiveMessage);
+  socket.on("new-poll", handleAddPoll);
+
+  return () => {
+    socket.off("receive-message", handleReceiveMessage);
+    socket.off("new-poll", handleAddPoll);
+  };
+}, []); // Removed `messages` dependency
 
 
 function sendMessage(e: FormEvent) {                    
-    
         e.preventDefault();
-        
+        if(!newMessage){ 
+          toast.error("Empty Input Box")
+          return
+          }
         const currentTime = new Date().toLocaleTimeString([], {
             hour: '2-digit',
             minute: '2-digit'
@@ -107,7 +178,7 @@ function sendMessage(e: FormEvent) {
                                 </button>
                                 
                             </form>
-                            {chatOptionIsOpen && <div className="absolute right-52 sm:right-60 bottom-10"><ChatAction/></div>}
+                            {chatOptionIsOpen && <div className="absolute right-52 sm:right-64 bottom-12"><ChatAction/></div>}
                         </div></div>
   )
 }

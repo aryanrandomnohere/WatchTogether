@@ -15,8 +15,6 @@ const console_1 = require("console");
 const prisma = new client_1.PrismaClient();
 function videoEvents(io, socket) {
     socket.on("change-video", (_a) => __awaiter(this, [_a], void 0, function* ({ playing, roomId }) {
-        console.log(playing);
-        (0, console_1.log)(roomId);
         try {
             const newPlaying = yield prisma.room.update({
                 where: { userId: roomId },
@@ -33,7 +31,6 @@ function videoEvents(io, socket) {
                     playingAnimeId: true,
                 }
             });
-            console.log(newPlaying);
             io.to(roomId).emit("receive-playing", newPlaying);
         }
         catch (error) {
@@ -85,7 +82,6 @@ function videoEvents(io, socket) {
                 currentTime: true
             }
         });
-        (0, console_1.log)(`Sending updated time ${timeState.currentTime}`);
         const playerRoom = roomId + "'s Player";
         io.to(playerRoom).emit("receiveSeek", { currentTime: timeState.currentTime });
     }));

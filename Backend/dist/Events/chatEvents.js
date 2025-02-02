@@ -53,16 +53,6 @@ function chatEvents(io, socket) {
         },
     };
     socket.on("send-message", (_a) => __awaiter(this, [_a], void 0, function* ({ type, time, message, options, roomId, multipleVotes = false, replyTo, displayname, }) {
-        (0, console_1.log)({
-            type,
-            time,
-            message,
-            options,
-            roomId,
-            multipleVotes,
-            replyTo,
-            displayname,
-        });
         try {
             if (type === "normal") {
                 const newMessage = yield prisma.chat.create({
@@ -257,7 +247,6 @@ function chatEvents(io, socket) {
         }
     }));
     socket.on("deleteMessage", (_a) => __awaiter(this, [_a], void 0, function* ({ roomId, chatId }) {
-        (0, console_1.log)(roomId, chatId);
         try {
             const deletedMessage = yield prisma.chat.delete({
                 where: {

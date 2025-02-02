@@ -6,8 +6,6 @@ const prisma = new PrismaClient();
 
 export default function videoEvents(io:Server, socket:Socket) {
     socket.on("change-video", async({playing,roomId}:{playing:{id:string, title:string, type:string, animeId?:string},roomId:string})=>{
-     console.log(playing);
-     log(roomId)
        try{ 
         const newPlaying = await prisma.room.update({
             where:{userId:roomId},
@@ -24,7 +22,6 @@ export default function videoEvents(io:Server, socket:Socket) {
                 playingAnimeId:true,
             }
         })
-        console.log(newPlaying);
         
     io.to(roomId).emit("receive-playing", newPlaying)
     }catch(error){
@@ -79,7 +76,6 @@ export default function videoEvents(io:Server, socket:Socket) {
             currentTime:true
         }
      })
-     log(`Sending updated time ${timeState.currentTime}`)
     const playerRoom = roomId+"'s Player"
         io.to(playerRoom).emit("receiveSeek",{currentTime:timeState.currentTime})
     })

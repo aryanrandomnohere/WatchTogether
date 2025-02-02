@@ -14,7 +14,6 @@ function AuthMiddleware(req: Request, res: Response, next: NextFunction){
 
     const data = verify(jwt, JWT_SECRET);
    
-    console.log(data);
     //@ts-ignore
     req.userId = data.userId;
     next(); // Move to the next middleware or route handler
