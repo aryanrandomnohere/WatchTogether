@@ -20,7 +20,7 @@ export default function Series({id ,type,title, animeId="" }: {id: number | stri
     const [hasAccess,setHasAccess] = useState(false);
   const Info = useRecoilValue(userInfo)    
     const {roomId} = useParams()
-console.log(isPlay,title);
+
 
 
 

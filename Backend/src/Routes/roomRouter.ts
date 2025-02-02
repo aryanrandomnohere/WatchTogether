@@ -18,7 +18,7 @@ roomRouter.get("/loadstate/:roomId",async (req:Request,res:Response)=>{
     const Messages = await prisma.chat.findMany({
                 where: { roomId },
                 orderBy: { createdAt: "desc" },
-                take: 30,
+                take: 15,
                 select: {
                   id: true,
                   type:true,

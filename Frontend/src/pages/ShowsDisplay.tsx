@@ -15,10 +15,9 @@ const options = {
     Authorization: `${import.meta.env.VITE_TMDB_AUTHORIZATION_KEY}`
   }
 };
-console.log(`${import.meta.env.VITE_TMDB_AUTHORIZATION_KEY}`);
 
 interface mData {
-  adult: boolean;
+  adult: boolean; 
   backdrop_path: string;
   first_air_date: string;
   genre_ids: number[];

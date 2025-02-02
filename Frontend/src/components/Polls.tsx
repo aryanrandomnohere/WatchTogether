@@ -1,8 +1,9 @@
-import { useRecoilValue } from "recoil";
+import {  useRecoilValue, useSetRecoilState } from "recoil";
 import { userInfo } from "../State/userState";
 import MsgAction from "./MsgAction";
 import Option from "./Option";
 import { TiTick } from "react-icons/ti";
+import { chatType } from "../State/chatWindowState";
 
 interface Message {
   id: number;
@@ -41,10 +42,16 @@ interface User {
     displayname: string;
     username: string; 
   }
+  enum ChatType {
+    CHATS,
+    POLL,
+    VOTES,
+    PEOPLE
+}
 
 export default function Polls({poll}:{poll:Message}) {
     const Info  = useRecoilValue(userInfo)
-  
+   const setChatType = useSetRecoilState(chatType)
   const totalVotes = poll.options?.reduce((ac,op)=>{
     return ac += op?.votes?.length || 0;
   },0) || 0;
@@ -54,7 +61,7 @@ export default function Polls({poll}:{poll:Message}) {
     {poll.multipleVotes ? <div className="flex items-center text-xs  mt-1"><TiTick className="rounded-full text-white bg-yellow-600"/><TiTick className="rounded-full text-white bg-yellow-600 mr-1" /> Select one or more</div>: <div className="text-xs flex mt-1 items-center "><TiTick className="rounded-full text-white bg-yellow-600 mr-1" />Select one</div>}
     <div className="mt-2">{poll.options.map((option)=>(<Option key={option.id} option={option} totalVotes={totalVotes}/>))}</div>
     <div className="text-xs flex justify-end mt-1">{poll.time}</div>
-    <div className="flex w-full justify-center pt-2 border-t border-t-gray-400/30 mt-1 font-bold hover:cursor-pointer">View Votes</div>
+    <div className="flex w-full justify-center pt-2 border-t border-t-gray-400/30 mt-1 font-bold hover:cursor-pointer hover:text-yellow-600" onClick={()=>setChatType(ChatType.VOTES)}>View Votes</div>
     </div>
   )
 }

@@ -43,7 +43,10 @@ export default function Option({ option,totalVotes }: { option: Option,totalVote
       console.error("roomId is undefined");
       return;
     }
-    socket.emit("new-vote", { chatId: option.chatId, optionId: option.id, userId: Info.id, roomId });
+console.log({ chatId: option.chatId, optionId: option.id, userId: Info.id, roomId });
+
+    socket.emit("new-vote", { chatId: option.chatId, optionId: option.id, userId: Info.id, roomId })
+    
   }
 
   

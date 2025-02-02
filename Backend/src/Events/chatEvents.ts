@@ -117,16 +117,7 @@ interface isPlayingType {
       message: string;
       roomId: string;
     }) => {
-        log({
-          type,
-          time,
-          message,
-          options,
-          roomId,
-          multipleVotes,
-          replyTo,
-          displayname,
-    })
+       
       try {
         if (type === "normal") {
           const newMessage = await prisma.chat.create({
@@ -246,7 +237,6 @@ interface isPlayingType {
             },
             select:messageSelect
           })
-        
             io.to(roomId).emit("new-poll", newPoll);
             return;
           }
@@ -297,7 +287,6 @@ interface isPlayingType {
             },
             select:messageSelect
           })
-        
             io.to(roomId).emit("new-poll", newPoll);
             return;
           }
@@ -333,7 +322,7 @@ interface isPlayingType {
           select:messageSelect
         })
 
-       
+     
           io.to(roomId).emit("new-poll", newPoll);
       } catch (error) {
         console.error("Error handling new vote:", error);
@@ -342,7 +331,7 @@ interface isPlayingType {
     }
   );
   socket.on("deleteMessage", async ({roomId, chatId}:{roomId:string,chatId:number})=>{
-    log(roomId,chatId)
+
   try {const deletedMessage = await prisma.chat.delete({
     where:{
       id:chatId

@@ -114,6 +114,7 @@ model UserMovieList {
   season   Int     @default(1)
   listType String
   createdAt  DateTime    @default(now())
+@@index([userId])
   @@unique([userId, Mid, listType])
 }
 

@@ -4,8 +4,9 @@
   "main": "index.js",
   "scripts": {
     "update": "npx prisma migrate dev && npx prisma generate && tsc -b && node dist/index.js",
-    "dev": "tsc -b",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "dev": "tsc -b && node dist/index.js",
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "dist":"tsc -b"
   },
   "author": "",
   "license": "ISC",

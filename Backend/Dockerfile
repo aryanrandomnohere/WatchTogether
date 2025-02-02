@@ -5,7 +5,7 @@ RUN npm install
 RUN npm rebuild bcrypt --build-from-source
 COPY . /app/backend/
 RUN npx prisma generate 
-RUN npm run dev 
+RUN npm run dist
 EXPOSE 3000
 CMD ["node", "dist/index.js"]
 
