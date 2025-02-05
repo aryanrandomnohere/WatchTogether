@@ -15,7 +15,6 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const client_1 = require("@prisma/client");
 const AuthMiddleware_1 = __importDefault(require("../AuthMiddleware"));
 const express_1 = __importDefault(require("express"));
-const console_1 = require("console");
 const prisma = new client_1.PrismaClient();
 const roomRouter = express_1.default.Router();
 roomRouter.use(AuthMiddleware_1.default);
@@ -91,7 +90,6 @@ roomRouter.get("/currentState/:roomId", (req, res) => __awaiter(void 0, void 0, 
     try {
         const userId = req.userId;
         const roomId = req.params.roomId;
-        (0, console_1.log)(roomId);
         const pastState = yield prisma.room.findFirst({
             where: {
                 userId: roomId

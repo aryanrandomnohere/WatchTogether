@@ -1,8 +1,6 @@
 import { PrismaClient } from "@prisma/client";
 import AuthMiddleware from "../AuthMiddleware"
 import express, { Request, Response } from "express";
-import { log } from "console";
-
 
 const prisma = new PrismaClient();
 const roomRouter = express.Router()
@@ -86,7 +84,7 @@ roomRouter.get("/loadstate/:roomId",async (req:Request,res:Response)=>{
 roomRouter.get("/currentState/:roomId",async (req:ExtendedRequest,res:Response)=>{
   try{const userId = req.userId;
    const roomId = req.params.roomId; 
-   log(roomId)
+
    const pastState = await prisma.room.findFirst({
           where:{
               userId:roomId

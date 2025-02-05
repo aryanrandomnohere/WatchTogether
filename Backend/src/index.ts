@@ -8,7 +8,6 @@ import videoEvents from './Events/videoEvents';
 import chatEvents from './Events/chatEvents';
 import userEvents from './Events/userEvents';
 import FriendActionEvents from './Events/FriendActionsEvent';
-import { log } from 'console';
 import p2pEvents from './Events/p2pEvents';
 interface peopleType {
   displayname: string;
@@ -40,7 +39,6 @@ const io = new Server(server, {
 io.on("connection", (socket) => {
   socket.on("join-room", async (roomId:string, userInfo:peopleType) => {
     socket.join(`${roomId}'s room`);
-log(userInfo)
     // Add the user to the room
     if (!rooms[roomId]) {
       rooms[roomId] = new Map();
@@ -49,7 +47,7 @@ log(userInfo)
     // Creates an array of users in a room
     const allUsers = Array.from(rooms[roomId].values())
     // Emit the user count for the room
-    log(allUsers)
+ 
     io.to(`${roomId}'s room`).emit("room-people-data", rooms[roomId].size,allUsers);
   });
   userEvents(io, socket);

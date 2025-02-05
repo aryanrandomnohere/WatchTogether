@@ -23,7 +23,6 @@ const videoEvents_1 = __importDefault(require("./Events/videoEvents"));
 const chatEvents_1 = __importDefault(require("./Events/chatEvents"));
 const userEvents_1 = __importDefault(require("./Events/userEvents"));
 const FriendActionsEvent_1 = __importDefault(require("./Events/FriendActionsEvent"));
-const console_1 = require("console");
 const p2pEvents_1 = __importDefault(require("./Events/p2pEvents"));
 const app = (0, express_1.default)();
 const prisma = new client_1.PrismaClient();
@@ -45,7 +44,6 @@ const io = new socket_io_1.Server(server, {
 io.on("connection", (socket) => {
     socket.on("join-room", (roomId, userInfo) => __awaiter(void 0, void 0, void 0, function* () {
         socket.join(`${roomId}'s room`);
-        (0, console_1.log)(userInfo);
         // Add the user to the room
         if (!exports.rooms[roomId]) {
             exports.rooms[roomId] = new Map();
@@ -54,7 +52,6 @@ io.on("connection", (socket) => {
         // Creates an array of users in a room
         const allUsers = Array.from(exports.rooms[roomId].values());
         // Emit the user count for the room
-        (0, console_1.log)(allUsers);
         io.to(`${roomId}'s room`).emit("room-people-data", exports.rooms[roomId].size, allUsers);
     }));
     (0, userEvents_1.default)(io, socket);

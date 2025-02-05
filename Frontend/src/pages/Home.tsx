@@ -92,7 +92,7 @@ if(!isAuthenticated) return <div className="flex h-screen w-screen justify-cente
      <Recommendation/>
     <div className="hidden"><SlideShow/></div>
      
-              <ShowsList title="Popular" shows={popular} />
+              { popular && <ShowsList title="Popular" shows={popular} />}
             
         <div className=" h-screen flex flex-col  pl-2 w-full ">
               <ShowsList title="Recently Watched" shows={recentlywatched?.slice(0,9)}  /></div>
