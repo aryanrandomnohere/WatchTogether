@@ -19,7 +19,7 @@ export default function SideBar() {
   return (
     <div className="flex flex-col h-screen w-full  justify-between">
   {/* Header with toggle button */}
-  <Link to={`/watch/${!Info.id ? "guest" : Info.id}`} className=" flex py-2 items-center max-w-[18.5rem] justify-between bg-transparent mx-3 p-2 hover:bg-yellow-600 hover:text-white border font-semibold rounded-full  text-yellow-600 hover:cursor-pointer  px-3 ">
+  <Link to={`/watch/${!Info.id ? "guest" : Info.id}`} className=" flex py-2 items-center max-w-[18.5rem] justify-between bg-transparent mx-3 p-2 hover:bg-yellow-600 hover:text-white border font-semibold text-yellow-600 hover:cursor-pointer  px-3 ">
    <div className=""> Go to your room</div><div><FaArrowsTurnRight /></div>
   </Link>
   <div onClick={() => setfOpen(!fOpen)} className="flex border-b border-b-yellow-600  hover:cursor-pointer justify-between mx-3 items-center rounded-md py-2 px-3 hover:bg-slate-950 hover:bg-opacity-40 mb-4 mt-5">

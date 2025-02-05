@@ -127,7 +127,7 @@ const { roomId } = useParams();
 </div>
 </div>
 <div className="text-xl font-bold ">{roomName}</div>
-<AlertBox><AlertBox.open opens="inviteLink"><div className="text-lg py-1 px-3 bg-yellow-600 text-white flex justify-between items-center hover:cursor-pointer gap-2 "><FcInvite className="text-xl" />Invite Link</div></AlertBox.open><AlertBox.window name="inviteLink"><div className="h-44 px-16 py-10">Copy your invite link and share it to your friends to watch togethre</div></AlertBox.window></AlertBox>
+<AlertBox><AlertBox.open opens="inviteLink"><div className="text-lg py-1 px-3 bg-yellow-600 text-white flex justify-between items-center hover:cursor-pointer gap-2 hover:bg-yellow-800 "><FcInvite className="md:text-xl" />Invite Link</div></AlertBox.open><AlertBox.window name="inviteLink"><div className="h-44 px-16 py-10">Copy your invite link and share it to your friends to watch togethre</div></AlertBox.window></AlertBox>
             </div>
 
             <div className={`flex flex-col w-full md:grid ${
@@ -139,7 +139,7 @@ const { roomId } = useParams();
   </div>
 
   {/* Middle Content */}
-  <div className={`flex w-full h-[43rem] pr-4  ${
+  <div className={`flex w-full md:h-[43rem] pr-4  ${
       isOpen && ["Series", "Anime","AnimeUrl"].includes(isPlaying.type) && chatIsOpen ? "md:col-span-2" : chatIsOpen  ? "md:col-span-3": isOpen ? "md:col-span-3":"md:col-span-4"
     }`}>
   <div
@@ -149,7 +149,7 @@ const { roomId } = useParams();
   > 
     <Series id={isPlaying.id} type={isPlaying.type} title={isPlaying.title} animeId={isPlaying.animeId} />
   </div>
-  <div className=" h-full flex gap-0  items-center"><div className="w-[1px] h-full bg-white flex items-center relative"><div className="hover:cursor-pointer " onClick={()=>setChatIsOpen(!chatIsOpen)}>{!chatIsOpen ?<TbArrowBarToLeft  className=" absolute top-1/2 -right-3 text-black font-extrabold bg-white rounded-full p-1 text-2xl"/>:<TbArrowBarToRight className=" absolute top-1/2 -right-3 text-black font-extrabold bg-white rounded-full p-1 text-2xl" />}</div></div> </div>
+  <div className="  h-full  gap-0 hidden md:block  items-center"><div className="w-[1px] h-full bg-white flex items-center relative"><div className="hover:cursor-pointer " onClick={()=>setChatIsOpen(!chatIsOpen)}>{!chatIsOpen ?<TbArrowBarToLeft  className=" absolute top-1/2 -right-3 text-black font-extrabold bg-white rounded-full p-1 text-2xl"/>:<TbArrowBarToRight className=" absolute top-1/2 -right-3 text-black font-extrabold bg-white rounded-full p-1 text-2xl" />}</div></div> </div>
 
   </div>
 

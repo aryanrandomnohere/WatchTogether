@@ -242,9 +242,9 @@ export default function Series({id ,type,title, animeId="" }: {id: number | stri
                         <source src={id.toString() } type="video/mp4" />
                         Your browser does not support the video tag.
                       </video>
-                      <div className="flex gap-2 text-base border sm:py-1 py-[0.5px] h-8 px-1 sm:mt-2.5 w-20 text-orange-600 border-orange-600 justify-center items-center">
+                      {/* <div className="flex gap-2 text-base border sm:py-1 py-[0.5px] h-8 px-1 sm:mt-2.5 w-20 text-orange-600 border-orange-600 justify-center items-center">
                         Live <CgMediaLive className="text-1xl" />
-                      </div>
+                      </div> */}
                     </div>
                   )}
                 </div>

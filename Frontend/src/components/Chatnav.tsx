@@ -22,7 +22,6 @@ export default function ChatNav() {
     const setRoomPeople = useSetRecoilState(people);
     useEffect(() => {
         socket.on("room-people-data", (data:number,allUser:peopleType[]) => {
-            console.log(allUser);
             
             setConnectionCount(data);
             setRoomPeople(allUser)
@@ -33,11 +32,11 @@ export default function ChatNav() {
 }, []);
 
     return (
-        <div className="flex bg-slate-950 rounded-s-md text-yellow-600 justify-center gap-32  py-2  sm:py-2 px-5 md:text-md">
+        <div  className="flex bg-slate-950 rounded-s-md text-yellow-600 justify-center gap-32  py-2  sm:py-2 px-5 md:text-md">
             <h1 className="hover:cursor-pointer" onClick={()=>setChatType(ChatType.CHATS)} >Chat</h1>
-            <div className="flex gap-2">
-            <div className="rounded-full px-2 text-white bg-yellow-600">{connectionCount}</div>
-                <h1 className="hover:cursor-pointer" onClick={()=>setChatType(ChatType.PEOPLE)} >People</h1>
+            <div onClick={()=>setChatType(ChatType.PEOPLE)}  className="flex gap-2 hover:cursor-pointer">
+            <div  className="rounded-full px-2 text-white bg-yellow-600 hover:cursor-pointer">{connectionCount}</div>
+                <h1 className="hover:cursor-pointer" >People</h1>
                 
             </div>
           
