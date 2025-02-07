@@ -72,6 +72,7 @@ const ref = useOutsideClick(handleClearChatOption);
 const setWasPlaying = useSetRecoilState(wasPlaying);
 const handleLoadState = async () => {
   try {
+    //@ts-ignore
     const response = await axios.get(`${import.meta.env.VITE_BACKEND_APP_API_BASE_URL}/api/v1/room/loadstate/${roomId}`, {
       headers: { authorization: localStorage.getItem("token") },
     });

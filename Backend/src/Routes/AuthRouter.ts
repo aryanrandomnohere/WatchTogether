@@ -5,6 +5,7 @@ import bcrypt from "bcrypt";
 import JWT_SECRET from "../JWT_SECRET";
 import zod from 'zod'
 import rateLimit from "express-rate-limit";
+import { log } from "console";
 
 const signUpSchema = zod.object({
     displayname: zod.string(),
@@ -71,21 +72,7 @@ authRouter.post("/signup", async (req: Request, res: Response) => {
 authRouter.post("/login", async (req: Request, res: Response) => {
 const {email, password, token} = req.body;
     const credential = {email, password}
-    const url = "https://challenges.cloudflare.com/turnstile/v0/siteverify"
-    let formData= new FormData()
-    formData.append('secret',"0x4AAAAAAA69LF326oAaGCpMKqc71-NhlN4")
-    formData.append('response',token)
-    const result = await fetch(url,{
-     body:formData,
-     method:"POST"
-    })
-    const validCaptcha = await result.json()
-
-    
-    if(!validCaptcha.success){
-        res.status(400).json({msg:"Invalid reCaptcha request"})
-        return 
-    }
+   log(token)
     const { success, data } = logInSchema.safeParse(credential);
     
     if (!success) return res.status(400).json({ msg: "Invalid Input" })

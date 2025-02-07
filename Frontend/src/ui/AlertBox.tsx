@@ -2,7 +2,6 @@ import { cloneElement, createContext, ReactNode, useContext, useState } from "re
 import { useOutsideClick } from "../hooks/useOutsideClick";
 import { createPortal } from "react-dom";
 import {motion} from "framer-motion"
-import { HiXMark } from "react-icons/hi2";
 interface AlertboxContextType {
 isOpen: string;
 close: ()=>void;
@@ -28,12 +27,14 @@ export default function AlertBox({children}:{children:ReactNode}) {
 }
 
 function Open({children, opens}:{children:ReactNode,opens:string}) {
+  //@ts-ignore
     const { open } = useAlertBox()
     const handleClick = ()=>open(opens)
 return cloneElement(children as React.ReactElement,{onClick:handleClick})
 }
 
 function Window({children, name }:{children:ReactNode, name:string}) {
+    //@ts-ignore
     const {isOpen, close} = useAlertBox()
     const ref = useOutsideClick(close);
     if(name !== isOpen) return null;

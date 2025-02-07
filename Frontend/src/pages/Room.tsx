@@ -18,6 +18,7 @@ import { lefSideIsOpen } from "../State/leftRoomSpace";
 import { FcInvite } from "react-icons/fc";
 import { TbArrowBarToLeft, TbArrowBarToRight } from "react-icons/tb";
 import getSocket from "../services/getSocket";
+//@ts-ignore
 import ChatNav from "../components/Chatnav";
 import AlertBox from "../ui/AlertBox";
 //@ts-ignore

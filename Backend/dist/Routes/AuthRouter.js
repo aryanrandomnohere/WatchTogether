@@ -19,6 +19,7 @@ const bcrypt_1 = __importDefault(require("bcrypt"));
 const JWT_SECRET_1 = __importDefault(require("../JWT_SECRET"));
 const zod_1 = __importDefault(require("zod"));
 const express_rate_limit_1 = __importDefault(require("express-rate-limit"));
+const console_1 = require("console");
 const signUpSchema = zod_1.default.object({
     displayname: zod_1.default.string(),
     username: zod_1.default.string(),
@@ -80,19 +81,7 @@ authRouter.post("/signup", (req, res) => __awaiter(void 0, void 0, void 0, funct
 authRouter.post("/login", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const { email, password, token } = req.body;
     const credential = { email, password };
-    const url = "https://challenges.cloudflare.com/turnstile/v0/siteverify";
-    let formData = new FormData();
-    formData.append('secret', "0x4AAAAAAA69LF326oAaGCpMKqc71-NhlN4");
-    formData.append('response', token);
-    const result = yield fetch(url, {
-        body: formData,
-        method: "POST"
-    });
-    const validCaptcha = yield result.json();
-    if (!validCaptcha.success) {
-        res.status(400).json({ msg: "Invalid reCaptcha request" });
-        return;
-    }
+    (0, console_1.log)(token);
     const { success, data } = logInSchema.safeParse(credential);
     if (!success)
         return res.status(400).json({ msg: "Invalid Input" });

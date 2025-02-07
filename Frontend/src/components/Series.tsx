@@ -1,7 +1,6 @@
 import { useRecoilValue } from "recoil";
 import { epState } from "../State/epState";
 import  { useEffect, useRef, useState } from 'react';
-import { CgMediaLive } from 'react-icons/cg';
 import { useParams } from 'react-router-dom';
 import { userInfo } from '../State/userState';
 import axios from "axios";
@@ -20,6 +19,7 @@ export default function Series({id ,type,title, animeId="" }: {id: number | stri
     const [hasAccess,setHasAccess] = useState(false);
   const Info = useRecoilValue(userInfo)    
     const {roomId} = useParams()
+console.log(title,isPlay);
 
 
 
