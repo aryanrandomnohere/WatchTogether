@@ -27,7 +27,6 @@ log("sending-iniated-offer",receiver)
 })
 
 socket.on("answer-created",(roomId:string,userId:string,sdp:any)=>{
-console.trace(senderId,userId);
 
 if(senderId == userId){ 
   console.log(senderId, userId);

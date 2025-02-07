@@ -21,7 +21,6 @@ function p2pEvents(io, socket) {
         }
     });
     socket.on("answer-created", (roomId, userId, sdp) => {
-        console.trace(senderId, userId);
         if (senderId == userId) {
             console.log(senderId, userId);
             return;

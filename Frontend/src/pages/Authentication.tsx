@@ -4,7 +4,6 @@ import n from "./n.png";
 import axios from "axios";
 import toast from "react-hot-toast";
 import useAuth from "../hooks/useAuth";
-import Turnstile from "react-turnstile";
 interface AuthenticationProps {
   close?: () => void;
 }
@@ -18,7 +17,7 @@ export default function Authentication({ close }: AuthenticationProps) {
   const [password, setPassword] = useState("");
   const [isLoading, setIsLoading] =useState<boolean>(false);
   const {login} = useAuth();
-  const [captchaToken, setCaptchaToken] = useState("")
+  const [captchaToken, setCaptchaToken] = useState("LogIn")
   
   const handleToggle = () => {
     setIsSignup((prev) => !prev);
@@ -144,11 +143,6 @@ setIsLoading(true);
               required
             />
           </div><div className="">
-  <Turnstile
-    sitekey="0x4AAAAAAA69LE59J1c69R4R"
-    onVerify={(token:string) => setCaptchaToken(token)}
-    className="w-full"
-  />
 </div>
 
           {/* Login/Signup Button */}
