@@ -17,6 +17,7 @@ export default function Authentication({ close }: AuthenticationProps) {
   const [password, setPassword] = useState("");
   const [isLoading, setIsLoading] =useState<boolean>(false);
   const {login} = useAuth();
+  //@ts-ignore
   const [captchaToken, setCaptchaToken] = useState("LogIn")
   
   const handleToggle = () => {
