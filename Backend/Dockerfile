@@ -9,3 +9,4 @@ RUN npm run dist
 EXPOSE 3000
 CMD ["node", "dist/index.js"]
 
+ 

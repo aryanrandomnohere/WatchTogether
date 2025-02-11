@@ -172,9 +172,9 @@ export default function Peoples() {
             <div className="mx-3 mb-5 hover:cursor-pointer max-w-72" onClick={goBack}><IoArrowBackCircleSharp className="text-3xl hover:text-yellow-600" /></div>
            <div className="flex justify-between mx-3 h-full"> {members && members.map((p)=><div key={p.userId} className=" w-1/2 border text-center h-fit">{p.displayname}</div>)}</div>
            <div className="flex flex-wrap w-full h-full ">
-            <video ref={videoref} src="" className="" autoPlay playsInline></video>
-            <video ref={localVideoRef} className="" src="" autoPlay playsInline></video>
-          <video ref={videoRef2 } src="" className="" autoPlay playsInline></video>
+            <video ref={videoref} src="" className="w-1/2" autoPlay playsInline></video>
+            <video ref={localVideoRef} className="w-1/2" src="" autoPlay playsInline></video>
+          <video ref={videoRef2 } src="" className="w-1/2" autoPlay playsInline></video>
           </div>
           { isReceiver == null ? <div  className="hover:cursor-pointer w-full text-center hover:bg-slate-800 py-1 self-center text-white bg-slate-600 " onClick={handleCall}>Start Call</div>: isReceiver ? <div className="hover:cursor-pointer w-full text-center self-center hover:bg-red-800 py-1 text-white bg-red-600 ">Leave</div>:<div className="hover:cursor-pointer self-center  w-full text-center hover:bg-red-800 py-1 text-white  bg-red-600">End Call</div>}
           
