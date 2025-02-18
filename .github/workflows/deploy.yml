@@ -33,9 +33,9 @@ jobs:
             platforms: linux/amd64,linux/arm64/v8
             tags: aryanrathore/watchalong_backend:latest
 
-       - name: Build and Push Multi-Platform Docker Image
-         uses: docker/build-push-action@v2
-         with:
+      - name: Build and Push Multi-Platform Docker Image
+        uses: docker/build-push-action@v2
+        with:
             context: ./Frontend
             file: ./Frontend/Dockerfile
             push: true
@@ -52,6 +52,8 @@ jobs:
               sudo docker pull aryanrathore/watchalong_backend:latest
               sudo docker stop watchalong_backend || true
               sudo docker rm watchalong_backend || true
+              sudo docker stop watchalong_frontend || true
+              sudo docker rm watchalong_frontend|| true
               sudo docker run -d -e DATABASE_URL=${{secrets.DB_URL}} --name watchalong_backend -p 3000:3000 aryanrathore/watchalong_backend:latest
               sudo docker run -d -e VITE_BACKEND_APP_API_BASE_URL="http://${{secrets.SERVER_IP}}:3000" -e VITE_TMDB_AUTHORIZATION_KEY=${{secrets.TMDB_AUTH_API}} --name watchalong_frontend -p 80:80 aryanrathore/watchalong_frontend:latest
 
