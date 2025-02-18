@@ -15,7 +15,7 @@ export default function UserDisplay() {
     const ref = useOutsideClick(handleCloseModal)
     return (
         <div 
-            onClick={() => setIsOpen(!isOpen)} 
+            onClick={() => setIsOpen(true)} 
             className="ml-2 relative border border-slate-700 shadow-black shadow-md flex gap-2 items-center justify-center py-2 px-3  mb-14 mt-auto rounded-lg hover:bg-slate-950 hover:bg-opacity-40 hover:cursor-pointer"
         >
             <Avatar r="user" name={user.username} />

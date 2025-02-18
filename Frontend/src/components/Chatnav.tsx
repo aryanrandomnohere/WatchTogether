@@ -15,7 +15,7 @@ interface peopleType {
     userId:string;
     avatar:"";
 }
-export default function ChatNav() {
+export default function Chatnav() {
     const setChatType = useSetRecoilState(chatType)
     const socket = getSocket()
     const [connectionCount, setConnectionCount] = useState(0);

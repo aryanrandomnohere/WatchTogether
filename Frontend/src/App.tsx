@@ -128,7 +128,7 @@ const [friends, setFriends] = useRecoilState(Friends);
           </div>
         </div>
       ))
-    })
+  })
     
 
 
