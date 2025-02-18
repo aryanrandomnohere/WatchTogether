@@ -27,7 +27,7 @@ jobs:
               sudo docker run -d -e DATABASE_URL=${{secrets.DB_URL}} --name watchalong_backend -p 3000:3000 aryanrathore/watchalong_backend:latest
               sudo docker run -d -e VITE_BACKEND_APP_API_BASE_URL="http://${{secrets.SERVER_IP}}:3000" -e VITE_TMDB_AUTHORIZATION_KEY=${{secrets.TMDB_AUTH_API}} --name watchalong_frontend -p 80:80 aryanrathore/watchalong_frontend:latest
 
-     
+  
         
 
 
