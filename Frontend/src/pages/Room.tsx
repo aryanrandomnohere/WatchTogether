@@ -18,8 +18,8 @@ import { lefSideIsOpen } from "../State/leftRoomSpace";
 import { FcInvite } from "react-icons/fc";
 import { TbArrowBarToLeft, TbArrowBarToRight } from "react-icons/tb";
 import getSocket from "../services/getSocket";
-//@ts-ignore
-import ChatNav from "../components/Chatnav";
+//@ts-ignoren
+import Chatnav from "../components/Chatnav";
 import AlertBox from "../ui/AlertBox";
 //@ts-ignore
 const socket = getSocket();
@@ -160,7 +160,7 @@ const { roomId } = useParams();
     
   <div className={`flex flex-col justify-between border-white/20 bg-slate-900 w-full ${chatIsOpen ? "md:col-span-1":"hidden"} h-fit md:h-auto`}>
       
-    <ChatNav />
+    <Chatnav />
     <ChatWindow />
   </div>
   </div>

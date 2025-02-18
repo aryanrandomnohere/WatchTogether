@@ -26,12 +26,31 @@ export default function Peoples() {
     const pc2 = useRef<RTCPeerConnection | null>(null)
     const {roomId} = useParams()
     const [isReceiver,setIsReceiver] = useState<null | boolean>(null)
+    const [isJoied, setIsJoined] = useState<boolean>(false)
+    async function Join(msg:string){
+    toast.custom((t) => (
+       <div className="flex flex-row bg-slate-950 p-2 gap-2"><div>{msg}</div> <div onClick={()=>{
+        setIsJoined(false)   
+        toast.error("Call Cancelled") 
+        toast.dismiss(t.id)
+    }} className="hover:cursor-pointer"> Cancel</div> <div className="hover:cursor-pointer" onClick={()=>{setIsJoined(()=>true)
+        toast.success("Call Joined")
+    }}> Join</div></div>
+      ))
+    }
     useEffect(()=>{ 
-            socket.on("multiple-call-error",(msg:string)=>{
+            socket.on("multiple-call-error",async (msg:string)=>{
                 toast.error(msg);
             })
+           
             socket.on("initiate-offer",async (msg:string,sdp:any)=>{
-                toast.success(msg);
+           await Join(msg)
+            setTimeout(async () => {
+            if(!isJoied) {
+                toast.success("Not Answered")
+                return 
+            }
+            
                 if (!pc2.current) {
                     pc2.current = new RTCPeerConnection;
                 }
@@ -75,7 +94,7 @@ export default function Peoples() {
                     }}      
                 socket.emit("answer-created",roomId,Info.id,answer)
             }
-            })
+        }, 10000);})
             socket.on("answer-created",(msg:string,sdp:any)=>{
                 toast.success(msg);
                 console.log(`${sdp} receiver created answer`);
@@ -172,8 +191,10 @@ export default function Peoples() {
             <div className="mx-3 mb-5 hover:cursor-pointer max-w-72" onClick={goBack}><IoArrowBackCircleSharp className="text-3xl hover:text-yellow-600" /></div>
            <div className="flex justify-between mx-3 h-full"> {members && members.map((p)=><div key={p.userId} className=" w-1/2 border text-center h-fit">{p.displayname}</div>)}</div>
            <div className="flex flex-wrap w-full h-full ">
+           <video ref={localVideoRef} className="w-1/2" src="" autoPlay playsInline></video>
+
             <video ref={videoref} src="" className="w-1/2" autoPlay playsInline></video>
-            <video ref={localVideoRef} className="w-1/2" src="" autoPlay playsInline></video>
+           
           <video ref={videoRef2 } src="" className="w-1/2" autoPlay playsInline></video>
           </div>
           { isReceiver == null ? <div  className="hover:cursor-pointer w-full text-center hover:bg-slate-800 py-1 self-center text-white bg-slate-600 " onClick={handleCall}>Start Call</div>: isReceiver ? <div className="hover:cursor-pointer w-full text-center self-center hover:bg-red-800 py-1 text-white bg-red-600 ">Leave</div>:<div className="hover:cursor-pointer self-center  w-full text-center hover:bg-red-800 py-1 text-white  bg-red-600">End Call</div>}

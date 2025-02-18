@@ -19,9 +19,15 @@ export default function SideBar() {
   return (
     <div className="flex flex-col h-screen w-full  justify-between">
   {/* Header with toggle button */}
-  <Link to={`/watch/${!Info.id ? "guest" : Info.id}`} className=" flex py-2 items-center max-w-[18.5rem] justify-between bg-transparent mx-3 p-2 hover:bg-yellow-600 hover:text-white border font-semibold text-yellow-600 hover:cursor-pointer  px-3 ">
-   <div className=""> Go to your room</div><div><FaArrowsTurnRight /></div>
-  </Link>
+  <Link
+  to={`/watch/${Info.id || "guest"}`}
+  className="flex items-center rounded justify-between max-w-[18.5rem] px-4 py-2 mx-3 border-b border-yellow-600 font-semibold transition-all bg-transparent  hover:bg-slate-950 text-white hover:cursor-pointer"
+  aria-label="Go to your room"
+>
+  <span>Go to your room</span>
+  <FaArrowsTurnRight className="text-yellow-600" />
+</Link>
+
   <div onClick={() => setfOpen(!fOpen)} className="flex border-b border-b-yellow-600  hover:cursor-pointer justify-between mx-3 items-center rounded-md py-2 px-3 hover:bg-slate-950 hover:bg-opacity-40 mb-4 mt-5">
     <button className="flex justify-between w-full items-center text-yellow-600" >
    <div className="flex items-center justify-center "><div className="` text-white text-lg">Friends</div> </div><MdArrowForwardIos  className={`text-sm ${fOpen? "rotate-90": ""}`} />
