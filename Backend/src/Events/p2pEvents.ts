@@ -22,7 +22,7 @@ if(receiverIds.length < 1) return
 
 for(let receiver of receiverIds ){
 log("sending-iniated-offer",receiver)
-    io.to(receiver).emit("initiate-offer",`${userInfo.username} started a call`,sdp)
+    io.to(receiver).emit("initiate-offer",`${userInfo.displayname || userInfo.username} started a call`,sdp)
 }
 })
 

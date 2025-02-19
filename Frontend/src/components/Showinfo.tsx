@@ -154,8 +154,10 @@ const handleAddFavourite = async ()=>{
 
       const fullId = result.data[0]?.link_url || alternateNames;
       const id = fullId?.split("-episode")[0];
+      const finalId = id?.split("-season")[0];
       if (!id) throw new Error("Invalid ID from API");
-      const formattedId = id.replace(/ /g, "-");
+      const formattedId = finalId.replace(/ /g, "-");
+      console.log(formattedId)
      
 
       setNowPlaying({

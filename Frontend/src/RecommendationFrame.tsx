@@ -92,11 +92,11 @@ export default function RecommendationFrame({show}:{show:mData}) {
       {show.title || show.name || show.original_name}
     </h1>
     <div className="flex items-center text-xs justify-between mb-3 max-w-96 text-white font-extrabold">
-      <div className="bg-yellow-600/20 p-1">{show.media_type?.toLocaleUpperCase()}</div>
-      <div className="  bg-yellow-600/20 p-1">{show.first_air_date || show.release_date}</div>
+      <div className="bg-yellow-600 p-1 rounded ">{show.media_type?.toLocaleUpperCase()}</div>
+      <div className="  bg-yellow-600 p-1 rounded">{show.first_air_date || show.release_date}</div>
       <div></div>
-      <div className=" bg-yellow-600/20 p-1">{show.original_language}</div>
-      <div className="bg-yellow-600/20 p-1">{show.vote_average}</div>
+      <div className=" bg-yellow-600 p-1 rounded">{show.original_language?.toUpperCase()}</div>
+      <div className="bg-yellow-600 p-1 rounded">{show.vote_average}</div>
     </div>
     <p className="max-w-80 md:max-w-2xl md:text-base font-comic text-xs hidden md:block">
       {show.overview}

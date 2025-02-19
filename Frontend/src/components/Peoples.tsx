@@ -1,5 +1,5 @@
 import { IoArrowBackCircleSharp } from "react-icons/io5"
-import { useRecoilValue, useSetRecoilState } from "recoil"
+import { useRecoilState, useRecoilValue, useSetRecoilState } from "recoil"
 import { chatType } from "../State/chatWindowState"
 import { people } from "../State/roomPeopleState"
 import getSocket from "../services/getSocket"
@@ -7,6 +7,8 @@ import { useParams } from "react-router-dom"
 import { userInfo } from "../State/userState"
 import { useEffect, useRef, useState } from "react"
 import toast from "react-hot-toast"
+import { joinedStatus } from "../State/isJoined"
+import CallNotification from "./CallNotification"
 
 enum ChatType {
     CHATS,
@@ -25,76 +27,83 @@ export default function Peoples() {
     const pc = useRef<RTCPeerConnection | null>(null)
     const pc2 = useRef<RTCPeerConnection | null>(null)
     const {roomId} = useParams()
+    const storedOffer = useRef<RTCSessionDescriptionInit | null>(null)
     const [isReceiver,setIsReceiver] = useState<null | boolean>(null)
-    const [isJoied, setIsJoined] = useState<boolean>(false)
+    const [isJoined,setIsJoined] = useRecoilState(joinedStatus)
     async function Join(msg:string){
     toast.custom((t) => (
-       <div className="flex flex-row bg-slate-950 p-2 gap-2"><div>{msg}</div> <div onClick={()=>{
-        setIsJoined(false)   
-        toast.error("Call Cancelled") 
-        toast.dismiss(t.id)
-    }} className="hover:cursor-pointer"> Cancel</div> <div className="hover:cursor-pointer" onClick={()=>{setIsJoined(()=>true)
-        toast.success("Call Joined")
-    }}> Join</div></div>
+      <CallNotification msg={msg} isJoined={isJoined} setIsJoined={setIsJoined} t={t} />
       ))
     }
-    useEffect(()=>{ 
+    useEffect(() => {
+        async function sendAnswer() {
+            if (!pc2.current) {
+                pc2.current = new RTCPeerConnection();
+            }
+    
+            try {
+                const stream = await navigator.mediaDevices.getUserMedia({ video: true, audio: true });
+                if (!stream) return;
+    
+                if (localVideoRef.current) {
+                    localVideoRef.current.srcObject = stream;
+                    await localVideoRef.current.play().catch(err => console.error("Error playing local video:", err));
+                }
+    
+                pc2.current.addTrack(stream.getVideoTracks()[0]);
+    
+                pc2.current.ontrack = (event) => {
+                    console.log("Received track:", event.track);
+    
+                    if (!videoref.current) return;
+    
+                    let existingStream = videoref.current.srcObject as MediaStream;
+                    if (!existingStream) {
+                        existingStream = new MediaStream();
+                        videoref.current.srcObject = existingStream;
+                    }
+    
+                    if (!existingStream.getTracks().some(t => t.id === event.track.id)) {
+                        existingStream.addTrack(event.track);
+                    }
+    
+                    videoref.current.play().catch(err => console.error("Autoplay error:", err));
+                };
+    
+                pc2.current.onnegotiationneeded = async () => {
+                    if (!pc2.current || !storedOffer.current) return;
+                    if (storedOffer.current == null) return
+                    await pc2.current.setRemoteDescription(new RTCSessionDescription(storedOffer.current));
+                    const answer = await pc2.current.createAnswer();
+                    await pc2.current.setLocalDescription(answer);
+                    setIsReceiver(true);
+    
+                    pc2.current.onicecandidate = (event) => {
+                        if (event.candidate) {
+                            socket.emit("ice-candidate", { userId: Info.id, candidate: event.candidate });
+                        }
+                    };
+    
+                    socket.emit("answer-created", roomId, Info.id, answer);
+                };
+            } catch (error) {
+                console.error("Error accessing media devices:", error);
+            }
+        }
+    
+        if (isJoined && storedOffer.current) {
+            sendAnswer();
+        }
+    }, [isJoined, storedOffer.current, socket]); // Added correct dependencies
+
+    useEffect(()=>{
             socket.on("multiple-call-error",async (msg:string)=>{
                 toast.error(msg);
             })
-           
-            socket.on("initiate-offer",async (msg:string,sdp:any)=>{
+            socket.on("initiate-offer",async (msg:string,sdp:RTCSessionDescription)=>{
            await Join(msg)
-            setTimeout(async () => {
-            if(!isJoied) {
-                toast.success("Not Answered")
-                return 
-            }
-            
-                if (!pc2.current) {
-                    pc2.current = new RTCPeerConnection;
-                }
-                const stream = await navigator.mediaDevices.getUserMedia({video:true,audio:false}); 
-                if (!stream) return;
-
-                if(localVideoRef.current){
-                    localVideoRef.current.srcObject = stream;
-                    localVideoRef.current.play().catch(err => console.error("Error playing local video:", err));
-                }
-                pc2.current.addTrack(stream.getVideoTracks()[0])
-
-                pc2.current.ontrack = (event) => {
-                    console.log("Received track:", event.track);
-                
-                    if (!videoref.current) return;
-                
-                    let stream = videoref.current.srcObject as MediaStream;
-                    if (!stream) {
-                        stream = new MediaStream();
-                        videoref.current.srcObject = stream;
-                    }
-                
-                    if (!stream.getTracks().some(t => t.id === event.track.id)) {
-                        stream.addTrack(event.track);
-                    }
-                
-                    videoref.current.play().catch(err => console.error("Autoplay error:", err));
-                };
-                
-               pc2.current.onnegotiationneeded = async () =>{      
-                if(!pc2.current) return
-                pc2.current.setRemoteDescription(new RTCSessionDescription(sdp));
-                const answer = await pc2.current.createAnswer()
-                await pc2.current.setLocalDescription(answer);
-                setIsReceiver(true)
-                pc2.current.onicecandidate = (event) => {
-                    if (event.candidate) {
-                        socket.emit("ice-candidate", { userId: Info.id, candidate: event.candidate });
-                        
-                    }}      
-                socket.emit("answer-created",roomId,Info.id,answer)
-            }
-        }, 10000);})
+           storedOffer.current = sdp
+            })
             socket.on("answer-created",(msg:string,sdp:any)=>{
                 toast.success(msg);
                 console.log(`${sdp} receiver created answer`);
@@ -121,8 +130,6 @@ export default function Peoples() {
                 }
             });
             
-
-          
         return ()=>{
             socket.off("answer-created")
             socket.off("multiple-call-error")
@@ -145,7 +152,7 @@ export default function Peoples() {
                 socket.emit("ice-candidate",{userId:Info.id,candidate:event.candidate})
                 }  
             } 
-        const stream = await navigator.mediaDevices.getUserMedia({video:true,audio:false}); 
+        const stream = await navigator.mediaDevices.getUserMedia({video:true,audio:true}); 
         if (!stream) return;
         pc.current.addTrack(stream.getVideoTracks()[0])
         if(!pc.current){
@@ -179,7 +186,7 @@ export default function Peoples() {
         await pc.current.setLocalDescription(offer);
         const membersId = members?.map((mem)=>mem.userId)
         console.log("initiating offer");
-        socket.emit("initiate-offer",roomId,{id:Info.id, username:Info.username},membersId,offer) 
+        socket.emit("initiate-offer",roomId,{id:Info.id, username:Info.username, displayname:Info.displayname},membersId,offer) 
     }
     setIsReceiver(false) 
     }

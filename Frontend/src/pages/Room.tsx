@@ -21,6 +21,7 @@ import getSocket from "../services/getSocket";
 //@ts-ignoren
 import Chatnav from "../components/Chatnav";
 import AlertBox from "../ui/AlertBox";
+import { MdScreenShare } from "react-icons/md";
 //@ts-ignore
 const socket = getSocket();
 
@@ -52,6 +53,9 @@ const { roomId } = useParams();
     wasplaying ?? 
     { id: "", title: "", type: "Custom" }; 
 
+    // const handleScreenShare = () =>{
+    //   const strea
+    // }
     
     useEffect(() => {
         if (!roomId || !isAuthenticated) return;
@@ -126,6 +130,7 @@ const { roomId } = useParams();
         </Modal.window>
     </Modal>
 </div>
+<div className="bg-yellow-600 text-white p-1.5 hover:cursor-pointer flex  justify-center items-center gap-2 hover:bg-yellow-800"><MdScreenShare className="text-xl"/>Share Screen</div>
 </div>
 <div className="text-xl font-bold ">{roomName}</div>
 <AlertBox><AlertBox.open opens="inviteLink"><div className="text-lg py-1 px-3 bg-yellow-600 text-white flex justify-between items-center hover:cursor-pointer gap-2 hover:bg-yellow-800 "><FcInvite className="md:text-xl" />Invite Link</div></AlertBox.open><AlertBox.window name="inviteLink"><div className="h-44 px-16 py-10">Copy your invite link and share it to your friends to watch togethre</div></AlertBox.window></AlertBox>

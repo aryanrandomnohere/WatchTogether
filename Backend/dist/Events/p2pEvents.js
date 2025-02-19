@@ -17,7 +17,7 @@ function p2pEvents(io, socket) {
             return;
         for (let receiver of receiverIds) {
             (0, console_1.log)("sending-iniated-offer", receiver);
-            io.to(receiver).emit("initiate-offer", `${userInfo.username} started a call`, sdp);
+            io.to(receiver).emit("initiate-offer", `${userInfo.displayname || userInfo.username} started a call`, sdp);
         }
     });
     socket.on("answer-created", (roomId, userId, sdp) => {
