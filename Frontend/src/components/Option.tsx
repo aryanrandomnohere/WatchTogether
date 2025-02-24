@@ -56,7 +56,7 @@ console.log({ chatId: option.chatId, optionId: option.id, userId: Info.id, roomI
   return (
     <div className="flex w-full text-white items-center hover:cursor-pointer mt-2">
       <div onClick={handleAddVote}>
-        {isSelected ? <FaCheckCircle className="text-xl text-yellow-600" /> : <FaRegCircle className="text-xl text-yellow-600" />}
+        {isSelected ? <FaCheckCircle className="text-xl text-slate-400" /> : <FaRegCircle className="text-xl text-slate-400" />}
       </div>
       <div className="flex flex-col justify-center w-full">
         <div className="flex justify-between items-center w-68">

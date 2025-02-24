@@ -61,17 +61,17 @@ export default function PollWindow() {
        setChatType(ChatType.CHATS)
      }
 
-    return <div className=" border border-t-0 border-yellow-600/15  justify-between h-64 md:h-[40.5rem] "><div className="mx-3 mb-10 hover:cursor-pointer max-w-72" onClick={goBack}><IoArrowBackCircleSharp className="text-3xl hover:text-yellow-600" /></div> <form onSubmit={handleSendPoll} className="flex flex-col my-2 md:my-9 justify-between h-full mx-7 w-76 lg:w-96 gap-2">
-    <div className="w-full h-full flex flex-col max-w-72 mt-12 "><div className="w-full"><h1 className="text-yellow-600 font-bold">Question</h1>
+    return <div className=" border border-t-0 border-slate-400/15  justify-between h-64 md:h-[40.5rem] "><div className="mx-3 mb-10 hover:cursor-pointer max-w-72" onClick={goBack}><IoArrowBackCircleSharp className="text-3xl hover:text-slate-400" /></div> <form onSubmit={handleSendPoll} className="flex flex-col my-2 md:my-9 justify-between h-full mx-7 w-76 lg:w-96 gap-2">
+    <div className="w-full h-full flex flex-col max-w-72 mt-12 "><div className="w-full"><h1 className="text-slate-400 font-bold">Question</h1>
     <input
       value={question}
       onChange={(e) => setQuestion(e.target.value)}
-      className="bg-transparent border-b max-w-72 ml-1 p-1 w-full focus:border-yellow-600 focus:outline-none"
+      className="bg-transparent border-b max-w-72 ml-1 p-1 w-full focus:border-slate-400 focus:outline-none"
       placeholder="Ask question"
       required
     /></div>
     <div className="flex flex-col mt-2.5 sm:mt-6 gap-2">
-      <h1 className="text-yellow-600 font-bold">Options</h1>
+      <h1 className="text-slate-400 font-bold">Options</h1>
       {options.map((option, index) => (
         <input
           key={index}
@@ -81,12 +81,12 @@ export default function PollWindow() {
             newOptions[index] = e.target.value;
             setOptions(newOptions);
           }}
-          className="bg-transparent border-b max-w-72 ml-1 p-1 focus:border-yellow-600 focus:outline-none"
+          className="bg-transparent border-b max-w-72 ml-1 p-1 focus:border-slate-400 focus:outline-none"
           placeholder={`Option ${index + 1}`}
   
         />
       ))}
-      <div className="w-full flex justify-between text-xl text-yellow-600 items-center  ">
+      <div className="w-full flex justify-between text-xl text-slate-400 items-center  ">
   <div className="flex justify-center items-center hover:cursor-pointer  hover:text-yellow-900 max-w-72" onClick={() => {
   if (options.length <= 2) return;
   const newOptions = [...options]; // Clone the array
@@ -108,7 +108,7 @@ export default function PollWindow() {
     <div className="flex w-full justify-end mt-4 mb-28 max-w-72">
       <button
         type="submit"
-        className="p-2 border border-yellow-600 rounded bg-yellow-600 text-white"
+        className="p-2 border border-slate-400 rounded bg-slate-600 text-white"
       >
         <BsSendFill />
       </button></div>

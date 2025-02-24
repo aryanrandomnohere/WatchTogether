@@ -9,12 +9,10 @@ import chatEvents from './Events/chatEvents';
 import userEvents from './Events/userEvents';
 import FriendActionEvents from './Events/FriendActionsEvent';
 import p2pEvents from './Events/p2pEvents';
-interface peopleType {
-  displayname: string;
-  username:string;
-  userId:string;
-  avatar:string;
-}
+import { roomManager } from './roomManager';
+import { UserManager } from './UserManager';
+import {  log, trace } from 'console';
+
 const app = express();
 const prisma = new PrismaClient();
 app.use(cors({
@@ -22,13 +20,17 @@ app.use(cors({
   methods: ['GET', 'POST', 'PUT', 'DELETE'], // Allow specific HTTP methods
   credentials: false,                  // Set to true only if cookies/auth headers are needed
 }));
-
+interface peopleType {
+  displayname: string;
+  username:string;
+  id:string;
+  avatar:string;
+}
 app.use(express.json());
 
 app.use('/api/v1', mainRouter);
 
 const server = http.createServer(app);
-export const rooms: Record<string, Map<string,peopleType>> = {};
 const io = new Server(server, {
   cors: {
     origin: '*',                       // Allow WebSocket connections from any domain
@@ -37,39 +39,62 @@ const io = new Server(server, {
 });
 
 io.on("connection", (socket) => {
-  socket.on("join-room", async (roomId:string, userInfo:peopleType) => {
+  socket.on("join-room", async (roomId:string, userId:string) => {
     socket.join(`${roomId}'s room`);
-    // Add the user to the room
-    if (!rooms[roomId]) {
-      rooms[roomId] = new Map();
-    }
-    rooms[roomId].set(socket.id,userInfo);
-    // Creates an array of users in a room
-    const allUsers = Array.from(rooms[roomId].values())
-    // Emit the user count for the room
- 
-    io.to(`${roomId}'s room`).emit("room-people-data", rooms[roomId].size,allUsers);
+   if(roomManager.getInstance().getRoomTotal(roomId) === 0){
+    const roomState = await prisma.room.findUnique({
+      where:{
+        userId:roomId,
+      },
+      select:{
+        playingId:true,
+        playingTitle:true,  
+        playingType:true,
+        playingAnimeId:true,  
+        isPlaying:true,
+        currentTime:true,   
+        episode:true,    
+        season:true,
+      }
+    })
+    if(!roomState) return
+    roomManager.getInstance().subscribe(roomId,roomState)
+   }
+     roomManager.getInstance().addSubscriber(roomId,userId,socket.id)
+     const roomInstance = roomManager.getInstance()?.getRoom(roomId);
+     if (!roomInstance || roomInstance.subscribers.size === 0) return;
+     let allUserData: peopleType[] = []; 
+     
+     for (const [key, values] of roomInstance.subscribers) {
+      const userInstance = UserManager.getInstance();
+      const user = userInstance.getUser(key)
+      log(user)
+      if(!user) continue
+       allUserData.push(user);
+     }
+     log(allUserData)
+     io.to(`${roomId}'s room`).emit("room-people-data", roomManager.getInstance().getRoomTotal(roomId),allUserData);
   });
   userEvents(io, socket);
   videoEvents(io, socket);
   chatEvents(io, socket);
-  FriendActionEvents(io, socket);
+  FriendActionEvents(io, socket); 
   p2pEvents(io,socket)
   // Handle disconnection
-  socket.on("disconnect", () => {
+socket.on("disconnect",async () => {
     // Remove the user from any room they were in
-    for (const roomId in rooms) {
-      rooms[roomId].delete(socket.id);
-      if (rooms[roomId].size === 0) {
-        delete rooms[roomId]; // Clean up empty rooms
-      } else {
-        const allUsers = Array.from(rooms[roomId].values())
-        io.to(roomId).emit("room-people-data", rooms[roomId].size,allUsers);
-      }
-    }
+    UserManager.getInstance().removeUser(socket.id)
+    roomManager.getInstance().userDisconnected(socket.id)
+    for (const roomId in roomManager.getInstance()) {
+      if(roomManager.getInstance().getRoom(roomId)){
+      roomManager.getInstance().removeSubscriber(roomId, socket.id)
+      if(roomManager.getInstance().getRoomTotal(roomId) === 0) roomManager.getInstance().unsubscribe(roomId)
+        return 
+      } }
   });
 });
 
 server.listen(3000, '0.0.0.0', () => {
-  console.log('Backend running on http://0.0.0.0:3000');
+console.log('Backend running on http://0.0.0.0:3000');
 });
+  

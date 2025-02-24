@@ -195,7 +195,7 @@ export default function Peoples() {
       }
   return (
      <div className=" flex flex-col  w-full h-64 md:h-[40.5rem] border border-t-0 border-white/15 " >
-            <div className="mx-3 mb-5 hover:cursor-pointer max-w-72" onClick={goBack}><IoArrowBackCircleSharp className="text-3xl hover:text-yellow-600" /></div>
+            <div className="mx-3 mb-5 hover:cursor-pointer max-w-72" onClick={goBack}><IoArrowBackCircleSharp className="text-3xl hover:text-slate-400" /></div>
            <div className="flex justify-between mx-3 h-full"> {members && members.map((p)=><div key={p.userId} className=" w-1/2 border text-center h-fit">{p.displayname}</div>)}</div>
            <div className="flex flex-wrap w-full h-full ">
            <video ref={localVideoRef} className="w-1/2" src="" autoPlay playsInline></video>

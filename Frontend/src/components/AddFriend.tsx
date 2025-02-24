@@ -39,10 +39,10 @@ export default function AddFriend() {
           <input
             onChange={(e) => setfusername(e.target.value)}
             value={fusername}
-            className="relative bg-black bg-opacity-5 rounded-md py-1 px-2 w-full font-bold mt-2 border text-center self-center focus:outline-none focus:placeholder-transparent focus:border-yellow-600 "
+            className="relative bg-black  bg-opacity-5 rounded-md py-1 px-2 w-full font-bold mt-2 border text-center self-center focus:outline-none focus:placeholder-transparent focus:border-slate-400 "
             placeholder="Find Friend"
           />
-          <button className=" absolute right-3 p-1 mt-2 px-2  text-xl border-l text-yellow-600"  >
+          <button className=" absolute right-3 p-1 mt-2 px-2  text-xl border-l text-slate-400"  >
           <MdOutlinePersonAddAlt />
           </button>
         </form>

@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import RecommendationFrame from "../RecommendationFrame";
-import { FaArrowAltCircleLeft, FaArrowAltCircleRight } from "react-icons/fa";
+import { FaArrowAltCircleLeft, FaArrowAltCircleRight, FaArrowLeft, FaArrowRight } from "react-icons/fa";
 
 
 const popular = [
@@ -128,7 +128,7 @@ export default function Recommendation() {
   useEffect(() => {
     const interval = setInterval(() => {
       nextSlide();
-    }, 6000); // Increased duration to 4 seconds
+    }, 5000); // Increased duration to 4 seconds
 
     return () => clearInterval(interval);
   }, [currentIndex]);
@@ -144,7 +144,7 @@ export default function Recommendation() {
   };
 
   return (
-    <div className="relative md:min-h-[35rem] min-h-52 w-full bg-gray-950 flex justify-center items-center overflow-hidden">
+    <div className="relative md:min-h-[35rem] min-h-52 w-full bg-black  flex justify-center items-center overflow-hidden">
       <div className="relative w-full h-full flex justify-center items-center">
         <AnimatePresence custom={direction} mode="popLayout">
           {popular.length > 0 && (
@@ -155,7 +155,7 @@ export default function Recommendation() {
                 initial={{ x: "0%", opacity: 1 }}
                 animate={{ x: direction === 1 ? "-100%" : "100%", opacity: 0 }}
                 exit={{ x: direction === 1 ? "-100%" : "100%", opacity: 0 }}
-                transition={{ duration: 2, ease: "easeInOut" }}
+                transition={{ duration: 1.5, ease: "easeInOut" }}
                 className="absolute w-full h-full flex justify-center"
               >
                 <RecommendationFrame show={popular[currentIndex]} />
@@ -167,7 +167,7 @@ export default function Recommendation() {
                 initial={{ x: direction === 1 ? "100%" : "-100%", opacity: 0 }}
                 animate={{ x: "0%", opacity: 1 }}
                 exit={{ x: "0%", opacity: 1 }}
-                transition={{ duration: 2, ease: "easeInOut" }}
+                transition={{ duration: 1.5, ease: "easeInOut" }}
                 className="absolute w-full h-full flex justify-center"
               >
                 <RecommendationFrame show={popular[(currentIndex + 1) % popular.length]} />
@@ -184,13 +184,13 @@ export default function Recommendation() {
           onClick={nextSlide}
           className="bg-gray-800 text-white p-2 bg-opacity-30 rounded-full shadow-lg hover:bg-gray-700 transition"
         >
-         <FaArrowAltCircleRight className="text-3xl" />
+         <FaArrowRight className="text-2xl" />
         </button>
         <button
           onClick={prevSlide}
           className="bg-gray-800 bg-opacity-30 text-white p-2 rounded-full shadow-lg hover:bg-gray-700 transition"
         >
-          <FaArrowAltCircleLeft className="text-3xl" />
+          <FaArrowLeft className="text-2xl" />
         </button>
       </div>
     </div>

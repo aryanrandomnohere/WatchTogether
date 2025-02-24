@@ -204,7 +204,7 @@ const handleAddFavourite = async ()=>{
 
 
   return (<div className='flex flex-col items-center '>
-<div className="relative min-w-fit bg-black">
+<div className="relative min-w-fit bg-black ">
   <img
     src={`https://image.tmdb.org/t/p/w500/${movie.backdrop_path}`}
     alt={`${movie.name} poster`}
@@ -217,9 +217,9 @@ const handleAddFavourite = async ()=>{
    
     {
   favourite?.some(fav => fav.movie.id === movie.id) ? 
-  <div onClick={handleRemoveFromFavourite}> <FaHeart className='text-yellow-600 text-2xl hover:cursor-pointer' /></div>
+  <div onClick={handleRemoveFromFavourite}> <FaHeart className='text-yellow-500 text-2xl hover:cursor-pointer' /></div>
     : 
-   <div onClick={handleAddFavourite}> <BiHeart className='text-white text-2xl hover:cursor-pointer hover:text-orange-600' /></div>
+   <div onClick={handleAddFavourite}> <BiHeart className='text-white text-2xl hover:cursor-pointer hover:text-orange-500' /></div>
 }
 
 
@@ -233,7 +233,7 @@ const handleAddFavourite = async ()=>{
       
 
       {/* Movie Details */}
-      <div className="flex flex-col self-start justify-between text-yellow-600 w-full px-4 ">
+      <div className="flex flex-col self-start justify-between text-slate-400 w-full px-4 ">
         {/* Title and Release Year */}
        
 

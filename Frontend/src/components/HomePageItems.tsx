@@ -13,7 +13,7 @@
 //       {isAuthenticated ? (
 //         <PreviouslyWatched/>
 //       ) : (
-//         <div className=" fixed inset-0 w-full h-screen bg-slate-950 bg-opacity-20 backdrop-blur-md z-[1000] transition-all duration-500 flex items-center justify-center p-1">
+//         <div className=" fixed inset-0 w-full h-screen bg-black  bg-opacity-20 backdrop-blur-md z-[1000] transition-all duration-500 flex items-center justify-center p-1">
         
 //           <div className="text-white text-center">
 //             Please log in to access your home page content.

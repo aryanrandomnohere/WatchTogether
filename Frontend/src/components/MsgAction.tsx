@@ -49,9 +49,9 @@ export default function MsgAction({ chatId, message,displayname }: { chatId: num
 
   return (
     <div ref={ref} className="relative ">
-      <SlOptions onClick={() => setIsOpen(!isOpen)} className="hover:cursor-pointer hover:text-yellow-600" />
+      <SlOptions onClick={() => setIsOpen(!isOpen)} className="hover:cursor-pointer hover:text-slate-400" />
       <div
-        className={`absolute right-0 h-fit bg-slate-950 w-fit opacity-0 transform  rounded-md text-white border border-yellow-600/20 transition-all duration-300 ease-in-out ${isOpen ? 'opacity-90 translate-y-0' : ''}`}
+        className={`absolute right-0 h-fit bg-black  w-fit opacity-0 transform  rounded-md text-white border border-slate-400/20 transition-all duration-300 ease-in-out ${isOpen ? 'opacity-90 translate-y-0' : ''}`}
       >
         <div className="flex flex-col p-1 px-3 gap-2 h-full">
           <Actions>

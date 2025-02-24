@@ -81,7 +81,7 @@ setIsLoading(true);
         </div>
 
         <form onSubmit={handleSubmit}>
-          <p className="mb-2 text-start text-yellow-600">
+          <p className="mb-2 text-start text-slate-400">
             Please {isSignup ? "create an account" : "login to your account"}
           </p>
 
@@ -159,7 +159,7 @@ setIsLoading(true);
               {isSignup ? "Sign Up" : "Log In"}
             </button>
             {!isSignup && (
-              <a href="#!" className="block mt-3 text-end text-sm text-yellow-600">
+              <a href="#!" className="block mt-3 text-end text-sm text-slate-400">
                 Forgot password?
               </a>
             )}
@@ -167,7 +167,7 @@ setIsLoading(true);
 
           {/* Toggle Between Login and Signup */}
           <div className="text-center">
-            <p className="mb-2 text-yellow-600">
+            <p className="mb-2 text-slate-400">
               {isSignup ? "Already have an account?" : "Don’t have an account?"}
               <span
                 onClick={handleToggle}
