@@ -15,7 +15,7 @@ const setChatType = useSetRecoilState(chatType)
       }
   return (
     <div className=" flex flex-col justify-between w-full h-64 md:h-[40rem]">
-        <div className="mx-3 mb-10 hover:cursor-pointer max-w-72" onClick={goBack}><IoArrowBackCircleSharp className="text-3xl hover:text-yellow-600" /></div>
+        <div className="mx-3 mb-10 hover:cursor-pointer max-w-72" onClick={goBack}><IoArrowBackCircleSharp className="text-3xl hover:text-slate-400" /></div>
         <div>AllVotes</div></div>
   )
 }

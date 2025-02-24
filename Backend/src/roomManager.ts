@@ -1,0 +1,73 @@
+  interface roomStatusInterface {
+    playingId:string; 
+    playingTitle:string;  
+    playingType:string;
+    playingAnimeId:string;  
+    isPlaying:boolean;
+    currentTime:number;   
+    episode:number;    
+    season:number;    
+  }
+  interface roomInterface {
+    roomStatus: roomStatusInterface;
+    subscribers: Map<string,string>;
+  }
+  
+
+export class roomManager {
+    private static instance:roomManager;
+    private rooms:Map<string, roomInterface>=new Map();
+   
+    public static getInstance(){
+        if(!this.instance){
+            this.instance = new roomManager;
+            return this.instance
+        }
+        return this.instance
+    }
+
+    public subscribe(roomId:string,roomStatus:roomStatusInterface) {
+      if (!this.rooms.get(roomId)) {
+        this.rooms.set(roomId,{
+          roomStatus,
+          subscribers: new Map(),
+        }) 
+    }
+    }
+    public unsubscribe(roomId:string){
+      this.rooms.delete(roomId);
+      return
+    }
+
+    public addSubscriber(roomId:string, userId:string,socketId:string){
+    if (!this.rooms.get(roomId)) {
+      console.error("Room does not exists")
+       return
+    }
+    this.rooms.get(roomId)?.subscribers.set(socketId,userId);
+    }
+
+    public removeSubscriber(roomId: string, socketId: string) {
+      const room = this.rooms.get(roomId);
+      if (!room || !room.subscribers) return; 
+      room.subscribers.delete(socketId)
+  }
+
+    public userDisconnected(socketId:string) {
+      for (const [roomId,room] of this.rooms.entries()){
+        if(!room || !room.subscribers) continue
+            room.subscribers.delete(socketId);
+      }
+      }
+  
+
+
+    public getRoom(id:string) {
+       return this.rooms.get(id) || null
+    }
+    public getRoomTotal(id:string) {
+      if(!this.rooms.get(id)) return 0
+      return this.rooms.get(id)?.subscribers.size;
+    }
+    
+}

@@ -1,5 +1,6 @@
 import { PrismaClient } from "@prisma/client";
 import { Server, Socket } from "socket.io";
+import { UserManager } from "../UserManager";
 
 const prisma = new PrismaClient();
 
@@ -8,17 +9,52 @@ export default function userEvents(io: Server, socket: Socket) {
     socket.on('register', async (userId: string) => {
         try {
             socket.join(userId);
-            const userFriends = await prisma.friendship.findMany({
-                where: { userId },
-                select: { friendId: true },
-            });
-
+            const userInfo = await prisma.user.findUnique({
+                where:{
+                id:userId
+                      },
+                select:{
+                displayname:true,
+                username:true,
+                avatar:true,
+                id:true,
+                }
+            })
+            if(userInfo){
+            UserManager.getInstance().addUser(socket.id,userInfo)
+        }else{
+            console.error("User does not exists")
+        }
             const noti = await prisma.friendRequests.findMany({
                 where:{toId:userId},
                 select:{from:true,
                     fromUsername:true,
                 }
             })
+
+            const response = await prisma.user.update({
+                where:{
+                    id:userId
+                },
+                data:{
+                    status:"ONLINE"
+                }
+              })
+              // Fetch the user's friends
+              const userFriends = await prisma.friendship.findMany({
+                where: { userId },
+                select: { friendId: true },
+              });
+          
+              const friendIds = userFriends.map((f) => f.friendId);
+          
+              // Notify all friends by broadcasting to their rooms
+              friendIds.forEach((friendId) => {
+                io.to(friendId).emit("friend-status-update", {
+                  userId,
+                  newStatus:"ONLINE", 
+                });
+              });
            
             io.to(userId).emit("load-noti", noti)
 

@@ -56,7 +56,7 @@ export default function ReplyTo({ replyTo }: { replyTo: Message }) {
       >
         {/* Header: Display Name & Actions */}
         <div className="flex w-full justify-between">
-          <div className="text-yellow-600 font-bold text-sm mb-0.5">{replyTo.displayname}</div>
+          <div className="text-slate-400 font-bold text-sm mb-0.5">{replyTo.displayname}</div>
           <div className="text-xs">
             <MsgAction chatId={replyTo.id} message={replyTo.message} displayname={replyTo.displayname} />
           </div>
@@ -65,7 +65,7 @@ export default function ReplyTo({ replyTo }: { replyTo: Message }) {
         {/* Reply Box */}
         <div className="flex flex-col rounded-md border-l border-l-yellow-600 bg-slate-700 w-full mb-0.5">
           <div className="px-2 py-1">
-            <div className="text-yellow-600 text-sm">{replyTo.replyTo?.displayname}</div>
+            <div className="text-slate-400 text-sm">{replyTo.replyTo?.displayname}</div>
             <div className={` ${isEmojiOnly(replyTo.message) ? "text-4xl" : "text-sm"} ${replyTo.replyTo?.message ? "text-white" : "font-thin text-zinc-200"}`}>
               {replyTo.replyTo?.message || "Deleted for everyone"}
             </div>

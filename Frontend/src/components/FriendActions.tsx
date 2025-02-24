@@ -22,8 +22,8 @@ export default function FriendActions({to}:{to:string}) {
 
   return (
     <div className="flex items-center gap-3">
-      <div onClick={handleJoinRequest}><LiaJointSolid className="text-yellow-600 text-lg hover:cursor-pointer hover:text-yellow-800" /></div>
-      <div onClick={handleSendInvite} ><HiPlusSm className="text-2xl hover:cursor-pointer hover:text-yellow-800  text-yellow-600"/></div>
+      <div onClick={handleJoinRequest}><LiaJointSolid className="text-slate-400 text-lg hover:cursor-pointer hover:border-b-slate-400" /></div>
+      <div onClick={handleSendInvite} ><HiPlusSm className="text-2xl hover:cursor-pointer hover:border-b-slate-400  text-slate-400"/></div>
       </div>
   )
 }

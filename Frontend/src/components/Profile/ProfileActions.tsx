@@ -74,7 +74,7 @@
 // //   <div className="w-24 rounded-full border-2">
 // //     <img src={selectedPfp || avatar2} />
 // //   </div>
-// //   <div className="absolute bottom-0 right-0 p-1 border rounded-full bg-white text-yellow-600 hover:cursor-pointer" onClick={()=>setIsOpenAvatar(!isOpenAvatar)}><MdModeEdit /></div>
+// //   <div className="absolute bottom-0 right-0 p-1 border rounded-full bg-white text-slate-400 hover:cursor-pointer" onClick={()=>setIsOpenAvatar(!isOpenAvatar)}><MdModeEdit /></div>
   
 // // </div>
 
@@ -83,8 +83,8 @@
 // //           <div className="text-sm text-gray-300">{Info.email}</div>
 // //         </div> */}
 // //       </div>
-// //       {isOpenAvatar &&  <div className="absolute mt-4 bg-slate-950 p-1.5 flex flex-col items-center">
-// //         <label className=" block text-yellow-600">Choose Profile Picture</label>
+// //       {isOpenAvatar &&  <div className="absolute mt-4 bg-black  p-1.5 flex flex-col items-center">
+// //         <label className=" block text-slate-400">Choose Profile Picture</label>
 // //         <div className="flex gap-3 mt-2">
 // //           {pfpOptions.map((pfp, index) => (
 // //             <img
@@ -92,7 +92,7 @@
 // //               src={pfp}
 // //               alt="PFP Option"
 // //               className={`w-12 h-12 cursor-pointer border-2 ${
-// //                 selectedPfp === pfp ? "border-yellow-600" : "border-transparent"
+// //                 selectedPfp === pfp ? "border-slate-400" : "border-transparent"
 // //               }`}
 // //               onClick={() => handleChangePfp(pfp)}
 // //             />
@@ -102,7 +102,7 @@
 // //       {/* Change Display Name */}
 // //       <div className="flex gap-4 mt-4">
 // //         <div>
-// //         <label className="block text-yellow-600 text-sm">Display Name</label>
+// //         <label className="block text-slate-400 text-sm">Display Name</label>
 // //         <input
 // //           type="text"
 // //           value={displayName}
@@ -111,12 +111,12 @@
 // //         />
       
 // //         </div>
-// //         <div className="flex flex-col"><label className="text-yellow-600 text-sm">Username</label>
+// //         <div className="flex flex-col"><label className="text-slate-400 text-sm">Username</label>
 // //         <input value={Info.username} className="bg-transparent "/></div>
       
          
 // //       </div>
-// //       <div className="flex flex-col"><label className="text-sm text-yellow-600">Email</label><input className="bg-transparent " value={Info.email}/></div>
+// //       <div className="flex flex-col"><label className="text-sm text-slate-400">Email</label><input className="bg-transparent " value={Info.email}/></div>
 
 // //       {/* Choose Profile Picture */}
      

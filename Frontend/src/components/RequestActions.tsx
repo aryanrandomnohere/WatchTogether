@@ -60,7 +60,7 @@ export default function RequestActions({id, fromUsername}:{id:string, fromUserna
   return (
 
     <div className="flex items-center gap-4"><div onClick={handleRejection}>
-      <RxCross2 className="text-yellow-600 text-xl hover:cursor-pointer hover:text-yellow-800" /></div>
-      <div onClick={handleAcceptance}><IoMdCheckmark className="text-xl hover:cursor-pointer hover:text-yellow-800  text-yellow-600"/></div></div>
+      <RxCross2 className="text-slate-400 text-xl hover:cursor-pointer hover:border-b-slate-400" /></div>
+      <div onClick={handleAcceptance}><IoMdCheckmark className="text-xl hover:cursor-pointer hover:border-b-slate-400  text-slate-400"/></div></div>
   )
 }

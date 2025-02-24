@@ -28,15 +28,17 @@ const [friends, setFriends] = useRecoilState(Friends);
  const userId = userInfoState.id;
  const navigate =useNavigate();
 
-
+useEffect(()=>{
+  if(!isAuthenticated || !userId) return
+  console.log(userId);
+  socket.emit("register", userId);
+},[userId])
 
   useEffect(() => {
     if(!isAuthenticated) return
     socket.connect();
-    socket.emit("register", userId);
-    window.addEventListener("beforeunload", () => {
-      socket.emit("update-status",userId, "OFFLINE" );
-    });
+
+
     
     socket.on("user-not-found", () => {
       toast.error("User does not exist");
@@ -46,7 +48,7 @@ const [friends, setFriends] = useRecoilState(Friends);
         <div
         className={`${
           t.visible ? 'animate-enter' : 'animate-leave'
-        } max-w-md w-full bg-slate-800 shadow-lg rounded-lg pointer-events-auto flex justify-center items-center ring-1 ring-black ring-opacity-5`}
+        } max-w-md w-full bg-slate-800 shadow-lg rounded-lg pointer-events-auto flex justify-center items-center ring-1 ring-black  ring-opacity-5`}
       >
         <div className="flex-1 items-center w-0 p-2">
           <div className="flex items-start">
@@ -54,7 +56,7 @@ const [friends, setFriends] = useRecoilState(Friends);
               {/* Avatar or image goes here */}
             </div>
             <div className="ml-3 flex-1">
-              <p className="text-sm font-medium text-yellow-600">{from}</p>
+              <p className="text-sm font-medium text-slate-400">{from}</p>
               <p className="text-sm text-gray-200">
                 has requested to join your room
               </p>
@@ -91,7 +93,7 @@ const [friends, setFriends] = useRecoilState(Friends);
         <div
           className={`${
             t.visible ? 'animate-enter' : 'animate-leave'
-          } max-w-md w-full bg-slate-800 shadow-lg rounded-lg pointer-events-auto flex justify-center items-center ring-1 ring-black ring-opacity-5`}
+          } max-w-md w-full bg-slate-800 shadow-lg rounded-lg pointer-events-auto flex justify-center items-center ring-1 ring-black  ring-opacity-5`}
         >
           <div className="flex-1 items-center w-0 p-2">
             <div className="flex items-start">
@@ -99,7 +101,7 @@ const [friends, setFriends] = useRecoilState(Friends);
                 {/* <Avatar name={from} r=""/> */}
               </div>
               <div className="ml-3 flex-1">
-                <p className="text-sm font-medium text-yellow-600">
+                <p className="text-sm font-medium text-slate-400">
                   {from}
                 </p>
                 <p className="-scroll-mt-0.5 text-sm text-gray-200">

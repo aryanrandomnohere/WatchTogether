@@ -11,21 +11,56 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.default = userEvents;
 const client_1 = require("@prisma/client");
+const UserManager_1 = require("../UserManager");
 const prisma = new client_1.PrismaClient();
 function userEvents(io, socket) {
     // Handle user registration
     socket.on('register', (userId) => __awaiter(this, void 0, void 0, function* () {
         try {
             socket.join(userId);
-            const userFriends = yield prisma.friendship.findMany({
-                where: { userId },
-                select: { friendId: true },
+            const userInfo = yield prisma.user.findUnique({
+                where: {
+                    id: userId
+                },
+                select: {
+                    displayname: true,
+                    username: true,
+                    avatar: true,
+                    id: true,
+                }
             });
+            if (userInfo) {
+                UserManager_1.UserManager.getInstance().addUser(socket.id, userInfo);
+            }
+            else {
+                console.error("User does not exists");
+            }
             const noti = yield prisma.friendRequests.findMany({
                 where: { toId: userId },
                 select: { from: true,
                     fromUsername: true,
                 }
+            });
+            const response = yield prisma.user.update({
+                where: {
+                    id: userId
+                },
+                data: {
+                    status: "ONLINE"
+                }
+            });
+            // Fetch the user's friends
+            const userFriends = yield prisma.friendship.findMany({
+                where: { userId },
+                select: { friendId: true },
+            });
+            const friendIds = userFriends.map((f) => f.friendId);
+            // Notify all friends by broadcasting to their rooms
+            friendIds.forEach((friendId) => {
+                io.to(friendId).emit("friend-status-update", {
+                    userId,
+                    newStatus: "ONLINE",
+                });
             });
             io.to(userId).emit("load-noti", noti);
         }

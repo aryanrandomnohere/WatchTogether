@@ -73,7 +73,7 @@ export default function Navbar() {
               authorization: localStorage.getItem("token") || ""
             }
           });
-          socket.emit("update-status",UserInfo.id, "ONLINE")
+         
           const { id, username, email, displayname,avatar }: UserInfoType = response.data.userWithMovies;
           setUserInfo({ id, username, email, displayname,avatar });
         } catch (error) {
@@ -91,12 +91,12 @@ export default function Navbar() {
 
   return (
     <div className="relative">
-      <div className="flex flex-col sm:flex-row items-center justify-center w-full bg-slate-950  text-yellow-600 font-bold shadow-yellow-950 mb-10 z-10 fixed">
+      <div className="flex flex-col sm:flex-row items-center justify-center w-full bg-black   text-slate-400 font-bold shadow-yellow-950 mb-10 z-10 fixed">
         
           <div className="flex w-full items-center mb-2 sm:mb-0 my-2 sm:my-0 justify-between">  
          
             <div className="flex w-full justify-between items-center ">
-            <Link to="/"> <div className="flex items-center"><img src={n} alt="Logo" className="h-10 w-10 sm:h-12 sm:w-12 ml-2 sm:ml-8" /><p className="ml-2 text-2xl sm:text-3xl font-comic font-light ">WatchAlong</p></div></Link>
+            <Link to="/"> <div className="flex items-center"><p className="ml-8 text-2xl sm:text-3xl font-comic font-light ">WatchAlong</p></div></Link>
             <div className="sm:hidden right-11 mr-2.5">
               {!isAuthenticated ?<div>
             <Modal>
@@ -111,7 +111,7 @@ export default function Navbar() {
             </Modal>
           </div> :<Sidebar>
               <Sidebar.open>
-                <TbLayoutSidebarRight className="text-3xl hover:cursor-pointer text-yellow-600 font-extralight" />
+                <TbLayoutSidebarRight className="text-3xl hover:cursor-pointer text-slate-400 font-extralight" />
               </Sidebar.open>
               <Sidebar.window>
                   {!isNotiOpenValue ?<SideBar/> : <Notifications/>}
@@ -123,7 +123,7 @@ export default function Navbar() {
         
         <form onSubmit={handleSearch} className="w-full sm:w-full flex justify-between md:mr-44">
           <input
-            className="w-full  md:min-w-96   md:w-150 bg-white bg-opacity-10 text-stone-300 rounded px-3 py-1 sm:py-1.5 sm:my-2 placeholder-stone-400 border-solid border border-yellow-600 focus:outline-none mx-0.5"
+            className="w-full  md:min-w-96   md:w-150 bg-white bg-opacity-10 text-stone-300 rounded px-3 py-1 sm:py-1.5 sm:my-2 placeholder-stone-400 border-solid border border-slate-400 focus:outline-none mx-0.5"
             value={query}
             onChange={(e) => setQuery(e.target.value)}
             placeholder="Search for anime/show"
@@ -146,7 +146,7 @@ export default function Navbar() {
           <div className="mr-8 hidden sm:block">
             <Sidebar>
               <Sidebar.open>
-                <TbLayoutSidebarRight className="text-3xl hover:cursor-pointer text-yellow-600 font-extralight" />
+                <TbLayoutSidebarRight className="text-3xl hover:cursor-pointer text-slate-400 font-extralight" />
               </Sidebar.open>
               <Sidebar.window>
                 {!isNotiOpenValue ? <SideBar /> : <Notifications/>}

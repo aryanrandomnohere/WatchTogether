@@ -162,20 +162,20 @@ function sendMessage(e: FormEvent) {
     <div className="flex flex-col gap-0 h-full"> <ChatBox messages={messages} />
 
                         <div ref={ref} className={`relative ${replyTo ? "" : "mt-0" } flex flex-col h-14 justify-center items-center w-full`}>
-                        {replyTo ? <div className="absolute right-0 bottom-[50px] bg-slate-950 border-l border-r border-t border-yellow-600 flex items-center justify-between w-full h-fit  rounded"><div className= "m-3 rounded  w-full  px-2 py-1 h-fit flex flex-col justify-between items-start bg-slate-800"><h1 className="text-sm text-yellow-600">{replyTo.displayname}</h1><h1 className="text-xs">{replyTo.message}</h1></div><div className="hover:cursor-pointer pr-4 pl-2 hover:text-yellow-600" onClick={handleClearReplyTo}><GiCancel/></div></div> : null}
+                        {replyTo ? <div className="absolute right-0 bottom-[50px] bg-black  border-l border-r border-t border-slate-400 flex items-center justify-between w-full h-fit  rounded"><div className= "m-3 rounded  w-full  px-2 py-1 h-fit flex flex-col justify-between items-start bg-slate-800"><h1 className="text-sm text-slate-400">{replyTo.displayname}</h1><h1 className="text-xs">{replyTo.message}</h1></div><div className="hover:cursor-pointer pr-4 pl-2 hover:text-slate-400" onClick={handleClearReplyTo}><GiCancel/></div></div> : null}
    
                             <form onSubmit={sendMessage} className="flex items-center w-full">
-                          <div  onClick={()=>setChatOptionIsOpen((state)=> !state)} className="flex justify-center w-full h-full  hover:cursor-pointer hover:text-yellow-600 items-center">  <FaLink className="absolute left-4 hover:cursor-pointer hover:text-yellow-600"  /></div>
+                          <div  onClick={()=>setChatOptionIsOpen((state)=> !state)} className="flex justify-center w-full h-full  hover:cursor-pointer hover:text-slate-400 items-center">  <FaLink className="absolute left-4 hover:cursor-pointer hover:text-slate-400"  /></div>
                 
                               <input
                                     type="text"
                                     value={newMessage}
                                     onChange={(e) => setNewMessage(e.target.value)}
                                     placeholder="Type here"
-                                    className=" bg-slate-950 pl-10 pr-10  min-w-full  mr-14 rounded h-10 text-sm  md:text-base outline-8 outline-blue-300 text-yellow-600 "
+                                    className=" bg-black  pl-10 pr-10  min-w-full  mr-14 rounded h-10 text-sm  md:text-base outline-8 outline-blue-300 text-slate-400 "
                                 />
-                                <button type="submit" className="absolute text-xl hover:bg-black hover:cursor-pointer hover:bg-opacity-50 right-3">
-                                    <BiSend className="hover:text-yellow-600" />
+                                <button type="submit" className="absolute text-xl hover:bg-black  hover:cursor-pointer hover:bg-opacity-50 right-3">
+                                    <BiSend className="hover:text-slate-400" />
                                 </button>
                                 
                             </form>

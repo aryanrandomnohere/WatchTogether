@@ -43,6 +43,8 @@ const isAuthenticated = useRecoilValue(isAuthenticatedState);
   const recentlywatched = useRecoilValue(recentlyWatched);
  const favourites = useRecoilValue(Favourite)
   const [popular, setPopular] = useState<mData[]>([]);
+  const [popularSeries, setPopularSeries] = useState<mData[]>([]);
+
   const setAllMedia = useSetRecoilState(userMedia); 
   // const lastWatched: mData[] | undefined  = recentlywatched?.map((item)=> item.movie);
   
@@ -56,26 +58,43 @@ useEffect(() => {
         headers: { authorization: localStorage.getItem("token") },
       });
       setAllMedia(mediaResponse.data.data);
-
       // Fetching trending data
-      const trendingResponse = await fetch("https://api.themoviedb.org/3/movie/top_rated?language=en-US&page=1", {
+      const trendingMoviesResponse = await fetch("https://api.themoviedb.org/3/movie/top_rated?language=en-US&page=1", {
         method: "GET",
         headers: {
           accept: "application/json",
           Authorization: `Bearer eyJhbGciOiJIUzI1NiJ9.eyJhdWQiOiI0NzI5NmMxNjY1NWI1NGE1MzU0MTA4NzIyZWVmMjFhNSIsIm5iZiI6MTczMDkyMTU4My44NzM5OTk4LCJzdWIiOiI2NzJiYzQ2ZjQzM2M4MmVhMjY3ZWExNWEiLCJzY29wZXMiOlsiYXBpX3JlYWQiXSwidmVyc2lvbiI6MX0.T9tYHXZGv0OisrEbFuVodRU7ppPEKLvLAsKMbmJElkA`,
         },
       });
-      const trendingData = await trendingResponse.json();
+      const popularMovieData = await trendingMoviesResponse.json();
 
       // Save only the first 8 objects
-      const limitedTrendingData = trendingData.results.slice(0, 9).map((pop: mData) => {
+      const limitedPopularMovieData = popularMovieData.results.slice(0, 9).map((pop: mData) => {
         return {
           ...pop, // Correct spread operator
           media_type: "movie", // Add or overwrite the `media_type` field
         };
       });
+      setPopular(limitedPopularMovieData);
+
+      const trendingSeriesResponse = await fetch("https://api.themoviedb.org/3/tv/top_rated?language=en-US&page=1", {
+        method: "GET",
+        headers: {
+          accept: "application/json",
+          Authorization: `Bearer eyJhbGciOiJIUzI1NiJ9.eyJhdWQiOiI0NzI5NmMxNjY1NWI1NGE1MzU0MTA4NzIyZWVmMjFhNSIsIm5iZiI6MTczMDkyMTU4My44NzM5OTk4LCJzdWIiOiI2NzJiYzQ2ZjQzM2M4MmVhMjY3ZWExNWEiLCJzY29wZXMiOlsiYXBpX3JlYWQiXSwidmVyc2lvbiI6MX0.T9tYHXZGv0OisrEbFuVodRU7ppPEKLvLAsKMbmJElkA`,
+        },
+      });
+      const popularSeriesData = await trendingSeriesResponse.json();
+
+      // Save only the first 8 objects
+      const limitedPopularSeriesData = popularSeriesData.results.slice(0, 9).map((pop: mData) => {
+        return {
+          ...pop, // Correct spread operator
+          media_type: "Series", // Add or overwrite the `media_type` field
+        };
+      });
+      setPopularSeries(limitedPopularSeriesData);
       
-      setPopular(limitedTrendingData);
     } catch (error) {
       console.error("Error fetching data:", error);
     }
@@ -92,8 +111,8 @@ if(!isAuthenticated) return <div className="flex h-screen w-screen justify-cente
      <Recommendation/>
     <div className="hidden"><SlideShow/></div>
      
-              { popular && <ShowsList title="Popular" shows={popular} />}
-            
+              { popular && <ShowsList title="Popular Movies" shows={popular} />}
+               { popularSeries && <ShowsList title="Popular Series" shows={popularSeries} />}
         <div className=" h-screen flex flex-col  pl-2 w-full ">
               <ShowsList title="Recently Watched" shows={recentlywatched?.slice(0,9)}  /></div>
               

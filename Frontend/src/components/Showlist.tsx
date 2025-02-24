@@ -54,7 +54,7 @@ export default function ShowsList({shows, title}:{shows: mediaData[] | mData[] |
   <div className="text-white font-bold text-2xl sm:text-3xl self-start  w-full">
     {title}
   </div>
-  <div className="flex items-center justify-start overflow-x-auto sm:overflow-x-visible overflow-y-hidden mb-3 h-68 sm:h-80 space-x-3 scrollbar-none">
+  <div className="flex items-center justify-start overflow-x-auto sm:overflow-x-visible overflow-y-hidden mb-3 h-44 sm:h-64 space-x-3 scrollbar-none">
     {shows &&
       shows.map((item) => (
         //@ts-ignore
@@ -66,7 +66,7 @@ export default function ShowsList({shows, title}:{shows: mediaData[] | mData[] |
               //@ts-ignore
                 onClick={() => handleClick(item?.movie || item)}
               >
-                <RiInformation2Fill className="text-5xl text-yellow-400 opacity-80" />
+                <RiInformation2Fill className="text-3xl text-yellow-400 opacity-80" />
               </button>
             </Modal.open>
             <Modal.window name="Showinfo">

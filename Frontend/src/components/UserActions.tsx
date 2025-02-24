@@ -14,7 +14,7 @@ import Actions from "./Actions";
 export default function UserActions() {
   const {logout} = useAuth();
   return (
-    <div className="h-40 bg-slate-950 w-40 opacity-90 rounded-xl text-white shadow shadow-yellow-600"><div className="flex flex-col p-2 pl-4 pb-3 justify-between h-full ">
+    <div className="h-40 bg-black  w-40 opacity-90 rounded-xl text-white shadow shadow-yellow-600"><div className="flex flex-col p-2 pl-4 pb-3 justify-between h-full ">
     <div>
         <Modal>
             <Modal.open opens="profile">
