@@ -51,10 +51,10 @@ export default function ShowsList({shows, title}:{shows: mediaData[] | mData[] |
 
   return (
     <div className="flex flex-col">
-  <div className="text-white font-bold text-2xl sm:text-3xl self-start  w-full">
+  <div className="text-white font-bold text-2xl sm:text-3xl self-start mb-2 mt-1  w-full">
     {title}
   </div>
-  <div className="flex items-center justify-start overflow-x-auto sm:overflow-x-visible overflow-y-hidden mb-3 h-44 sm:h-64 space-x-3 scrollbar-none">
+  <div className="flex items-center justify-start overflow-x-auto sm:overflow-x-visible overflow-y-hidden mb-3 h-fit space-x-3 scrollbar-none">
     {shows &&
       shows.map((item) => (
         //@ts-ignore

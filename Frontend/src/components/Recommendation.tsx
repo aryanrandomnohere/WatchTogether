@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import RecommendationFrame from "../RecommendationFrame";
-import { FaArrowAltCircleLeft, FaArrowAltCircleRight, FaArrowLeft, FaArrowRight } from "react-icons/fa";
+import {  FaArrowLeft, FaArrowRight } from "react-icons/fa";
 
 
 const popular = [
@@ -178,19 +178,19 @@ export default function Recommendation() {
       </div>
 
       {/* Navigation Buttons (Stacked) */}
-      <div className="absolute bottom-6 right-6 sm:mr-3 flex flex-col space-y-2">
+      <div className="absolute bottom-1.5 right-3 sm:mr-3 flex flex-col space-y-2">
        
         <button
           onClick={nextSlide}
-          className="bg-gray-800 text-white p-2 bg-opacity-30 rounded-full shadow-lg hover:bg-gray-700 transition"
+          className="bg-gray-800 text-white p-1 md:p-2 bg-opacity-30 rounded-full shadow-lg hover:bg-gray-700 transition"
         >
-         <FaArrowRight className="text-2xl" />
+         <FaArrowRight className="md:text-2xl" />
         </button>
         <button
           onClick={prevSlide}
-          className="bg-gray-800 bg-opacity-30 text-white p-2 rounded-full shadow-lg hover:bg-gray-700 transition"
+          className="bg-gray-800 bg-opacity-30 text-white p-1 md:p-2 rounded-full shadow-lg hover:bg-gray-700 transition"
         >
-          <FaArrowLeft className="text-2xl" />
+          <FaArrowLeft className="md:text-2xl" />
         </button>
       </div>
     </div>

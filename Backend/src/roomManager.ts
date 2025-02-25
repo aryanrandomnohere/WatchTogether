@@ -1,8 +1,10 @@
+import { log } from "console";
+
   interface roomStatusInterface {
     playingId:string; 
     playingTitle:string;  
     playingType:string;
-    playingAnimeId:string;  
+    playingAnimeId?:string;  
     isPlaying:boolean;
     currentTime:number;   
     episode:number;    
@@ -21,7 +23,7 @@ export class roomManager {
     public static getInstance(){
         if(!this.instance){
             this.instance = new roomManager;
-            return this.instance
+            return this.instance 
         }
         return this.instance
     }
@@ -35,8 +37,9 @@ export class roomManager {
     }
     }
     public unsubscribe(roomId:string){
+      const lastRoomState = this.rooms.get(roomId)?.roomStatus;
       this.rooms.delete(roomId);
-      return
+      return lastRoomState
     }
 
     public addSubscriber(roomId:string, userId:string,socketId:string){
@@ -57,6 +60,7 @@ export class roomManager {
       for (const [roomId,room] of this.rooms.entries()){
         if(!room || !room.subscribers) continue
             room.subscribers.delete(socketId);
+            return roomId
       }
       }
   

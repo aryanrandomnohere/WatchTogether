@@ -87,21 +87,20 @@ export default function RecommendationFrame({show}:{show:mData}) {
   </div>
 
   {/* Text Content */}
-  <div className="relative flex flex-col ml-5 md:ml-10 justify-center max-w-[50%]">
-    <h1 className="text-3xl md:text-6xl font-stencil mb-1">
+  <div className="relative flex flex-col ml-3 md:ml-10 justify-center max-w-[60%]">
+    <h1 className="text-3xl md:text-6xl font-stencil mb-0.5 md:mb-1">
       {show.title || show.name || show.original_name}
     </h1>
-    <div className="flex items-center text-xs justify-between mb-3 max-w-96 text-white font-extrabold">
-      <div className="bg-slate-600 p-1 rounded ">{show.media_type?.toLocaleUpperCase()}</div>
-      <div className="  bg-slate-600 p-1 rounded">{show.first_air_date || show.release_date}</div>
-      <div></div>
-      <div className=" bg-slate-600 p-1 rounded">{show.original_language?.toUpperCase()}</div>
-      <div className="bg-slate-600 p-1 rounded">{show.vote_average}</div>
+    <div className="flex items-center text-xs gap-5 mb-3 max-w-96 text-white font-extrabold">
+      <div className="border border-slate-600 p-0.5 rounded text-xs ">{show.media_type?.toLocaleUpperCase()}</div>
+      <div className=" border hidden md:block border-slate-600 p-0.5 rounded text-xs">{show.first_air_date || show.release_date}</div>
+      <div className="border border-slate-600 p-0.5 rounded text-xs">{show.original_language?.toUpperCase()}</div>
+      <div className="border border-slate-600 p-0.5 rounded text-xs">{show.vote_average}</div>
     </div>
     <p className="max-w-80 md:max-w-2xl md:text-base font-comic text-xs hidden md:block">
       {show.overview}
     </p>
-    <div onClick={handleWatchNow} className=" p-0.5 md:p-2 text-yellow-60 hover:bg-slate-600 text-slate-400 hover:text-white hover:cursor-pointer border hover:border-0 mt-10 w-32 flex justify-center text-sm md:text-base font-extrabold rounded font-comic">Watch Now</div>
+    <div onClick={handleWatchNow} className=" p-1 md:p-2 text-yellow-60 hover:bg-slate-600  text-white hover:cursor-pointer border hover:border-slate-600 mt-5 md:mt-10 w-24 md:w-32 flex justify-center text-xs md:text-base font-extrabold rounded font-comic  ">Watch Now</div>
   </div>
 </div>
 

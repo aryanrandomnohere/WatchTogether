@@ -11,7 +11,6 @@ import FriendActionEvents from './Events/FriendActionsEvent';
 import p2pEvents from './Events/p2pEvents';
 import { roomManager } from './roomManager';
 import { UserManager } from './UserManager';
-import {  log, trace } from 'console';
 
 const app = express();
 const prisma = new PrismaClient();
@@ -40,7 +39,7 @@ const io = new Server(server, {
 
 io.on("connection", (socket) => {
   socket.on("join-room", async (roomId:string, userId:string) => {
-    socket.join(`${roomId}'s room`);
+    socket.join(`${roomId}`);
    if(roomManager.getInstance().getRoomTotal(roomId) === 0){
     const roomState = await prisma.room.findUnique({
       where:{
@@ -68,12 +67,37 @@ io.on("connection", (socket) => {
      for (const [key, values] of roomInstance.subscribers) {
       const userInstance = UserManager.getInstance();
       const user = userInstance.getUser(key)
-      log(user)
       if(!user) continue
        allUserData.push(user);
      }
-     log(allUserData)
-     io.to(`${roomId}'s room`).emit("room-people-data", roomManager.getInstance().getRoomTotal(roomId),allUserData);
+     io.to(`${roomId}`).emit("room-people-data", roomManager.getInstance().getRoomTotal(roomId),allUserData);
+  });
+  socket.on("leave-room",async (roomId:string)=>{
+    console.log("Component unmounted leave-room called")
+  roomManager.getInstance().removeSubscriber(roomId,socket.id);
+  if(roomManager.getInstance().getRoomTotal(roomId) === 0) {
+    const lastRoomState = roomManager.getInstance().unsubscribe(roomId)
+    if(!lastRoomState) return
+    await prisma.room.update({
+      where:{
+      userId:roomId,
+      },
+      data:lastRoomState 
+    })
+    return
+     }
+  const roomInstance = roomManager.getInstance()?.getRoom(roomId);
+  if (!roomInstance || roomInstance.subscribers.size === 0) return;
+  let allUserData: peopleType[] = []; 
+  
+  for (const [key, values] of roomInstance.subscribers) {
+   const userInstance = UserManager.getInstance();
+   const user = userInstance.getUser(key)
+   if(!user) continue
+    allUserData.push(user);
+  }
+  io.to(`${roomId}`).emit("room-people-data", roomManager.getInstance().getRoomTotal(roomId),allUserData);
+  return  
   });
   userEvents(io, socket);
   videoEvents(io, socket);
@@ -82,19 +106,59 @@ io.on("connection", (socket) => {
   p2pEvents(io,socket)
   // Handle disconnection
 socket.on("disconnect",async () => {
-    // Remove the user from any room they were in
-    UserManager.getInstance().removeUser(socket.id)
-    roomManager.getInstance().userDisconnected(socket.id)
-    for (const roomId in roomManager.getInstance()) {
-      if(roomManager.getInstance().getRoom(roomId)){
-      roomManager.getInstance().removeSubscriber(roomId, socket.id)
-      if(roomManager.getInstance().getRoomTotal(roomId) === 0) roomManager.getInstance().unsubscribe(roomId)
-        return 
-      } }
-  });
+    // Remove the user from userManager
+    const userId = UserManager.getInstance().removeUser(socket.id)
+    if(userId){
+        await prisma.user.update({
+        where:{
+            id:userId
+        },
+        data:{
+            status:"ONLINE"
+        }
+      })
+      // Fetch the user's friends
+      const userFriends = await prisma.friendship.findMany({
+        where: { userId },
+        select: { friendId: true },
+      });
+  
+      const friendIds = userFriends.map((f) => f.friendId);
+      friendIds.forEach((friendId) => {
+        io.to(friendId).emit("friend-status-update", {
+          userId,
+          newStatus:"OFFLINE", 
+        });
+      });
+    }
+    const roomId = roomManager.getInstance().userDisconnected(socket.id)
+    if(!roomId) return
+    const roomInstance = roomManager.getInstance()?.getRoom(roomId);
+    if (!roomInstance) return;
+    if(roomManager.getInstance().getRoomTotal(roomId) === 0) {
+    const lastRoomState = roomManager.getInstance().unsubscribe(roomId)
+    if(!lastRoomState) return
+    await prisma.room.update({
+      where:{
+      userId:roomId,
+      },
+      data:lastRoomState 
+    })
+    return
+     }
+     let allUserData: peopleType[] = []; 
+     
+     for (const [key, values] of roomInstance.subscribers) {
+      const userInstance = UserManager.getInstance();
+      const user = userInstance.getUser(key)
+      if(!user) continue
+       allUserData.push(user);
+     }
+     io.to(`${roomId}`).emit("room-people-data", roomManager.getInstance().getRoomTotal(roomId),allUserData);
+});
 });
 
 server.listen(3000, '0.0.0.0', () => {
 console.log('Backend running on http://0.0.0.0:3000');
 });
-  
+ 

@@ -41,7 +41,7 @@ export default function Show({
     <div
       role="button"
       onClick={() => onClick?.(item.id)}
-      className="relative hover:cursor-pointer flex flex-col items-center justify-center   sm:min-w-[100px] bg-slate-200  my-2 sm:min-h-[100px]   max-h-[1000px] sm:max-h-[500px]  sm:mx-0.5 max-w-[150px]   min-w-[100px] sm:w-2/5 md:w-1/6 bg-opacity-10 rounded-md overflow-hidden shadow-lg transition-transform transform hover:scale-95 group duration-300"
+      className="relative hover:cursor-pointer flex flex-col items-center justify-center   sm:min-w-[100px] bg-slate-200  my-2 sm:min-h-[100px]   max-h-[1000px] sm:max-h-[500px]  sm:mx-0.5 max-w-[150px]   min-w-[130px] sm:w-2/5 md:w-1/6 bg-opacity-10 rounded-md overflow-hidden shadow-lg transition-transform transform hover:scale-95 group duration-300"
     >
       <div className="relative w-full  min-h-fit">
         {item.poster_path ? (
