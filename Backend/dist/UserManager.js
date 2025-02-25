@@ -15,7 +15,9 @@ class UserManager {
         this.users.set(socketId, userInfo);
     }
     removeUser(socketId) {
+        const userId = this.users.get(socketId);
         this.users.delete(socketId);
+        return userId === null || userId === void 0 ? void 0 : userId.id;
     }
     getUser(id) {
         return this.users.get(id);

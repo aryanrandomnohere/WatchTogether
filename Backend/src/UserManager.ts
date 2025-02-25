@@ -23,7 +23,9 @@ interface peopleType {
    this.users.set(socketId,userInfo)
    }
    public removeUser(socketId:string) {
+    const userId = this.users.get(socketId)
     this.users.delete(socketId)
+    return userId?.id
    }
    
     public getUser(id:string){

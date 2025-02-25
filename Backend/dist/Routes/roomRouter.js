@@ -15,12 +15,34 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const client_1 = require("@prisma/client");
 const AuthMiddleware_1 = __importDefault(require("../AuthMiddleware"));
 const express_1 = __importDefault(require("express"));
+const roomManager_1 = require("../roomManager");
 const prisma = new client_1.PrismaClient();
 const roomRouter = express_1.default.Router();
 roomRouter.use(AuthMiddleware_1.default);
 roomRouter.get("/loadstate/:roomId", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const roomId = req.params.roomId;
+        let playing;
+        const room = roomManager_1.roomManager.getInstance().getRoom(roomId);
+        if (room === null || room === void 0 ? void 0 : room.roomStatus) {
+            const { playingId, playingTitle, playingType, playingAnimeId } = room === null || room === void 0 ? void 0 : room.roomStatus;
+            playing = { playingId, playingTitle, playingType, playingAnimeId };
+            console.log("local variable used to fetch");
+        }
+        else {
+            playing = yield prisma.room.findFirst({
+                where: {
+                    userId: roomId,
+                },
+                select: {
+                    playingId: true,
+                    playingTitle: true,
+                    playingType: true,
+                    playingAnimeId: true,
+                },
+            });
+            console.log("db variable used to fetch");
+        }
         const Messages = yield prisma.chat.findMany({
             where: { roomId },
             orderBy: { createdAt: "desc" },
@@ -65,17 +87,6 @@ roomRouter.get("/loadstate/:roomId", (req, res) => __awaiter(void 0, void 0, voi
                 },
             },
         });
-        const playing = yield prisma.room.findFirst({
-            where: {
-                userId: roomId,
-            },
-            select: {
-                playingId: true,
-                playingTitle: true,
-                playingType: true,
-                playingAnimeId: true,
-            },
-        });
         const oldMessages = Messages.reverse();
         res.status(200).json({ oldMessages, playing });
     }
@@ -90,15 +101,24 @@ roomRouter.get("/currentState/:roomId", (req, res) => __awaiter(void 0, void 0, 
     try {
         const userId = req.userId;
         const roomId = req.params.roomId;
-        const pastState = yield prisma.room.findFirst({
-            where: {
-                userId: roomId
-            },
-            select: {
-                isPlaying: true,
-                currentTime: true,
-            }
-        });
+        let pastState;
+        const room = roomManager_1.roomManager.getInstance().getRoom(roomId);
+        if (room === null || room === void 0 ? void 0 : room.roomStatus) {
+            const { isPlaying, currentTime } = room === null || room === void 0 ? void 0 : room.roomStatus;
+            pastState = { isPlaying, currentTime };
+            console.log("local variable used to fetch");
+        }
+        else {
+            pastState = yield prisma.room.findFirst({
+                where: {
+                    userId: roomId
+                },
+                select: {
+                    isPlaying: true,
+                    currentTime: true,
+                }
+            });
+        }
         res.status(200).json({
             isPlaying: pastState === null || pastState === void 0 ? void 0 : pastState.isPlaying,
             currentTime: pastState === null || pastState === void 0 ? void 0 : pastState.currentTime

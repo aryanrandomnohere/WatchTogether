@@ -21,8 +21,10 @@ class roomManager {
         }
     }
     unsubscribe(roomId) {
+        var _a;
+        const lastRoomState = (_a = this.rooms.get(roomId)) === null || _a === void 0 ? void 0 : _a.roomStatus;
         this.rooms.delete(roomId);
-        return;
+        return lastRoomState;
     }
     addSubscriber(roomId, userId, socketId) {
         var _a;
@@ -43,6 +45,7 @@ class roomManager {
             if (!room || !room.subscribers)
                 continue;
             room.subscribers.delete(socketId);
+            return roomId;
         }
     }
     getRoom(id) {
