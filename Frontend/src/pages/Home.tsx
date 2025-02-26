@@ -69,7 +69,7 @@ useEffect(() => {
       const popularMovieData = await trendingMoviesResponse.json();
 
       // Save only the first 8 objects
-      const limitedPopularMovieData = popularMovieData.results.slice(0, 9).map((pop: mData) => {
+      const limitedPopularMovieData = popularMovieData.results.map((pop: mData) => {
         return {
           ...pop, // Correct spread operator
           media_type: "movie", // Add or overwrite the `media_type` field
@@ -87,7 +87,7 @@ useEffect(() => {
       const popularSeriesData = await trendingSeriesResponse.json();
 
       // Save only the first 8 objects
-      const limitedPopularSeriesData = popularSeriesData.results.slice(0, 9).map((pop: mData) => {
+      const limitedPopularSeriesData = popularSeriesData.results.map((pop: mData) => {
         return {
           ...pop, // Correct spread operator
           media_type: "Series", // Add or overwrite the `media_type` field
@@ -111,14 +111,14 @@ if(!isAuthenticated) return <div className="flex h-screen w-screen justify-cente
      <Recommendation/>
     <div className="hidden"><SlideShow/></div>
      
-              { popular && <ShowsList title="Popular Movies" shows={popular} />}
-               { popularSeries && <ShowsList title="Popular Series" shows={popularSeries} />}
+              { popular && <ShowsList title="Popular Movies" shows={popular?.slice(0,10) } />}
+               { popularSeries && <ShowsList title="Popular Series" shows={popularSeries?.slice(0,10)} />}
         <div className=" h-screen flex flex-col  pl-2 w-full ">
-              <ShowsList title="Recently Watched" shows={recentlywatched?.slice(0,9)}  /></div>
+              <ShowsList title="Recently Watched" shows={recentlywatched?.slice(0,10)}  /></div>
               
               {favourites && favourites?.length > 0 && <div className="h-screen flex flex-col  pl-2 w-full ">
            
-              <ShowsList title="Favourites" shows={favourites?.slice(0,9)}  /></div> }
+              <ShowsList title="Favourites" shows={favourites?.slice(0,10)}  /></div> }
     </div>
   
 }

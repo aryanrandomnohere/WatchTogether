@@ -10,15 +10,15 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.default = userEvents;
-const client_1 = require("@prisma/client");
 const UserManager_1 = require("../UserManager");
-const prisma = new client_1.PrismaClient();
+const db_1 = require("../db");
+;
 function userEvents(io, socket) {
     // Handle user registration
     socket.on('register', (userId) => __awaiter(this, void 0, void 0, function* () {
         try {
             socket.join(userId);
-            const userInfo = yield prisma.user.findUnique({
+            const userInfo = yield db_1.prisma.user.findUnique({
                 where: {
                     id: userId
                 },
@@ -35,13 +35,13 @@ function userEvents(io, socket) {
             else {
                 console.error("User does not exists");
             }
-            const noti = yield prisma.friendRequests.findMany({
+            const noti = yield db_1.prisma.friendRequests.findMany({
                 where: { toId: userId },
                 select: { from: true,
                     fromUsername: true,
                 }
             });
-            const response = yield prisma.user.update({
+            const response = yield db_1.prisma.user.update({
                 where: {
                     id: userId
                 },
@@ -50,7 +50,7 @@ function userEvents(io, socket) {
                 }
             });
             // Fetch the user's friends
-            const userFriends = yield prisma.friendship.findMany({
+            const userFriends = yield db_1.prisma.friendship.findMany({
                 where: { userId },
                 select: { friendId: true },
             });
@@ -73,7 +73,7 @@ function userEvents(io, socket) {
     socket.on("update-status", (userId, newStatus) => __awaiter(this, void 0, void 0, function* () {
         try {
             //Updating status in db
-            yield prisma.user.update({
+            yield db_1.prisma.user.update({
                 where: {
                     id: userId
                 },
@@ -82,7 +82,7 @@ function userEvents(io, socket) {
                 }
             });
             // Fetch the user's friends
-            const userFriends = yield prisma.friendship.findMany({
+            const userFriends = yield db_1.prisma.friendship.findMany({
                 where: { userId },
                 select: { friendId: true },
             });
@@ -102,7 +102,7 @@ function userEvents(io, socket) {
     // Handle sending friend requests
     socket.on("send-friend-request", (senderId, senderUsername, receiverUsername) => __awaiter(this, void 0, void 0, function* () {
         try {
-            const receiver = yield prisma.user.findFirst({
+            const receiver = yield db_1.prisma.user.findFirst({
                 where: { username: receiverUsername },
                 select: { id: true },
             });
@@ -111,7 +111,7 @@ function userEvents(io, socket) {
             }
             else {
                 const receiverId = receiver.id;
-                const isReceived = yield prisma.friendRequests.create({
+                const isReceived = yield db_1.prisma.friendRequests.create({
                     data: {
                         from: senderId,
                         toId: receiverId,
@@ -133,7 +133,7 @@ function userEvents(io, socket) {
     // Handle accepting friend requests
     socket.on("accept-friend-request", (_a) => __awaiter(this, [_a], void 0, function* ({ userId, friendId }) {
         try {
-            yield prisma.$transaction((tx) => __awaiter(this, void 0, void 0, function* () {
+            yield db_1.prisma.$transaction((tx) => __awaiter(this, void 0, void 0, function* () {
                 yield tx.friendship.createMany({
                     data: [
                         { userId, friendId },

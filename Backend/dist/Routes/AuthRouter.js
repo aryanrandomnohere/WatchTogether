@@ -13,13 +13,12 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 const express_1 = __importDefault(require("express"));
-const client_1 = require("@prisma/client");
 const jsonwebtoken_1 = require("jsonwebtoken");
 const bcrypt_1 = __importDefault(require("bcrypt"));
 const JWT_SECRET_1 = __importDefault(require("../JWT_SECRET"));
 const zod_1 = __importDefault(require("zod"));
 const express_rate_limit_1 = __importDefault(require("express-rate-limit"));
-const console_1 = require("console");
+const db_1 = require("../db");
 const signUpSchema = zod_1.default.object({
     displayname: zod_1.default.string(),
     username: zod_1.default.string(),
@@ -39,7 +38,6 @@ const authLimiter = (0, express_rate_limit_1.default)({
     skipSuccessfulRequests: true, // ⬅️ Allows users to log in/signup again if they succeed
 });
 const authRouter = express_1.default.Router();
-const prisma = new client_1.PrismaClient();
 const SALT_ROUNDS = 10; // Number of salt rounds for bcrypt
 authRouter.use(authLimiter);
 // Signup endpoint
@@ -51,13 +49,13 @@ authRouter.post("/signup", (req, res) => __awaiter(void 0, void 0, void 0, funct
         return res.status(400).json({ msg: "Invalid Input" });
     try {
         // Check if user already exists
-        const existingUser = yield prisma.user.findUnique({ where: { email: data.email } });
+        const existingUser = yield db_1.prisma.user.findUnique({ where: { email: data.email } });
         if (existingUser)
             return res.status(400).json({ msg: "User already exists" });
         // Hash the password
         const hashedPassword = yield bcrypt_1.default.hash(data.password, SALT_ROUNDS);
         // Create new user with hashed password
-        const newUser = yield prisma.user.create({
+        const newUser = yield db_1.prisma.user.create({
             data: {
                 email: data.email,
                 displayname: data.displayname,
@@ -65,7 +63,7 @@ authRouter.post("/signup", (req, res) => __awaiter(void 0, void 0, void 0, funct
                 username: data.username,
             }
         });
-        yield prisma.room.create({ data: { userId: newUser.id }
+        yield db_1.prisma.room.create({ data: { userId: newUser.id }
         });
         // Generate JWT token
         const token = (0, jsonwebtoken_1.sign)({ userId: newUser.id, username: newUser.username }, JWT_SECRET_1.default);
@@ -81,12 +79,11 @@ authRouter.post("/signup", (req, res) => __awaiter(void 0, void 0, void 0, funct
 authRouter.post("/login", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const { email, password, token } = req.body;
     const credential = { email, password };
-    (0, console_1.log)(token);
     const { success, data } = logInSchema.safeParse(credential);
     if (!success)
         return res.status(400).json({ msg: "Invalid Input" });
     try {
-        const user = yield prisma.user.findUnique({ where: { email: data.email } });
+        const user = yield db_1.prisma.user.findUnique({ where: { email: data.email } });
         if (!user)
             return res.status(401).json({ msg: "Email does not exists" });
         // Compare password with stored hashed password

@@ -12,16 +12,16 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-const client_1 = require("@prisma/client");
 const express_1 = __importDefault(require("express"));
 const AuthMiddleware_1 = __importDefault(require("../AuthMiddleware"));
 const UserRouter = express_1.default.Router();
-const prisma = new client_1.PrismaClient();
+const db_1 = require("../db");
+;
 UserRouter.get("/getuser", AuthMiddleware_1.default, (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     //@ts-ignore
     const id = req.userId;
     try {
-        const userWithMovies = yield prisma.user.findUnique({
+        const userWithMovies = yield db_1.prisma.user.findUnique({
             where: {
                 id
             },

@@ -5,7 +5,7 @@ import bcrypt from "bcrypt";
 import JWT_SECRET from "../JWT_SECRET";
 import zod from 'zod'
 import rateLimit from "express-rate-limit";
-import { log } from "console";
+import { prisma } from "../db";
 
 const signUpSchema = zod.object({
     displayname: zod.string(),
@@ -27,7 +27,6 @@ const authLimiter = rateLimit({
     skipSuccessfulRequests: true, // ⬅️ Allows users to log in/signup again if they succeed
 });
 const authRouter = express.Router();
-const prisma = new PrismaClient();
 const SALT_ROUNDS = 10; // Number of salt rounds for bcrypt
 authRouter.use(authLimiter);
 // Signup endpoint
@@ -72,7 +71,6 @@ authRouter.post("/signup", async (req: Request, res: Response) => {
 authRouter.post("/login", async (req: Request, res: Response) => {
 const {email, password, token} = req.body;
     const credential = {email, password}
-   log(token)
     const { success, data } = logInSchema.safeParse(credential);
     
     if (!success) return res.status(400).json({ msg: "Invalid Input" })

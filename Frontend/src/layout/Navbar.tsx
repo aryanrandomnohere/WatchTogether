@@ -16,9 +16,6 @@ import { isNotiOpen } from "../State/notificationPanel";
 import Notifications from "../components/Notifications";
 import { Friends } from "../State/friendsState";
 import { FriendRequests } from "../State/FriendRequests";
-import getSocket from "../services/getSocket";
-
-
 
 interface UserInfoType {
   id: string;
@@ -27,7 +24,6 @@ interface UserInfoType {
   email: string;
   displayname:string;
 }
-const socket = getSocket();
 export default function Navbar() {
   const navigate = useNavigate();
   const [query, setQuery] = useState("");
@@ -91,9 +87,9 @@ export default function Navbar() {
 
   return (
     <div className="relative">
-      <div className="flex flex-col sm:flex-row items-center justify-center w-full bg-black   text-slate-400 font-bold shadow-yellow-950 mb-10 z-10 fixed">
+      <div className="flex flex-col sm:flex-row items-center justify-center w-full backdrop-filter backdrop-blur bg-opacity-30  text-slate-400 font-bold z-10 fixed  bg-transparent">
         
-          <div className="flex w-full items-center mb-2 sm:mb-0 my-2 sm:my-0 justify-between">  
+          <div className="flex w-full items-center  justify-between">  
          
             <div className="flex w-full justify-between items-center ">
             <Link to="/"> <div className="flex items-center"><p className=" ml-4 md:ml-8 text-2xl sm:text-3xl font-comic font-light ">WatchAlong</p></div></Link>
@@ -123,7 +119,7 @@ export default function Navbar() {
         
         <form onSubmit={handleSearch} className="w-full sm:w-full flex justify-between md:mr-44">
           <input
-            className="w-full  md:min-w-96   md:w-150 bg-white bg-opacity-10 text-stone-300 rounded px-3 py-1 sm:py-1.5 sm:my-2 placeholder-stone-400 border-solid border border-slate-400 focus:outline-none mx-0.5"
+            className="w-full  md:min-w-96   md:w-150 bg-white bg-opacity-10 text-stone-300 rounded px-3 py-1 sm:py-1.5 sm:my-1 placeholder-stone-400 border-solid border border-slate-400 focus:outline-none mx-0.5"
             value={query}
             onChange={(e) => setQuery(e.target.value)}
             placeholder="Search for anime/show"

@@ -8,7 +8,12 @@ export default {
     "./src/**/*.{js,ts,jsx,tsx}",
   ],
   theme: {
-    extend: {width: {
+    extend: {
+      colors: {
+        'custom-slate': {
+          950: '#1a1a1a', // This is a darker shade of slate
+        }},
+      width: {
       '128': '28rem',
       '150':'33rem',
       '92':'21rem',

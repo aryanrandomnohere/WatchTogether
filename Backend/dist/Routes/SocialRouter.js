@@ -14,9 +14,8 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 const express_1 = __importDefault(require("express"));
 const AuthMiddleware_1 = __importDefault(require("../AuthMiddleware"));
-const client_1 = require("@prisma/client");
+const db_1 = require("../db");
 const SocialRouter = express_1.default.Router();
-const prisma = new client_1.PrismaClient();
 SocialRouter.use(AuthMiddleware_1.default);
 SocialRouter.put("/rejectrequest", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     //@ts-ignore
@@ -28,7 +27,7 @@ SocialRouter.put("/rejectrequest", (req, res) => __awaiter(void 0, void 0, void 
     }
     try {
         // Find the friend request
-        const friendRequest = yield prisma.friendRequests.findFirst({
+        const friendRequest = yield db_1.prisma.friendRequests.findFirst({
             where: { toId, from },
             select: { id: true },
         });
@@ -37,7 +36,7 @@ SocialRouter.put("/rejectrequest", (req, res) => __awaiter(void 0, void 0, void 
             return;
         }
         // Delete the friend request
-        const deletedRequest = yield prisma.friendRequests.delete({
+        const deletedRequest = yield db_1.prisma.friendRequests.delete({
             where: { id: friendRequest.id },
         });
         const fromUsername = deletedRequest.fromUsername;
@@ -51,7 +50,7 @@ SocialRouter.put("/rejectrequest", (req, res) => __awaiter(void 0, void 0, void 
 SocialRouter.get("/friends", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     //@ts-ignore
     const userId = req.userId;
-    const userFriends = yield prisma.friendship.findMany({
+    const userFriends = yield db_1.prisma.friendship.findMany({
         where: {
             userId
         },
@@ -60,7 +59,7 @@ SocialRouter.get("/friends", (req, res) => __awaiter(void 0, void 0, void 0, fun
         }
     });
     const friendIds = userFriends.map(f => f.friendId);
-    const mutualFriends = yield prisma.friendship.findMany({
+    const mutualFriends = yield db_1.prisma.friendship.findMany({
         where: {
             userId: { in: friendIds },
             friendId: userId,
@@ -83,7 +82,7 @@ SocialRouter.get("/friends", (req, res) => __awaiter(void 0, void 0, void 0, fun
 SocialRouter.get('/loadrequests', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     //@ts-ignore
     const userId = req.userId;
-    const noti = yield prisma.friendRequests.findMany({
+    const noti = yield db_1.prisma.friendRequests.findMany({
         where: { toId: userId },
         select: { from: true,
             fromUsername: true,

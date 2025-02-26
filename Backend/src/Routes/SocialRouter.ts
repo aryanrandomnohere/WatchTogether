@@ -1,9 +1,8 @@
 import express, { Request, Response } from "express";
 import AuthMiddleware from "../AuthMiddleware";
-import { PrismaClient } from "@prisma/client";
+import { prisma } from "../db";
 
 const SocialRouter = express.Router();
-const prisma = new PrismaClient();
 SocialRouter.use(AuthMiddleware)
 SocialRouter.put("/rejectrequest", async (req: Request, res: Response) => {
   //@ts-ignore

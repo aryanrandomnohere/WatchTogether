@@ -1,10 +1,9 @@
 import express, { Request, Response } from "express";
 import AuthMiddleware from "../AuthMiddleware";
-import { Prisma, PrismaClient } from "@prisma/client";
-import { reverse } from "dns";
+import {prisma as prismaClient} from "../db"
+
 
 const MediaRouter = express.Router();
-const prismaClient = new PrismaClient();
 const VALID_LIST_TYPES = ["Favourite", "Recently Watched", "Watch Later"];
 interface UpdateEpisodeRequest extends Request {
   userId?: string; // Added by AuthMiddleware
