@@ -1,9 +1,8 @@
-import { PrismaClient } from "@prisma/client";
 import { log } from "console";
 import { Server, Socket } from "socket.io";
 import { number } from "zod";
 import { roomManager } from "../roomManager";
-const prisma = new PrismaClient();
+import { prisma } from "../db";;
 
 export default function videoEvents(io:Server, socket:Socket) {
     socket.on("change-video", async({playing,roomId}:{playing:{id:string, title:string, type:string, animeId?:string},roomId:string})=>{

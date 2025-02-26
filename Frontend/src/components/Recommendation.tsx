@@ -155,7 +155,7 @@ export default function Recommendation() {
                 initial={{ x: "0%", opacity: 1 }}
                 animate={{ x: direction === 1 ? "-100%" : "100%", opacity: 0 }}
                 exit={{ x: direction === 1 ? "-100%" : "100%", opacity: 0 }}
-                transition={{ duration: 1.5, ease: "easeInOut" }}
+                transition={{ duration: 0.5, ease: "easeInOut" }}
                 className="absolute w-full h-full flex justify-center"
               >
                 <RecommendationFrame show={popular[currentIndex]} />
@@ -167,7 +167,7 @@ export default function Recommendation() {
                 initial={{ x: direction === 1 ? "100%" : "-100%", opacity: 0 }}
                 animate={{ x: "0%", opacity: 1 }}
                 exit={{ x: "0%", opacity: 1 }}
-                transition={{ duration: 1.5, ease: "easeInOut" }}
+                transition={{ duration: 0.5, ease: "easeInOut" }}
                 className="absolute w-full h-full flex justify-center"
               >
                 <RecommendationFrame show={popular[(currentIndex + 1) % popular.length]} />
@@ -178,17 +178,17 @@ export default function Recommendation() {
       </div>
 
       {/* Navigation Buttons (Stacked) */}
-      <div className="absolute bottom-1.5 right-3 sm:mr-3 flex flex-col space-y-2">
+      <div className="absolute bottom-1.5 md:right-0.5 right-2 sm:mr-3 flex flex-col space-y-2">
        
         <button
           onClick={nextSlide}
-          className="bg-gray-800 text-white p-1 md:p-2 bg-opacity-30 rounded-full shadow-lg hover:bg-gray-700 transition"
+          className="bg-gray-800 text-white p-1 md:p-2 bg-opacity-50 rounded  shadow-lg hover:bg-gray-700 transition"
         >
          <FaArrowRight className="md:text-2xl" />
         </button>
         <button
           onClick={prevSlide}
-          className="bg-gray-800 bg-opacity-30 text-white p-1 md:p-2 rounded-full shadow-lg hover:bg-gray-700 transition"
+          className="bg-gray-800 bg-opacity-50 text-white p-1 md:p-2 rounded shadow-lg hover:bg-gray-700 transition"
         >
           <FaArrowLeft className="md:text-2xl" />
         </button>

@@ -1,5 +1,3 @@
-import { log } from "console";
-
 interface peopleType {
     displayname: string;
     username:string;

@@ -3,7 +3,6 @@ import cors from 'cors'; // Correct import
 import http from "http";
 import mainRouter from './Routes/index';
 import { Server } from 'socket.io';
-import { PrismaClient } from '@prisma/client';
 import videoEvents from './Events/videoEvents';
 import chatEvents from './Events/chatEvents';
 import userEvents from './Events/userEvents';
@@ -11,9 +10,10 @@ import FriendActionEvents from './Events/FriendActionsEvent';
 import p2pEvents from './Events/p2pEvents';
 import { roomManager } from './roomManager';
 import { UserManager } from './UserManager';
-
+import { prisma } from "./db";
+import { log } from 'console';
 const app = express();
-const prisma = new PrismaClient();
+
 app.use(cors({
   origin: '*',                         // Allow requests from any domain
   methods: ['GET', 'POST', 'PUT', 'DELETE'], // Allow specific HTTP methods
@@ -114,7 +114,7 @@ socket.on("disconnect",async () => {
             id:userId
         },
         data:{
-            status:"ONLINE"
+            status:"OFFLINE"
         }
       })
       // Fetch the user's friends

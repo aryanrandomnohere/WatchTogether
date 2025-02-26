@@ -14,16 +14,15 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 const express_1 = __importDefault(require("express"));
 const AuthMiddleware_1 = __importDefault(require("../AuthMiddleware"));
-const client_1 = require("@prisma/client");
+const db_1 = require("../db");
 const MediaRouter = express_1.default.Router();
-const prismaClient = new client_1.PrismaClient();
 const VALID_LIST_TYPES = ["Favourite", "Recently Watched", "Watch Later"];
 // Get all media for a user
 MediaRouter.get("/allmedia", AuthMiddleware_1.default, (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         //@ts-ignore
         const userId = req.userId;
-        const userMedia = yield prismaClient.userMovieList.findMany({
+        const userMedia = yield db_1.prisma.userMovieList.findMany({
             where: { userId },
             select: {
                 listType: true,
@@ -75,7 +74,7 @@ MediaRouter.put("/removefavourite", AuthMiddleware_1.default, (req, res) => __aw
     try {
         const userId = req.userId;
         const { movieId, listType } = req.body;
-        yield prismaClient.userMovieList.delete({
+        yield db_1.prisma.userMovieList.delete({
             where: {
                 userId_Mid_listType: {
                     userId,
@@ -107,7 +106,7 @@ MediaRouter.post("/mediaaction", AuthMiddleware_1.default, (req, res) => __await
             return;
         }
         // Check if the movie already exists in the database
-        let movieRecord = yield prismaClient.movie.findUnique({
+        let movieRecord = yield db_1.prisma.movie.findUnique({
             where: { id: movie.id },
             select: {
                 Mid: true,
@@ -116,7 +115,7 @@ MediaRouter.post("/mediaaction", AuthMiddleware_1.default, (req, res) => __await
         });
         // If the movie does not exist, create it
         if (!movieRecord) {
-            movieRecord = yield prismaClient.movie.create({
+            movieRecord = yield db_1.prisma.movie.create({
                 data: {
                     id: movie.id,
                     adult: movie.adult,
@@ -139,7 +138,7 @@ MediaRouter.post("/mediaaction", AuthMiddleware_1.default, (req, res) => __await
             });
             // Add genre IDs if provided
             if (movie.genre_ids && movie.genre_ids.length > 0) {
-                yield Promise.all(movie.genre_ids.map((genreId) => prismaClient.genreIds.create({
+                yield Promise.all(movie.genre_ids.map((genreId) => db_1.prisma.genreIds.create({
                     data: {
                         //@ts-ignore
                         movieId: movieRecord.Mid,
@@ -149,7 +148,7 @@ MediaRouter.post("/mediaaction", AuthMiddleware_1.default, (req, res) => __await
             }
             // Add origin countries if provided
             if (movie.origin_country && movie.origin_country.length > 0) {
-                yield Promise.all(movie.origin_country.map((country) => prismaClient.originCountry.create({
+                yield Promise.all(movie.origin_country.map((country) => db_1.prisma.originCountry.create({
                     data: {
                         //@ts-ignore
                         movieId: movieRecord.Mid,
@@ -159,7 +158,7 @@ MediaRouter.post("/mediaaction", AuthMiddleware_1.default, (req, res) => __await
             }
         }
         // Check if the user already added this movie with the same listType
-        const existingEntry = yield prismaClient.userMovieList.findUnique({
+        const existingEntry = yield db_1.prisma.userMovieList.findUnique({
             where: {
                 userId_Mid_listType: {
                     userId,
@@ -173,7 +172,7 @@ MediaRouter.post("/mediaaction", AuthMiddleware_1.default, (req, res) => __await
             }
         });
         if (existingEntry) {
-            yield prismaClient.userMovieList.update({
+            yield db_1.prisma.userMovieList.update({
                 where: {
                     id: existingEntry.id,
                 },
@@ -185,7 +184,7 @@ MediaRouter.post("/mediaaction", AuthMiddleware_1.default, (req, res) => __await
             return;
         }
         // Create the user-movie relationship
-        yield prismaClient.userMovieList.create({
+        yield db_1.prisma.userMovieList.create({
             data: {
                 userId,
                 movieId: movieRecord.Mid,
@@ -214,7 +213,7 @@ MediaRouter.put("/setmedia", AuthMiddleware_1.default, (req, res) => __awaiter(v
             return;
         }
         // Attempt to update the entry
-        const response = yield prismaClient.userMovieList.findUnique({
+        const response = yield db_1.prisma.userMovieList.findUnique({
             where: {
                 userId_Mid_listType: {
                     userId,
@@ -224,7 +223,7 @@ MediaRouter.put("/setmedia", AuthMiddleware_1.default, (req, res) => __awaiter(v
             },
         });
         if (response) {
-            yield prismaClient.userMovieList.update({
+            yield db_1.prisma.userMovieList.update({
                 where: {
                     userId_Mid_listType: {
                         userId,
@@ -241,7 +240,7 @@ MediaRouter.put("/setmedia", AuthMiddleware_1.default, (req, res) => __awaiter(v
             return;
         }
         // Create a new entry if no matching update found
-        const movie = yield prismaClient.movie.findUnique({
+        const movie = yield db_1.prisma.movie.findUnique({
             where: { id: movie_Id },
             select: { Mid: true },
         });
@@ -249,7 +248,7 @@ MediaRouter.put("/setmedia", AuthMiddleware_1.default, (req, res) => __awaiter(v
             res.status(404).json({ success: false, message: "Movie not found." });
             return;
         }
-        yield prismaClient.userMovieList.create({
+        yield db_1.prisma.userMovieList.create({
             data: {
                 userId,
                 listType: "Recently Watched",

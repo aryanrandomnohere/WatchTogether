@@ -2,8 +2,7 @@ import { PrismaClient } from "@prisma/client";
 import { log } from "console";
 import { SocketAddress } from "net";
 import { Server, Socket } from "socket.io";
-
-const prisma = new PrismaClient();
+import { prisma } from "../db";;
 
 export default function chatEvents(io: Server, socket: Socket) {
   // Shared select clause for message fetching

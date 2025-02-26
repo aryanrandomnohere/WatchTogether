@@ -2,8 +2,8 @@ import { PrismaClient } from "@prisma/client";
 import AuthMiddleware from "../AuthMiddleware"
 import express, { Request, Response } from "express";
 import { roomManager } from "../roomManager";
+import { prisma } from "../db";
 
-const prisma = new PrismaClient();
 const roomRouter = express.Router()
 roomRouter.use(AuthMiddleware)
 

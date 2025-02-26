@@ -80,7 +80,7 @@ const ShowInfo: React.FC<ShowInfoProps> = ({ movie, ep=1, season=1 }) => {
     const data = await results.json();    
     const possibleNames = data.results.filter((name:{iso_3166_1: string;  title: string; type: string;})=> name.type === "Romaji" )   
     const finalName:string = possibleNames[0].title.replace(/:/g,"")
-    const result = await axios.get(`/api/search?q=${finalName}&page=1`);
+    const result = await axios.get(`/api/search?q=${finalName}`);
     const FullId = result.data[0]?.link_url;
    const Id = FullId.split("-episode")[0];
    return Id
@@ -143,7 +143,7 @@ const handleAddFavourite = async ()=>{
       let alternateNames = "";
       const name = movie.name || movie.title || "";
       const formattedName = name.replace(/ /g, "-").replace(/:/g, "");
-      const result = await axios.get(`/api/search?q=${formattedName}&page=1`);
+      const result = await axios.get(`/api/search?q=${formattedName}`);
       console.log(result);
       
       if (!result?.data[0]?.link_url) {

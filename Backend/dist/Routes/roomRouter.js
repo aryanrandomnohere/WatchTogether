@@ -12,11 +12,10 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-const client_1 = require("@prisma/client");
 const AuthMiddleware_1 = __importDefault(require("../AuthMiddleware"));
 const express_1 = __importDefault(require("express"));
 const roomManager_1 = require("../roomManager");
-const prisma = new client_1.PrismaClient();
+const db_1 = require("../db");
 const roomRouter = express_1.default.Router();
 roomRouter.use(AuthMiddleware_1.default);
 roomRouter.get("/loadstate/:roomId", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
@@ -30,7 +29,7 @@ roomRouter.get("/loadstate/:roomId", (req, res) => __awaiter(void 0, void 0, voi
             console.log("local variable used to fetch");
         }
         else {
-            playing = yield prisma.room.findFirst({
+            playing = yield db_1.prisma.room.findFirst({
                 where: {
                     userId: roomId,
                 },
@@ -43,7 +42,7 @@ roomRouter.get("/loadstate/:roomId", (req, res) => __awaiter(void 0, void 0, voi
             });
             console.log("db variable used to fetch");
         }
-        const Messages = yield prisma.chat.findMany({
+        const Messages = yield db_1.prisma.chat.findMany({
             where: { roomId },
             orderBy: { createdAt: "desc" },
             take: 15,
@@ -109,7 +108,7 @@ roomRouter.get("/currentState/:roomId", (req, res) => __awaiter(void 0, void 0, 
             console.log("local variable used to fetch");
         }
         else {
-            pastState = yield prisma.room.findFirst({
+            pastState = yield db_1.prisma.room.findFirst({
                 where: {
                     userId: roomId
                 },
@@ -131,7 +130,7 @@ roomRouter.get("/currentState/:roomId", (req, res) => __awaiter(void 0, void 0, 
 roomRouter.get("/getRoomName/:roomId", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const roomId = req.params.roomId;
-        const roomDetails = yield prisma.user.findFirst({
+        const roomDetails = yield db_1.prisma.user.findFirst({
             where: {
                 id: roomId
             },

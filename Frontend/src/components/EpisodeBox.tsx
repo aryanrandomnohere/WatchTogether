@@ -23,15 +23,12 @@ export default function EpisodeBox({ episodes }: { episodes: EpisodeType[] }) {
    const Info = useRecoilValue(userInfo)
    const handleEpisodeClick = async (episode: EpisodeType) => { 
     setEp({ episode_number: episode.episode_number, season_number: episode.season_number });
-    console.log("Recoil state set:", { episode_number: episode.episode_number, season_number: episode.season_number });
     const currentTime = new Date().toLocaleTimeString([], {
         hour: '2-digit',
         minute: '2-digit'
     });
     try {
-        console.log("Sending Axios request...");
         const token = localStorage.getItem("token");
-        console.log("Token:", token);
         
         const response = await axios.put(
             //@ts-ignore
@@ -47,7 +44,6 @@ export default function EpisodeBox({ episodes }: { episodes: EpisodeType[] }) {
                 },
             }
         );
-        console.log("Axios response:", response.data);
     } catch (error) {
         console.error("Failed to update episode:", error);
     }

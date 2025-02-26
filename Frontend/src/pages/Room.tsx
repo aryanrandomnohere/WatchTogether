@@ -145,13 +145,13 @@ const { roomId } = useParams();
   </div>
 
   {/* Middle Content */}
-  <div className={`flex w-full md:h-[43rem] pr-4  ${
+  <div className={`flex w-full  pr-4 min- ${
       isOpen && ["Series", "Anime","AnimeUrl"].includes(isPlaying.type) && chatIsOpen ? "md:col-span-2" : chatIsOpen  ? "md:col-span-3": isOpen ? "md:col-span-3":"md:col-span-4"
     }`}>
   <div
-    className={`flex w-full  ${
+    className={`flex w-full   ${
       isOpen && ["Series", "Anime","AnimeUrl"].includes(isPlaying.type) && chatIsOpen ? "md:col-span-2" : "md:col-span-4"
-    } transition-all duration-700 ease-in-out justify-center items-center bg-zinc-950 min-h-full   border border-white/20 p-1.5 h-full`}
+    } transition-all duration-700 md:h-[44rem] ease-in-out justify-center items-center bg-zinc-950 min-h-full    border border-white/20 p-1.5 `}
   > 
     <Series id={isPlaying.id} type={isPlaying.type} title={isPlaying.title} animeId={isPlaying.animeId} />
   </div>

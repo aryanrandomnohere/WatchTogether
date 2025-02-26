@@ -1,8 +1,6 @@
-import { PrismaClient } from "@prisma/client";
 import { Server, Socket } from "socket.io";
 import { UserManager } from "../UserManager";
-
-const prisma = new PrismaClient();
+import { prisma } from "../db";;
 
 export default function userEvents(io: Server, socket: Socket) {
     // Handle user registration

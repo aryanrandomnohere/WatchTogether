@@ -17,13 +17,10 @@ export default function Series({id ,type,title, animeId="" }: {id: number | stri
     const leftIsOpen = useRecoilValue(lefSideIsOpen)
     const [lastTime, setLastTime] = useState(0);
     const [hasAccess,setHasAccess] = useState(false);
-  const Info = useRecoilValue(userInfo)    
+    const Info = useRecoilValue(userInfo)    
     const {roomId} = useParams()
-console.log(title,isPlay);
-
-
-
-
+    const {episode_number, season_number} = useRecoilValue(epState);
+    const [AnimeId,setAnimeId] = useState<string>("")
     useEffect(() => {
         if (videoRef.current) {
             // videoRef.current.load(); // Reload the video when the source changes
@@ -136,6 +133,27 @@ console.log(title,isPlay);
             };
         }
     }, [id, roomId, Info.displayname, Info.username,lastTime, hasAccess]);
+
+    useEffect(() => {
+      if ((id && type === "Anime") || type === "AniMov") {
+          if (season_number > 1) {
+              const getDifferentSeasonLink = async () => {
+                  try {
+                      const result = await axios.get(`/api/search?q=${animeId.replace(/-/g, " ") + " season " + season_number}`);
+                      if (result.data[0]?.link_url) {
+                          const newId = result.data[0]?.link_url?.split("-dub")[0];
+                          console.log(newId); // Logs correctly
+                          setAnimeId(newId);
+                      }
+                  } catch (error) {
+                      console.error("Error fetching season link:", error);
+                  }
+              };
+
+              getDifferentSeasonLink();
+          }
+      }
+  }, [animeId, season_number, type]);
     
     const handleAccessClick = async () => {
         setHasAccess(true);
@@ -158,15 +176,14 @@ console.log(title,isPlay);
         }
       };
     
-    const {episode_number, season_number} = useRecoilValue(epState);
-    if (id && type==="Anime" || type === "AniMov") {
+  
    
-            
-            
+    if (id && type==="Anime" || type === "AniMov") {
+     console.log(AnimeId);
         return (
               <iframe 
-                 className={` ${leftIsOpen?"sm:h-24": "sm:h-full"} w-screen h-16 max-w-[73rem]  rounded `}
-                  src={`https://2anime.xyz/embed/${animeId}-episode-${episode_number}`}
+                 className={` ${leftIsOpen?"sm:h-full": "sm:h-full"} w-screen h-16 max-w-[73rem]  rounded `}
+                  src={`https://2anime.xyz/embed/${AnimeId}-episode-${episode_number}`}
                   frameBorder="0"
                   allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
                   allowFullScreen

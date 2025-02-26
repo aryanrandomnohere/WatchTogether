@@ -17,7 +17,6 @@ const cors_1 = __importDefault(require("cors")); // Correct import
 const http_1 = __importDefault(require("http"));
 const index_1 = __importDefault(require("./Routes/index"));
 const socket_io_1 = require("socket.io");
-const client_1 = require("@prisma/client");
 const videoEvents_1 = __importDefault(require("./Events/videoEvents"));
 const chatEvents_1 = __importDefault(require("./Events/chatEvents"));
 const userEvents_1 = __importDefault(require("./Events/userEvents"));
@@ -25,8 +24,8 @@ const FriendActionsEvent_1 = __importDefault(require("./Events/FriendActionsEven
 const p2pEvents_1 = __importDefault(require("./Events/p2pEvents"));
 const roomManager_1 = require("./roomManager");
 const UserManager_1 = require("./UserManager");
+const db_1 = require("./db");
 const app = (0, express_1.default)();
-const prisma = new client_1.PrismaClient();
 app.use((0, cors_1.default)({
     origin: '*', // Allow requests from any domain
     methods: ['GET', 'POST', 'PUT', 'DELETE'], // Allow specific HTTP methods
@@ -46,7 +45,7 @@ io.on("connection", (socket) => {
         var _a;
         socket.join(`${roomId}`);
         if (roomManager_1.roomManager.getInstance().getRoomTotal(roomId) === 0) {
-            const roomState = yield prisma.room.findUnique({
+            const roomState = yield db_1.prisma.room.findUnique({
                 where: {
                     userId: roomId,
                 },
@@ -87,7 +86,7 @@ io.on("connection", (socket) => {
             const lastRoomState = roomManager_1.roomManager.getInstance().unsubscribe(roomId);
             if (!lastRoomState)
                 return;
-            yield prisma.room.update({
+            yield db_1.prisma.room.update({
                 where: {
                     userId: roomId,
                 },
@@ -120,16 +119,16 @@ io.on("connection", (socket) => {
         // Remove the user from userManager
         const userId = UserManager_1.UserManager.getInstance().removeUser(socket.id);
         if (userId) {
-            yield prisma.user.update({
+            yield db_1.prisma.user.update({
                 where: {
                     id: userId
                 },
                 data: {
-                    status: "ONLINE"
+                    status: "OFFLINE"
                 }
             });
             // Fetch the user's friends
-            const userFriends = yield prisma.friendship.findMany({
+            const userFriends = yield db_1.prisma.friendship.findMany({
                 where: { userId },
                 select: { friendId: true },
             });
@@ -151,7 +150,7 @@ io.on("connection", (socket) => {
             const lastRoomState = roomManager_1.roomManager.getInstance().unsubscribe(roomId);
             if (!lastRoomState)
                 return;
-            yield prisma.room.update({
+            yield db_1.prisma.room.update({
                 where: {
                     userId: roomId,
                 },

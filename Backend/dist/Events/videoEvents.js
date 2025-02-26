@@ -10,10 +10,10 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.default = videoEvents;
-const client_1 = require("@prisma/client");
 const console_1 = require("console");
 const roomManager_1 = require("../roomManager");
-const prisma = new client_1.PrismaClient();
+const db_1 = require("../db");
+;
 function videoEvents(io, socket) {
     socket.on("change-video", (_a) => __awaiter(this, [_a], void 0, function* ({ playing, roomId }) {
         try {
@@ -29,7 +29,7 @@ function videoEvents(io, socket) {
                 (0, console_1.log)(room.roomStatus);
             }
             else {
-                newPlaying = yield prisma.room.update({
+                newPlaying = yield db_1.prisma.room.update({
                     where: { userId: roomId },
                     data: {
                         playingId: playing.id,
@@ -60,7 +60,7 @@ function videoEvents(io, socket) {
                 (0, console_1.log)("ep stored locally");
             }
             else {
-                yield prisma.room.update({
+                yield db_1.prisma.room.update({
                     where: {
                         userId: roomId
                     },
@@ -82,7 +82,7 @@ function videoEvents(io, socket) {
             room.roomStatus.isPlaying = isPlaying;
         }
         else {
-            yield prisma.room.update({
+            yield db_1.prisma.room.update({
                 where: {
                     userId: roomId
                 },
@@ -104,7 +104,7 @@ function videoEvents(io, socket) {
             room.roomStatus.currentTime = currentTime;
         }
         else {
-            yield prisma.room.update({
+            yield db_1.prisma.room.update({
                 where: {
                     userId: roomId
                 },
