@@ -1,26 +1,21 @@
 import { log } from "console";
 import { Server, Socket } from "socket.io";
-interface peopleType {
-    displayname: string;
-    username:string;
-    userId:string;
-    avatar:string;
-  }
+import { roomManager } from "../roomManager";
 
-let senderId: null | string = null;
-let receiverIds: null | string[] = null;
+
+
 export default function p2pEvents(io:Server,socket:Socket){
-socket.on("initiate-offer",(roomId:string,userInfo,peoples:string[],sdp:any)=>{
+socket.on("initiate-offer",(roomId:string,userInfo, peoples:string[],sdp:any)=>{
+  const room =  roomManager.getInstance().getRoom(roomId)
   log("frontend is hitting")
-if(receiverIds?.includes(userInfo.id)){ 
+if(roomManager.getInstance().getRoom(roomId)?.inCall?.Receivers?.includes(userInfo.id)){ 
   io.to(userInfo.id).emit("multiple-call-error","A call is already started cannot make an offer"); 
   return;
 }
 senderId= userInfo.id;
 receiverIds = peoples.filter((people)=> people !== userInfo.id);
 if(receiverIds.length < 1) return
-
-for(let receiver of receiverIds ){
+for(let receiver of room.inCall?.Receivers){
 log("sending-iniated-offer",receiver)
     io.to(receiver).emit("initiate-offer",`${userInfo.displayname || userInfo.username} started a call`,sdp)
 }

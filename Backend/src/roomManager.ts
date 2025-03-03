@@ -1,4 +1,3 @@
-import { log } from "console";
 
   interface roomStatusInterface {
     playingId:string; 
@@ -10,9 +9,20 @@ import { log } from "console";
     episode:number;    
     season:number;    
   }
+
+  interface SpdStatus {
+  sdp:RTCSessionDescriptionInit,
+  
+  }
+
+  interface Call {
+   Senders:Map<string, SpdStatus>,
+   Receivers:Set<string>
+  }
   interface roomInterface {
     roomStatus: roomStatusInterface;
     subscribers: Map<string,string>;
+    inCall?: Call;
   }
   
 
@@ -63,9 +73,16 @@ export class roomManager {
             return roomId
       }
       }
-  
+    public joinAsASender(roomId:string,) {
 
-
+    }
+    public joinAsAReceiver(roomId:string) {
+      this.rooms.get
+    }
+    public getCallMemberSize(roomId:string){
+    const CallSize = this.rooms.get(roomId)?.inCall?.Receivers.size || 0 + this.rooms.get(roomId)?.inCall?.Senders.size || 0;
+    return CallSize
+    }
     public getRoom(id:string) {
        return this.rooms.get(id) || null
     }

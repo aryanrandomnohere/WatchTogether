@@ -59,7 +59,7 @@ export default function EpisodeBox({ episodes }: { episodes: EpisodeType[] }) {
 
     return (
         <div className="flex justify-center items-center w-full pt-2">
-            <div className="flex-wrap flex w-full max-w-96  gap-1.5 sm:gap-1 justify-center">
+            <div className="flex-wrap flex w-full max-w-96  gap-1.5 sm:gap-1 justify-between">
                 {episodes.map((episode) => {
                     const paddingClass =
                         episode.episode_number.toString().length > 2
