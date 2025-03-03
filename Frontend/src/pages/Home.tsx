@@ -107,7 +107,7 @@ if(!isAuthenticated) return <div className="flex h-screen w-screen justify-cente
 </div>
 
   return  <div className="flex flex-col  placeholder:bg-gray-900 h-screen overflow-y-auto scrollbar-none   pl-2 w-full ">
-     <div className="sm:mt-14 mt-22"></div>
+     <div className="sm:mt-12 mt-22"></div>
      <Recommendation/>
     <div className="hidden"><SlideShow/></div>
      

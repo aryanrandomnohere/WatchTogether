@@ -92,7 +92,7 @@ export default function Navbar() {
           <div className="flex w-full items-center  justify-between">  
          
             <div className="flex w-full justify-between items-center ">
-            <Link to="/"> <div className="flex items-center"><p className=" ml-4 md:ml-8 text-2xl sm:text-3xl font-comic font-light ">WatchAlong</p></div></Link>
+            <Link to="/"> <div className="flex items-center"><p className=" ml-4 md:ml-8 my-1.5 text-2xl sm:text-3xl font-comic font-light ">WatchAlong</p></div></Link>
             <div className="sm:hidden right-11 mr-2.5">
               {!isAuthenticated ?<div>
             <Modal>

@@ -40,7 +40,7 @@ useEffect(()=>{
     socket.connect();
 
 
-    
+      
     socket.on("user-not-found", () => {
       toast.error("User does not exist");
     });
