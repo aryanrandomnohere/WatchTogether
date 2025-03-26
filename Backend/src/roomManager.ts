@@ -80,7 +80,8 @@ export class roomManager {
       this.rooms.get
     }
     public getCallMemberSize(roomId:string){
-    const CallSize = this.rooms.get(roomId)?.inCall?.Receivers.size || 0 + this.rooms.get(roomId)?.inCall?.Senders.size || 0;
+  
+    const CallSize = this.rooms.get(roomId)?.inCall?.Receivers.size;
     return CallSize
     }
     public getRoom(id:string) {

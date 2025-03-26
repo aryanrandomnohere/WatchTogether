@@ -1,7 +1,7 @@
 import React, { cloneElement, createContext, ReactNode, useContext, useState } from "react";
 import { createPortal } from "react-dom";
 import { HiXMark } from "react-icons/hi2";
-import { useOutsideClick } from "../hooks/useOutsideClick";
+// import { useOutsideClick } from "../hooks/useOutsideClick";
 import { motion } from "framer-motion";
 interface ModalContextType {
   openName: string;
@@ -52,7 +52,7 @@ interface WindowProps {
 
 function Window({ children, name }: WindowProps) {
   const { openName, close } = useModal();
-  const ref = useOutsideClick(close)
+  // const ref = useOutsideClick(close)
   if (name !== openName) return null;
 
   return createPortal(
@@ -63,7 +63,7 @@ function Window({ children, name }: WindowProps) {
       transition={{ duration: 0.5, ease: "easeInOut" }}
       className="fixed inset-0 w-full h-screen bg-black  bg-opacity-20 backdrop-blur-sm z-[1000] flex items-center justify-center p-1"
     >
-      <div ref={ref} className="flex flex-col w-auto h-auto max-w-full max-h-full bg-gray-900 rounded shadow-lg overflow-auto">
+      <div  className="flex flex-col w-auto h-auto max-w-full max-h-full bg-gray-900 rounded shadow-lg overflow-auto">
         <div
           className="fixed z-10 self-end p-1 hover:bg-opacity-45 hover:bg-black  rounded-full text-orange-600 text-3xl cursor-pointer"
           onClick={close}

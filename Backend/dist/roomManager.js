@@ -48,6 +48,16 @@ class roomManager {
             return roomId;
         }
     }
+    joinAsASender(roomId) {
+    }
+    joinAsAReceiver(roomId) {
+        this.rooms.get;
+    }
+    getCallMemberSize(roomId) {
+        var _a, _b;
+        const CallSize = (_b = (_a = this.rooms.get(roomId)) === null || _a === void 0 ? void 0 : _a.inCall) === null || _b === void 0 ? void 0 : _b.Receivers.size;
+        return CallSize;
+    }
     getRoom(id) {
         return this.rooms.get(id) || null;
     }
