@@ -27,14 +27,14 @@ export default function AlertBox({children}:{children:ReactNode}) {
 }
 
 function Open({children, opens}:{children:ReactNode,opens:string}) {
-  //@ts-ignore
+  //@ts-expect-error - Environment variable type is not defined
     const { open } = useAlertBox()
     const handleClick = ()=>open(opens)
 return cloneElement(children as React.ReactElement,{onClick:handleClick})
 }
 
 function Window({children, name }:{children:ReactNode, name:string}) {
-    //@ts-ignore
+    //@ts-expect-error - Environment variable type is not defined
     const {isOpen, close} = useAlertBox()
     const ref = useOutsideClick(close);
     if(name !== isOpen) return null;
@@ -45,12 +45,12 @@ function Window({children, name }:{children:ReactNode, name:string}) {
         transition={{ duration: 0.5, ease: "easeInOut" }}
         className="fixed inset-0 w-full h-screen bg-opacity-5 backdrop-blur-0 z-[1000] flex items-start justify-center"
       >
-        <div ref={ref} className="flex flex-col w-auto h-auto max-w-full max-h-full bg-black  rounded shadow-lg overflow-auto items-end justify-end">
+        <div ref={ref} className="flex flex-col w-auto h-auto max-w-full max-h-full bg-slate-200 dark:bg-slate-800 rounded shadow-lg overflow-auto items-end justify-end">
           <div
-            className="fixed z-10 self-end p-1 hover:bg-opacity-45 hover:bg-yellow-950 rounded-sm m-2 text-orange-600 text-3xl cursor-pointer flex "
+            className="fixed z-10 self-end p-1 hover:bg-opacity-45 hover:bg-slate-300 dark:hover:bg-slate-700 rounded-sm m-2 text-slate-700 dark:text-slate-300 text-3xl cursor-pointer flex"
             onClick={close}
           >
-          <div className="text-base  p-1">GOT IT</div> 
+            <div className="text-base p-1">GOT IT</div> 
           </div>
           <div className="px-0">
             {cloneElement(children as React.ReactElement, { close })}

@@ -46,7 +46,7 @@ const isAuthenticated = useRecoilValue(isAuthenticatedState);
   const [popularSeries, setPopularSeries] = useState<mData[]>([]);
 
   const setAllMedia = useSetRecoilState(userMedia); 
-  // const lastWatched: mData[] | undefined  = recentlywatched?.map((item)=> item.movie);
+  // const lastWatched: mData[] | undefined  = recentlywatched?.((item)=> item.movie);
   
 useEffect(() => {
   if(!isAuthenticated) return

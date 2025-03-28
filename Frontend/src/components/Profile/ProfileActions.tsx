@@ -74,7 +74,7 @@
 // //   <div className="w-24 rounded-full border-2">
 // //     <img src={selectedPfp || avatar2} />
 // //   </div>
-// //   <div className="absolute bottom-0 right-0 p-1 border rounded-full bg-white text-slate-400 hover:cursor-pointer" onClick={()=>setIsOpenAvatar(!isOpenAvatar)}><MdModeEdit /></div>
+// //   <div className="absolute bottom-0 right-0 p-1 border rounded-full bg-slate-950 text-slate-400 hover:cursor-pointer" onClick={()=>setIsOpenAvatar(!isOpenAvatar)}><MdModeEdit /></div>
   
 // // </div>
 
@@ -83,7 +83,7 @@
 // //           <div className="text-sm text-gray-300">{Info.email}</div>
 // //         </div> */}
 // //       </div>
-// //       {isOpenAvatar &&  <div className="absolute mt-4 bg-black  p-1.5 flex flex-col items-center">
+// //       {isOpenAvatar &&  <div className="absolute mt-4 bg-slate-950  p-1.5 flex flex-col items-center">
 // //         <label className=" block text-slate-400">Choose Profile Picture</label>
 // //         <div className="flex gap-3 mt-2">
 // //           {pfpOptions.map((pfp, index) => (

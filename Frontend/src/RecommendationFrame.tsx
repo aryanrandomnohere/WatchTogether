@@ -71,7 +71,7 @@ export default function RecommendationFrame({show}:{show:mData}) {
   }
     if(!show) return <></>
   return (
-<div className="relative w-full h-full text-white flex items-center">
+<div className="relative w-full h-full text-slate-800 dark:text-white flex items-center">
   {/* Background Image (Now Behind the Text) */}
   <div className="absolute inset-0 w-full flex justify-end h-full">
     <div className="relative w-2/3 h-full">
@@ -82,7 +82,7 @@ export default function RecommendationFrame({show}:{show:mData}) {
       />
 
       {/* Faded Overlay (Now Covers the Image Properly) */}
-      <div className="absolute inset-0 bg-gradient-to-r  from-black   via-transparent to-transparent"></div>
+      <div className="absolute inset-0 bg-gradient-to-r from-slate-200 dark:from-slate-950 via-transparent to-transparent"></div>
     </div>
   </div>
 
@@ -91,16 +91,16 @@ export default function RecommendationFrame({show}:{show:mData}) {
     <h1 className="text-3xl md:text-6xl font-stencil mb-0.5 md:mb-1">
       {show.title || show.name || show.original_name}
     </h1>
-    <div className="flex items-center text-xs gap-5 mb-3 max-w-96 text-white font-extrabold">
-      <div className="border border-slate-600 p-0.5 rounded text-xs ">{show.media_type?.toLocaleUpperCase()}</div>
-      <div className=" border hidden md:block border-slate-600 p-0.5 rounded text-xs">{show.first_air_date || show.release_date}</div>
-      <div className="border border-slate-600 p-0.5 rounded text-xs">{show.original_language?.toUpperCase()}</div>
-      <div className="border border-slate-600 p-0.5 rounded text-xs">{show.vote_average}</div>
+    <div className="flex items-center text-xs gap-5 mb-3 max-w-96 text-slate-800 dark:text-white font-extrabold">
+      <div className="border border-slate-400 dark:border-slate-600 p-0.5 rounded text-xs">{show.media_type?.toLocaleUpperCase()}</div>
+      <div className="border hidden md:block border-slate-400 dark:border-slate-600 p-0.5 rounded text-xs">{show.first_air_date || show.release_date}</div>
+      <div className="border border-slate-400 dark:border-slate-600 p-0.5 rounded text-xs">{show.original_language?.toUpperCase()}</div>
+      <div className="border border-slate-400 dark:border-slate-600 p-0.5 rounded text-xs">{show.vote_average}</div>
     </div>
     <p className="max-w-80 md:max-w-2xl md:text-base font-comic text-xs hidden md:block">
       {show.overview}
     </p>
-    <div onClick={handleWatchNow} className=" p-1 md:p-2 text-yellow-60 hover:bg-slate-600  text-white hover:cursor-pointer border hover:border-slate-600 mt-5 md:mt-10 w-24 md:w-32 flex justify-center text-xs md:text-base font-extrabold rounded font-comic  ">Watch Now</div>
+    <div onClick={handleWatchNow} className="p-1 md:p-2 text-yellow-600 hover:bg-slate-300 dark:hover:bg-slate-600 text-slate-800 dark:text-white hover:cursor-pointer border border-slate-400 dark:border-slate-600 hover:border-slate-500 dark:hover:border-slate-500 mt-5 md:mt-10 w-24 md:w-32 flex justify-center text-xs md:text-base font-extrabold rounded font-comic">Watch Now</div>
   </div>
 </div>
 

@@ -51,33 +51,32 @@ export default function ShowsList({shows, title}:{shows: mediaData[] | mData[] |
 
   return (
     <div className="flex flex-col">
-  <div className="text-white font-bold text-2xl sm:text-3xl self-start mb-2 mt-1  w-full">
-    {title}
-  </div>
-  <div className="flex  items-center justify-between overflow-x-auto sm:overflow-x-visible overflow-y-hidden mb-3 h-fit space-x-3 scrollbar-none">
-    {shows &&
-      shows.map((item) => (
-        //@ts-ignore
-        <Show key={item?.movie?.id ?? item?.id} item={item?.movie || item} onClick={() => handleClick(item?.movie || item)}>
-          <Modal>
-            <Modal.open opens="Showinfo">
-              <button
-                className="absolute bottom-1/2 left-1/2 transform -translate-x-1/2 text-white py-1 px-4 rounded opacity-0 transition-opacity duration-300 group-hover:opacity-100"
-              //@ts-ignore
-                onClick={() => handleClick(item?.movie || item)}
-              >
-                <RiInformation2Fill className="text-3xl text-yellow-400 opacity-80" />
-              </button>
-            </Modal.open>
-            <Modal.window name="Showinfo">
-              <ShowInfo movie={MovieInfo} ep={item?.episode || 1} season={item?.season || 1} />
-            </Modal.window>
-          </Modal>
-        </Show>
-      ))}
-  </div>
-</div>
-
+      <div className="text-slate-800 dark:text-white font-bold text-2xl sm:text-3xl self-start mb-2 mt-1 w-full">
+        {title}
+      </div>
+      <div className={`flex items-center justify-start overflow-x-auto sm:overflow-x-visible overflow-y-hidden mb-3 h-fit space-x-3 scrollbar-none`}>
+        {shows &&
+          shows.map((item) => (
+            //@ts-ignore
+            <Show key={item?.movie?.id ?? item?.id} item={item?.movie || item} onClick={() => handleClick(item?.movie || item)}>
+              <Modal>
+                <Modal.open opens="Showinfo">
+                  <button
+                    className="absolute bottom-1/2 left-1/2 transform -translate-x-1/2 text-slate-800 dark:text-white py-1 px-4 rounded opacity-0 transition-opacity duration-300 group-hover:opacity-100"
+                    //@ts-ignore
+                    onClick={() => handleClick(item?.movie || item)}
+                  >
+                    <RiInformation2Fill className="text-3xl text-yellow-500 dark:text-yellow-400 opacity-80" />
+                  </button>
+                </Modal.open>
+                <Modal.window name="Showinfo">
+                  <ShowInfo movie={MovieInfo} ep={item?.episode || 1} season={item?.season || 1} />
+                </Modal.window>
+              </Modal>
+            </Show>
+          ))}
+      </div>
+    </div>
   )
 }
 
