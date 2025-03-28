@@ -144,7 +144,7 @@ export default function Recommendation() {
   };
 
   return (
-    <div className="relative md:min-h-[35rem] min-h-52 w-full bg-black  flex justify-center items-center overflow-hidden">
+    <div className="relative md:min-h-[35rem] min-h-52 w-full bg-slate-200 dark:bg-slate-950 flex justify-center items-center overflow-hidden">
       <div className="relative w-full h-full flex justify-center items-center">
         <AnimatePresence custom={direction} mode="popLayout">
           {popular.length > 0 && (
@@ -182,13 +182,13 @@ export default function Recommendation() {
        
         <button
           onClick={nextSlide}
-          className="bg-gray-800 text-white p-1 md:p-2 bg-opacity-50 rounded  shadow-lg hover:bg-gray-700 transition"
+          className="bg-slate-700 text-slate-100 p-1 md:p-2 bg-opacity-50 rounded shadow-lg hover:bg-slate-600 transition"
         >
          <FaArrowRight className="md:text-2xl" />
         </button>
         <button
           onClick={prevSlide}
-          className="bg-gray-800 bg-opacity-50 text-white p-1 md:p-2 rounded shadow-lg hover:bg-gray-700 transition"
+          className="bg-slate-700 bg-opacity-50 text-slate-100 p-1 md:p-2 rounded shadow-lg hover:bg-slate-600 transition"
         >
           <FaArrowLeft className="md:text-2xl" />
         </button>

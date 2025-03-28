@@ -65,10 +65,10 @@ function Window({ children }: WindowProps) {
       {/* Sidebar Panel with smoother sliding animation */}
       <div
         ref={ref} // Attach ref to the main container to detect outside clicks
-        className={`flex flex-col border-l border-slate-400 overflow-hidden w-80 h-screen max-w-full max-h-screen bg-gray-900 rounded-xl shadow-lg z-20`}
+        className={`flex flex-col border-l border-yellow-600 dark:border-slate-400 overflow-hidden w-80 h-screen max-w-full max-h-screen bg-slate-200 dark:bg-gray-900 rounded-xl shadow-lg z-20`}
       >
         <div
-          className="flex w-full justify-between self-start p-2 text-slate-400 text-3xl cursor-pointer"
+          className="flex w-full justify-between self-start p-2 text-slate-600 dark:text-slate-400 text-3xl cursor-pointer"
         >
           <div onClick={toggle}><TbLayoutSidebarRight /></div>
         </div>

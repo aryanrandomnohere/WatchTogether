@@ -204,7 +204,7 @@ const handleAddFavourite = async ()=>{
 
 
   return (<div className='flex flex-col items-center '>
-<div className="relative min-w-fit bg-black ">
+<div className="relative min-w-fit bg-slate-950 ">
   <img
     src={`https://image.tmdb.org/t/p/w500/${movie.backdrop_path}`}
     alt={`${movie.name} poster`}
@@ -255,7 +255,7 @@ const handleAddFavourite = async ()=>{
 
         {/* Overview */}
         <div className="sm:mt-2.5 mt-2">
-          <h2 className="sm:text-lg text-base font-extrabold mb-1 text-white">Overview:</h2>
+          <h2 className="sm:text-lg text-base font-extrabold mb-1 text-slate-500 dark:text-white">Overview:</h2>
           <p className="text-gray-400 text-sm sm:test-base w-86 sm:w-150 md:w-150">{movie.overview ?`${movie.overview.length > 300? movie.overview.slice(0,300)+"...":movie.overview}` :'No description available.'}</p>
         </div>
 

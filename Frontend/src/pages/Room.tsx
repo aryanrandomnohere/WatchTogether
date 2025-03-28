@@ -111,7 +111,7 @@ const { roomId } = useParams();
     
 
     return (
-        <div className="bg-gray-900 min-h-screen flex flex-col px-1 pt-4 items-start">
+        <div className="bg-slate-200 dark:bg-gray-900 min-h-screen flex flex-col px-1 pt-4 items-start">
            <div className="sm:mt-14 mt-28"></div>
             <div className="flex-wrap sm:flex sm:justify-between gap-2 mb-4 px-4 items-center justify-between w-full">
               <div className="flex items-center gap-3">
@@ -119,21 +119,21 @@ const { roomId } = useParams();
             setIsOpen(!isOpen)
             return}
               
-            }} className={` `}><TfiViewList className={`hover:cursor-pointer text-2xl font-bold  ml-2 ${isOpen && ["Series", "Anime","AnimeUrl"].includes(isPlaying.type)?"text-slate-400" :""}`}/></div>
+            }} className={` `}><TfiViewList className={`hover:cursor-pointer text-2xl font-bold  ml-2 ${isOpen && ["Series", "Anime","AnimeUrl"].includes(isPlaying.type)?"text-slate-600 dark:text-slate-400" :""}`}/></div>
                 <div>
     <Modal>
         <Modal.open opens="changeVideo">
-            <div><RiExchangeLine className="hover:cursor-pointer text-4xl "/></div>
+            <div><RiExchangeLine className="hover:cursor-pointer text-4xl text-slate-800 dark:text-white"/></div>
         </Modal.open>
         <Modal.window name="changeVideo">
-            <ChangeVideo />
+            <ChangeVideo  />
         </Modal.window>
     </Modal>
 </div>
-<div className="bg-slate-600 text-white p-1.5 hover:cursor-pointer flex text-sm justify-center items-center gap-2 hover:bg-slate-800"><MdScreenShare className="sm:text-xl"/>Share Screen</div>
+<div className="bg-slate-300 dark:bg-slate-600 text-slate-800 dark:text-white p-1.5 hover:cursor-pointer flex text-sm justify-center items-center gap-2 hover:bg-slate-400 dark:hover:bg-slate-800"><MdScreenShare className="sm:text-xl" />Screen Share</div>
 </div>
-<div className="sm:text-lg font-bold  ">{roomName}</div>
-<AlertBox><AlertBox.open opens="inviteLink"><div className=" py-1 px-3 bg-slate-600 text-white max-w-36 flex items-center hover:cursor-pointer gap-2 hover:bg-slate-800 "><FcInvite className="sm:text-xl" />Invite Link</div></AlertBox.open><AlertBox.window name="inviteLink"><div className="h-44 px-16 py-10">Copy your invite link and share it to your friends to watch togethre</div></AlertBox.window></AlertBox>
+<div className="sm:text-lg font-bold text-slate-800 dark:text-white">{roomName}</div>
+<AlertBox><AlertBox.open opens="inviteLink"><div className=" py-1 px-3 bg-slate-300 dark:bg-slate-600 text-slate-800 dark:text-white max-w-36 flex items-center hover:cursor-pointer gap-2 hover:bg-slate-400 dark:hover:bg-slate-800 "><FcInvite className="sm:text-xl" />Invite Link</div></AlertBox.open><AlertBox.window name="inviteLink"><div className="h-44 px-16 py-10 text-slate-800 dark:text-white">Copy your invite link and share it to your friends to watch together</div></AlertBox.window></AlertBox>
             </div>
 
             <div className={`flex flex-col w-full md:grid ${
@@ -151,23 +151,21 @@ const { roomId } = useParams();
   <div
     className={`flex w-full   ${
       isOpen && ["Series", "Anime","AnimeUrl"].includes(isPlaying.type) && chatIsOpen ? "md:col-span-2" : "md:col-span-4"
-    } transition-all duration-700 md:h-[44rem] ease-in-out justify-center items-center bg-zinc-950 min-h-full    border border-white/20 p-1.5 `}
+    } transition-all duration-700 md:h-[44rem] ease-in-out justify-center items-center bg-slate-200 dark:bg-zinc-950 min-h-full    border border-slate-300 dark:border-white/20 p-1.5 `}
   > 
     <Series id={isPlaying.id} type={isPlaying.type} title={isPlaying.title} animeId={isPlaying.animeId} />
   </div>
-  <div className="  h-full  gap-0 hidden md:block  items-center"><div className="w-[1px] h-full bg-white flex items-center relative"><div className="hover:cursor-pointer " onClick={()=>setChatIsOpen(!chatIsOpen)}>{!chatIsOpen ?<TbArrowBarToLeft  className=" absolute top-1/2 -right-3 text-black  font-extrabold bg-white rounded-full p-1 text-2xl"/>:<TbArrowBarToRight className=" absolute top-1/2 -right-3 text-black  font-extrabold bg-white rounded-full p-1 text-2xl" />}</div></div> </div>
+  <div className="  h-full  gap-0 hidden md:block  items-center"><div className="w-[1px] h-full bg-slate-950 flex items-center relative"><div className="hover:cursor-pointer " onClick={()=>setChatIsOpen(!chatIsOpen)}>{!chatIsOpen ?<TbArrowBarToLeft  className=" absolute top-1/2 -right-3 text-white  font-extrabold bg-slate-950 rounded-full p-1 text-2xl"/>:<TbArrowBarToRight className=" absolute top-1/2 -right-3 text-white  font-extrabold bg-slate-950 rounded-full p-1 text-2xl" />}</div></div> </div>
 
   </div>
 
 
   {/* Right Sidebar */}
-  <div className="flex ">
-    
-  <div className={`flex flex-col justify-between border-white/20 bg-slate-900 w-full ${chatIsOpen ? "md:col-span-1":"hidden"} h-fit md:h-auto`}>
-      
-    <Chatnav />
-    <ChatWindow />
-  </div>
+  <div className="flex">
+    <div className={`flex flex-col justify-between border-slate-300 dark:border-white/20 bg-slate-200 dark:bg-slate-900 w-full ${chatIsOpen ? "md:col-span-1":"hidden"} h-fit md:h-auto`}>
+      <Chatnav />
+      <ChatWindow />
+    </div>
   </div>
 </div>
 

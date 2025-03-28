@@ -25,7 +25,7 @@
 //   };
 
 //   return (
-//     <div className="relative w-full max-w-3xl mx-auto bg-black  overflow-hidden rounded-lg shadow-lg">
+//     <div className="relative w-full max-w-3xl mx-auto bg-slate-950  overflow-hidden rounded-lg shadow-lg">
 //       {/* Iframe Wrapper */}
 //       <div className="relative w-full pb-[56.25%]"> {/* Aspect ratio 16:9 */}
 //         <iframe
@@ -40,7 +40,7 @@
 //       </div>
 
 //       {/* Custom Controls */}
-//       <div className="flex justify-center items-center bg-black  bg-opacity-70 text-white p-4 space-x-4">
+//       <div className="flex justify-center items-center bg-slate-950  bg-opacity-70 text-white p-4 space-x-4">
 //         <button
 //           onClick={togglePlayPause}
 //           className="bg-gray-700 hover:bg-gray-600 text-white font-semibold py-2 px-4 rounded"

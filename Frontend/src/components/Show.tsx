@@ -57,7 +57,7 @@ export default function Show({
           </div>
         )}
 
-        <div className="absolute inset-0 flex flex-col h-full justify-center items-center p-2 opacity-0 hover:opacity-100 backdrop-blur-sm bg-black /50 group-hover:bg-black/50 transition duration-500">
+        <div className="absolute inset-0 flex flex-col h-full justify-center items-center p-2 opacity-0 hover:opacity-100 backdrop-blur-sm bg-slate-950 /50 group-hover:bg-slate-950/50 transition duration-500">
           <div className="group-hover">{children}</div>
         </div>
       </div>

@@ -49,16 +49,16 @@ export default function ChangeVideo() {
     <div className="flex flex-col gap-2 p-6">
     <div>
                <h1 className="text-sm text-slate-400">Media Type</h1>
-               <select className="text-xs rounded-lg py-1 px-3 font-medium w-36 bg-opacity-20 text-white bg-white  focus:outline-none" onChange={(e) => handleInputChange({type: e.target.value})} value={inputPlaying.type}  required={true}><option>AniMov</option><option>Url</option><option>Movie</option><option>Series</option><option>Anime</option><option>AnimeUrl</option></select>
+               <select className="text-xs rounded-lg py-1 px-3 font-medium w-36 bg-opacity-20 text-white bg-slate-950  focus:outline-none" onChange={(e) => handleInputChange({type: e.target.value})} value={inputPlaying.type}  required={true}><option>AniMov</option><option>Url</option><option>Movie</option><option>Series</option><option>Anime</option><option>AnimeUrl</option></select>
                </div>
                {inputPlaying.type === "AnimeUrl" && <div>
                <h1 className="text-sm text-slate-400">Enter Anime Url </h1>
-               <input className="text-xs rounded-lg py-1 px-3 font-medium w-36 bg-white bg-opacity-20 text-zinc-300 placeholder-gray-500 focus:outline-none" value={inputPlaying.animeId} onChange={(e) => handleInputChange({ animeId: e.target.value})}   required={true} placeholder="Src Url" />
+               <input className="text-xs rounded-lg py-1 px-3 font-medium w-36 bg-slate-950 bg-opacity-20 text-zinc-300 placeholder-gray-500 focus:outline-none" value={inputPlaying.animeId} onChange={(e) => handleInputChange({ animeId: e.target.value})}   required={true} placeholder="Src Url" />
                </div> }
       <div>
       <h1 className="text-sm text-slate-400">Enter Id</h1>
       <input
-                   className="text-xs rounded-lg py-1 px-3 font-medium w-36 bg-white bg-opacity-20 text-zinc-300 placeholder-gray-500 focus:outline-none"
+                   className="text-xs rounded-lg py-1 px-3 font-medium w-36 bg-slate-950 bg-opacity-20 text-zinc-300 placeholder-gray-500 focus:outline-none"
                    placeholder="ShowId/Url/ImdbId"
                    type="text"
                    value={inputPlaying.id} 
@@ -68,7 +68,7 @@ export default function ChangeVideo() {
                
                <div>
                <h1 className="text-sm text-slate-400">Enter Show Name</h1>
-               <input className="text-xs rounded-lg py-1 px-3 font-medium w-36 bg-white bg-opacity-20 text-zinc-300 placeholder-gray-500 focus:outline-none" value={inputPlaying.title} onChange={(e) => handleInputChange({ title: e.target.value})} placeholder="Name"  required={true} />
+               <input className="text-xs rounded-lg py-1 px-3 font-medium w-36 bg-slate-950 bg-opacity-20 text-zinc-300 placeholder-gray-500 focus:outline-none" value={inputPlaying.title} onChange={(e) => handleInputChange({ title: e.target.value})} placeholder="Name"  required={true} />
                </div>
                </div><button className="p-1 text-sm hover:bg-slate-600 border-l px-3 border-slate-400 hover:text-white font-bold ">Change</button></form>
   )

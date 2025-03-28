@@ -2,23 +2,52 @@ import { useRecoilValue } from "recoil";
 import Avatar from "./Avatar";
 import FriendActions from "./FriendActions";
 import { Friends } from "../State/friendsState";
-import {motion} from "framer-motion"
+import { motion } from "framer-motion";
+
 interface Friend {
-  id:string;
-  status:string;
-  displayname:string;
-  username:string
+    id: string;
+    username: string;
+    status: string;
 }
-export default function Friend({friend}:{friend:Friend}) {
-  const AllFriends = useRecoilValue(Friends);
 
-  if (!AllFriends) return <div>There are no friend present</div>
+interface FriendProps {
+    friend: Friend;
+}
 
-  return (
-    <motion.div className="text-white py-1.5 px-3 rounded-md hover:bg-slate-600 hover:bg-opacity-10">
-      <div><div className="flex items-center justify-between gap-3">
-        <div className="flex gap-2"><Avatar r="9" name={friend.username} /><div className="flex flex-col font-bold gap-0 justify-center items-start">
-          <h1 className="hover:text-blue-800 hover:cursor-pointer">{friend.username}</h1><p className={`font-extralight  text-sm ${friend.status !== "OFFLINE"?"text-orange-400":""}`}>{friend.status}</p></div></div><div><FriendActions to={friend.id} /></div></div>
-          </div></motion.div>
-  )
+export default function Friend({ friend }: FriendProps) {
+    const AllFriends = useRecoilValue(Friends);
+
+    if (!AllFriends) return null;
+
+    return (
+        <motion.div
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="flex items-center justify-between p-2 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors duration-200"
+        >
+            <div className="flex items-center gap-3">
+                <div className="relative">
+                    <Avatar r="9" name={friend.username} />
+                    <span className={`absolute bottom-0 right-0 w-2.5 h-2.5 rounded-full border-2 border-white dark:border-slate-900 ${
+                        friend.status !== "OFFLINE" ? "bg-green-500" : "bg-slate-400"
+                    }`} />
+                </div>
+                <div className="flex flex-col">
+                    <h1 className="text-sm font-medium text-slate-800 dark:text-slate-200">
+                        {friend.username}
+                    </h1>
+                    <p className={`text-xs ${
+                        friend.status !== "OFFLINE" 
+                            ? "text-green-500 dark:text-green-400" 
+                            : "text-slate-600 dark:text-slate-400"
+                    }`}>
+                        {friend.status}
+                    </p>
+                </div>
+            </div>
+            <div className="flex-shrink-0">
+                <FriendActions to={friend.id} />
+            </div>
+        </motion.div>
+    );
 }
