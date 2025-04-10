@@ -83,9 +83,16 @@ export default function Navbar() {
     navigate(`/query/${query}`);
   }
 
+  useEffect(() => {
+    document.documentElement.classList.remove('light', 'dark');
+    document.documentElement.classList.add(theme);
+    localStorage.setItem('theme', theme);
+  }, [theme]);
+  
   const toggleTheme = () => {
     setTheme(prevTheme => prevTheme === 'light' ? 'dark' : 'light');
   };
+
 
   return (
     <div className="relative">
