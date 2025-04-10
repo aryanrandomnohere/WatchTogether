@@ -33,11 +33,7 @@ export default function App() {
   const navigate = useNavigate();
 
   // Apply theme to document
-  useEffect(() => {
-    document.documentElement.classList.remove('light', 'dark');
-    document.documentElement.classList.add(theme);
-    localStorage.setItem('theme', theme);
-  }, [theme]);
+ 
 
   useEffect(()=>{
     if(!isAuthenticated || !userId) return
