@@ -17,6 +17,10 @@ class roomManager {
             this.rooms.set(roomId, {
                 roomStatus,
                 subscribers: new Map(),
+                inCall: {
+                    people: new Set(),
+                    firstOffer: null,
+                }
             });
         }
     }
@@ -48,14 +52,36 @@ class roomManager {
             return roomId;
         }
     }
-    joinAsASender(roomId) {
+    joinCall(roomId, userId, sdp) {
+        var _a, _b;
+        const room = this.rooms.get(roomId);
+        if (!room)
+            return false;
+        console.log(room.inCall, "room.inCall");
+        if (((_a = room.inCall) === null || _a === void 0 ? void 0 : _a.people.size) === 0) {
+            room.inCall.people.add(userId);
+            room.inCall.firstOffer = sdp;
+            return true;
+        }
+        (_b = room.inCall) === null || _b === void 0 ? void 0 : _b.people.add(userId);
+        return true;
     }
-    joinAsAReceiver(roomId) {
-        this.rooms.get;
+    leaveCall(roomId, userId) {
+        const room = this.rooms.get(roomId);
+        if (!room || !room.inCall)
+            return false;
+        room.inCall.people.delete(userId);
+    }
+    callSize(roomId) {
+        const room = this.rooms.get(roomId);
+        if (!room)
+            return;
+        const peopleSize = room.inCall.people.size;
+        return peopleSize;
     }
     getCallMemberSize(roomId) {
         var _a, _b;
-        const CallSize = (_b = (_a = this.rooms.get(roomId)) === null || _a === void 0 ? void 0 : _a.inCall) === null || _b === void 0 ? void 0 : _b.Receivers.size;
+        const CallSize = (_b = (_a = this.rooms.get(roomId)) === null || _a === void 0 ? void 0 : _a.inCall) === null || _b === void 0 ? void 0 : _b.people.size;
         return CallSize;
     }
     getRoom(id) {

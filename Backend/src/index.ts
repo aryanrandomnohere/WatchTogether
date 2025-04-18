@@ -7,7 +7,7 @@ import videoEvents from './Events/videoEvents';
 import chatEvents from './Events/chatEvents';
 import userEvents from './Events/userEvents';
 import FriendActionEvents from './Events/FriendActionsEvent';
-// import p2pEvents from './Events/p2pEvents';
+import p2pEvents from './Events/p2pEvents';
 import { roomManager } from './roomManager';
 import { UserManager } from './UserManager';
 import { prisma } from "./db";
@@ -103,7 +103,7 @@ io.on("connection", (socket) => {
   videoEvents(io, socket);
   chatEvents(io, socket);
   FriendActionEvents(io, socket); 
-  // p2pEvents(io,socket)
+  p2pEvents(io,socket)
   // Handle disconnection
 socket.on("disconnect",async () => {
     // Remove the user from userManager

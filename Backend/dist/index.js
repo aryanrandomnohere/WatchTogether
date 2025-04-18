@@ -21,7 +21,7 @@ const videoEvents_1 = __importDefault(require("./Events/videoEvents"));
 const chatEvents_1 = __importDefault(require("./Events/chatEvents"));
 const userEvents_1 = __importDefault(require("./Events/userEvents"));
 const FriendActionsEvent_1 = __importDefault(require("./Events/FriendActionsEvent"));
-// import p2pEvents from './Events/p2pEvents';
+const p2pEvents_1 = __importDefault(require("./Events/p2pEvents"));
 const roomManager_1 = require("./roomManager");
 const UserManager_1 = require("./UserManager");
 const db_1 = require("./db");
@@ -112,7 +112,7 @@ io.on("connection", (socket) => {
     (0, videoEvents_1.default)(io, socket);
     (0, chatEvents_1.default)(io, socket);
     (0, FriendActionsEvent_1.default)(io, socket);
-    // p2pEvents(io,socket)
+    (0, p2pEvents_1.default)(io, socket);
     // Handle disconnection
     socket.on("disconnect", () => __awaiter(void 0, void 0, void 0, function* () {
         var _a;
