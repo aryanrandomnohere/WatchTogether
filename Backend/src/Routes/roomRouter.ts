@@ -146,6 +146,23 @@ select:{
 
 })
 
+roomRouter.get("/call/:roomId", async (req: Request, res: Response) => {
+  try {
+    const roomId = req.params.roomId;
+    const room = roomManager.getInstance().getRoom(roomId);
+    if (!room) {
+      res.status(400).json({ msg: "Room not found" });
+      return;
+    }
+    
+    // Convert Set to array of strings
+    const stringArray: string[] = room.inCall?.people ? Array.from(room.inCall.people) : [];
+    res.status(200).json(stringArray);
+  } catch (error) {
+    res.status(400).json({ msg: "Internal server error" });
+  }
+});
+
 
 
 

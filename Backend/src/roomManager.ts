@@ -10,19 +10,17 @@
     season:number;    
   }
 
-  interface SpdStatus {
-  sdp:RTCSessionDescriptionInit,
   
-  }
+
 
   interface Call {
-   Senders:Map<string, SpdStatus>,
-   Receivers:Set<string>
+   people:Set<string>;
+   firstOffer:RTCSessionDescriptionInit | null;
   }
   interface roomInterface {
     roomStatus: roomStatusInterface;
     subscribers: Map<string,string>;
-    inCall?: Call;
+    inCall: Call;
   }
   
 
@@ -43,6 +41,10 @@ export class roomManager {
         this.rooms.set(roomId,{
           roomStatus,
           subscribers: new Map(),
+          inCall:{
+          people:new Set(),
+          firstOffer:null,
+          }
         }) 
     }
     }
@@ -73,15 +75,32 @@ export class roomManager {
             return roomId
       }
       }
-    public joinAsASender(roomId:string,) {
-
+    public joinCall(roomId:string,userId:string,sdp:RTCSessionDescriptionInit) {
+      const room = this.rooms.get(roomId);
+      if(!room) return false;
+      console.log(room.inCall,"room.inCall");
+      if(room.inCall?.people.size === 0){
+        room.inCall.people.add(userId);
+        room.inCall.firstOffer = sdp;
+        return true;
+      }
+      room.inCall?.people.add(userId);
+      return true;
     }
-    public joinAsAReceiver(roomId:string) {
-      this.rooms.get
+    public leaveCall(roomId:string,userId:string){
+      const room = this.rooms.get(roomId);
+      if(!room || !room.inCall) return false;
+      room.inCall.people.delete(userId);
     }
+    public callSize(roomId:string){ 
+    const room = this.rooms.get(roomId);
+    if(!room) return;
+    const  peopleSize = room.inCall.people.size;
+    return peopleSize;
+    }
+    
     public getCallMemberSize(roomId:string){
-  
-    const CallSize = this.rooms.get(roomId)?.inCall?.Receivers.size;
+    const CallSize = this.rooms.get(roomId)?.inCall?.people.size;
     return CallSize
     }
     public getRoom(id:string) {

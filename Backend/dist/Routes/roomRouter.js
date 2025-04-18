@@ -149,4 +149,21 @@ roomRouter.get("/getRoomName/:roomId", (req, res) => __awaiter(void 0, void 0, v
         });
     }
 }));
+roomRouter.get("/call/:roomId", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    var _a;
+    try {
+        const roomId = req.params.roomId;
+        const room = roomManager_1.roomManager.getInstance().getRoom(roomId);
+        if (!room) {
+            res.status(400).json({ msg: "Room not found" });
+            return;
+        }
+        // Convert Set to array of strings
+        const stringArray = ((_a = room.inCall) === null || _a === void 0 ? void 0 : _a.people) ? Array.from(room.inCall.people) : [];
+        res.status(200).json(stringArray);
+    }
+    catch (error) {
+        res.status(400).json({ msg: "Internal server error" });
+    }
+}));
 exports.default = roomRouter;
