@@ -1,10 +1,10 @@
-import Avatar from "./Avatar";
-import RequestActions from "./RequestActions";
+import Avatar from './Avatar';
+import RequestActions from './RequestActions';
 
 interface requests {
   from: string;
   fromUsername: string;
-} 
+}
 
 export default function Notification({ request }: { request: requests }) {
   return (
@@ -15,9 +15,7 @@ export default function Notification({ request }: { request: requests }) {
           <h1 className="text-sm font-medium text-slate-700 dark:text-slate-200">
             {request.fromUsername}
           </h1>
-          <p className="text-xs text-slate-500 dark:text-slate-400">
-            sent you a friend request
-          </p>
+          <p className="text-xs text-slate-500 dark:text-slate-400">sent you a friend request</p>
         </div>
       </div>
       <div className="flex-shrink-0">

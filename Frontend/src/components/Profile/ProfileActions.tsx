@@ -14,9 +14,6 @@
 // import toast from "react-hot-toast";
 // import { MdModeEdit } from "react-icons/md";
 
-
-
-
 // const avatars = { avatar1, avatar2, avatar3, avatar4};
 
 // export default function ProfileAction() {
@@ -33,7 +30,7 @@
 //     try {
 //       setLoading(true);
 //       await axios.put(
-//         `${API_BASE_URL}/api/v1/user/updateDisplayName`, 
+//         `${API_BASE_URL}/api/v1/user/updateDisplayName`,
 //         { newDisplayName: displayName },
 //         { headers: { Authorization: token } }
 //       );
@@ -51,7 +48,7 @@
 //     try {
 //       setSelectedPfp(newPfp);
 //       await axios.put(
-//         `${API_BASE_URL}/api/v1/user/updateAvatar`, 
+//         `${API_BASE_URL}/api/v1/user/updateAvatar`,
 //         { avatar: newPfp },
 //         { headers: { Authorization: token } }
 //       );
@@ -66,7 +63,6 @@
 
 //   return (
 // //     <div className="m-5 rounded-lg h-96 text-white">
-     
 
 // //       {/* User Info */}
 // //       <div className="flex items-center justify-center gap-4 mt-4">
@@ -75,7 +71,7 @@
 // //     <img src={selectedPfp || avatar2} />
 // //   </div>
 // //   <div className="absolute bottom-0 right-0 p-1 border rounded-full bg-slate-950 text-slate-400 hover:cursor-pointer" onClick={()=>setIsOpenAvatar(!isOpenAvatar)}><MdModeEdit /></div>
-  
+
 // // </div>
 
 // //         {/* <div>
@@ -109,18 +105,16 @@
 // //           onChange={(e) => setDisplayName(e.target.value)}
 // //           className="w-full px-2 mt-1 text-white  bg-transparent"
 // //         />
-      
+
 // //         </div>
 // //         <div className="flex flex-col"><label className="text-slate-400 text-sm">Username</label>
 // //         <input value={Info.username} className="bg-transparent "/></div>
-      
-         
+
 // //       </div>
 // //       <div className="flex flex-col"><label className="text-sm text-slate-400">Email</label><input className="bg-transparent " value={Info.email}/></div>
 
 // //       {/* Choose Profile Picture */}
-     
+
 // //     </div>
 //   );
 // }
-

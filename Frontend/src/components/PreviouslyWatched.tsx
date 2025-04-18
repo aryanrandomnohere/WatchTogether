@@ -38,7 +38,7 @@
 //   const setAllMedia = useSetRecoilState(userMedia);
 //   // const lastWatched: mData[] | undefined  = recentlywatched?.map((item)=> item.movie);
 //   console.log(recentlywatched);
-  
+
 //   useEffect(() => {
 //     const fetchData = async () => {
 //       try {
@@ -47,16 +47,15 @@
 //           headers: { authorization: localStorage.getItem("token") },
 //         });
 //         setAllMedia(mediaResponse.data.data);
-  
+
 //         // Fetching trending data
-//         
+//
 //       } catch (error) {
 //         console.error("Error fetching data:", error);
 //       }
 //     };
 //     fetchData();
 //   }, [setAllMedia]);
-  
 
 //   return (
 //     <div className="bg-gray-900 h-screen flex flex-col  pl-2 w-full ">

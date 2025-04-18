@@ -1,7 +1,8 @@
-import { useEffect, useRef } from "react";
-import Chats from "./Chats";
-import Polls from "./Polls";
-import ReplyTo from "./ReplyTo";
+import { useEffect, useRef } from 'react';
+
+import Chats from './Chats';
+import Polls from './Polls';
+import ReplyTo from './ReplyTo';
 
 interface Message {
   id: number;
@@ -57,12 +58,11 @@ export default function ChatBox({ messages }: { messages: Message[] }) {
     }
   }, [messages]); // Run only when messages update
 
-  useEffect(()=>{
+  useEffect(() => {
     if (chatContainerRef.current) {
       chatContainerRef.current.scrollTop = chatContainerRef.current.scrollHeight;
     }
-
-  },[messages])
+  }, [messages]);
 
   return (
     <div>
@@ -70,11 +70,11 @@ export default function ChatBox({ messages }: { messages: Message[] }) {
         ref={chatContainerRef}
         className="flex flex-col w-full justify-start items-start max-h-64 sm:max-h-full px-2 space-y-2.5 overflow-y-auto h-full md:h-[37rem] md:min-h-[32rem] scrollbar-thin scrollbar-thumb-slate-400 dark:scrollbar-thumb-slate-600 scrollbar-track-slate-200 dark:scrollbar-track-slate-800 bg-slate-200 dark:bg-slate-900"
       >
-        {messages.map((message) =>
-          message.type === "normal" ? (
-            <Chats key={message.id} chat={message} /> 
-          ) : message.type === "poll" ? (
-            <Polls key={message.id} poll={message} /> 
+        {messages.map(message =>
+          message.type === 'normal' ? (
+            <Chats key={message.id} chat={message} />
+          ) : message.type === 'poll' ? (
+            <Polls key={message.id} poll={message} />
           ) : (
             <ReplyTo key={message.id} replyTo={message} />
           )
