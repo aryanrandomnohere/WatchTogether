@@ -1,23 +1,26 @@
-import { useEffect, useState } from "react";
-import axios from "axios";
-import { useParams } from "react-router-dom";
-import { MovieInfoState } from "../State/MovieInfoState";
-import Show from "../components/Show";
-import { RiInformation2Fill } from "react-icons/ri";
-import Modal from "../ui/Modal";
-import { useRecoilState} from "recoil";
-import ShowInfo from "../components/Showinfo";
+import { useEffect, useState } from 'react';
+import { RiInformation2Fill } from 'react-icons/ri';
+import { useParams } from 'react-router-dom';
+
+import axios from 'axios';
+import { useRecoilState } from 'recoil';
+
+import { MovieInfoState } from '../State/MovieInfoState';
+import Show from '../components/Show';
+import ShowInfo from '../components/Showinfo';
+import Modal from '../ui/Modal';
+
 const options = {
   method: 'GET',
   headers: {
     accept: 'application/json',
     //@ts-ignore
-    Authorization: `${import.meta.env.VITE_TMDB_AUTHORIZATION_KEY}`
-  }
+    Authorization: `${import.meta.env.VITE_TMDB_AUTHORIZATION_KEY}`,
+  },
 };
 
 interface mData {
-  adult: boolean; 
+  adult: boolean;
   backdrop_path: string;
   first_air_date: string;
   genre_ids: number[];
@@ -34,13 +37,12 @@ interface mData {
   vote_count: number;
 }
 export default function ShowsDisplay() {
- const [media, setMedia] = useState<mData[] | undefined>(undefined);
-  const [MovieInfo, setMovieInfo] =  useRecoilState(MovieInfoState);
+  const [media, setMedia] = useState<mData[] | undefined>(undefined);
+  const [MovieInfo, setMovieInfo] = useRecoilState(MovieInfoState);
   const { id } = useParams<{ id: string }>();
-  
 
-  async function  handleClick(item:mData) {
-   setMovieInfo(item);  
+  async function handleClick(item: mData) {
+    setMovieInfo(item);
   }
 
   useEffect(() => {
@@ -54,11 +56,14 @@ export default function ShowsDisplay() {
         //     },
         //   }
         // );
-        const response = await axios.get(`https://api.themoviedb.org/3/search/multi?query=${id}&include_adult=true&language=en-US&page=1`,options)
-        
+        const response = await axios.get(
+          `https://api.themoviedb.org/3/search/multi?query=${id}&include_adult=true&language=en-US&page=1`,
+          options
+        );
+
         setMedia(response.data.results);
       } catch (error) {
-        console.error("Error fetching data:", error);
+        console.error('Error fetching data:', error);
         setMedia(undefined);
       }
     }
@@ -85,26 +90,29 @@ export default function ShowsDisplay() {
 
   return (
     <div className="flex flex-wrap bg-slate-200 dark:bg-slate-950  justify-center items-center text-zinc-300 mt-24 md:mt-16 gap-1.5  sm:gap-3">
-      {media.map((item:mData) => {
-        if(!item.backdrop_path || !item.poster_path) return
-      return (
-        <Show key={item.id} item={item} onClick={() => handleClick(item)}>
-         <div> <Modal>
-                 <Modal.open opens="Showinfo">
-                   <button
-                     className="absolute bottom-1/2 left-1/2 transform -translate-x-1/2 text-white rounded opacity-0 transition-opacity duration-300 group-hover:opacity-100"
-                     onClick={()=>handleClick(item)}
-                   >
-                     <RiInformation2Fill className="text-5xl text-yellow-400 opacity-80" />
-                   </button>
-                 </Modal.open>
-            <Modal.window name="Showinfo">
-              <ShowInfo movie={MovieInfo} />
-            </Modal.window>
-          </Modal>
-          </div>
-        </Show>
-      )})}
+      {media.map((item: mData) => {
+        if (!item.backdrop_path || !item.poster_path) return;
+        return (
+          <Show key={item.id} item={item} onClick={() => handleClick(item)}>
+            <div>
+              {' '}
+              <Modal>
+                <Modal.open opens="Showinfo">
+                  <button
+                    className="absolute bottom-1/2 left-1/2 transform -translate-x-1/2 text-white rounded opacity-0 transition-opacity duration-300 group-hover:opacity-100"
+                    onClick={() => handleClick(item)}
+                  >
+                    <RiInformation2Fill className="text-5xl text-yellow-400 opacity-80" />
+                  </button>
+                </Modal.open>
+                <Modal.window name="Showinfo">
+                  <ShowInfo movie={MovieInfo} />
+                </Modal.window>
+              </Modal>
+            </div>
+          </Show>
+        );
+      })}
     </div>
   );
 }

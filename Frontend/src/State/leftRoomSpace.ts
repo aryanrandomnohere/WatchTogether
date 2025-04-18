@@ -1,6 +1,6 @@
-import { atom } from "recoil";
+import { atom } from 'recoil';
 
 export const lefSideIsOpen = atom({
-    key:"leftSideIsOpen",
-    default:false
-})
+  key: 'leftSideIsOpen',
+  default: false,
+});

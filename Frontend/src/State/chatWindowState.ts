@@ -1,12 +1,12 @@
-import { atom } from "recoil";
+import { atom } from 'recoil';
+
 enum ChatType {
-    CHATS,
-    POLL,
-    VOTES,
-    PEOPLE,
+  CHATS,
+  POLL,
+  VOTES,
+  PEOPLE,
 }
 export const chatType = atom<ChatType>({
-    key:"chatType",
-    default: ChatType.CHATS
-})
-
+  key: 'chatType',
+  default: ChatType.CHATS,
+});

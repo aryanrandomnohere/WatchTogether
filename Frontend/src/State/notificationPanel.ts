@@ -1,7 +1,6 @@
-import { atom } from "recoil";
-
+import { atom } from 'recoil';
 
 export const isNotiOpen = atom({
-    key:"isNotiOpen",
-    default : false
-}) 
+  key: 'isNotiOpen',
+  default: false,
+});

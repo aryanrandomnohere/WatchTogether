@@ -1,8 +1,10 @@
-import React, { cloneElement, createContext, ReactNode, useContext, useState } from "react";
-import { createPortal } from "react-dom";
-import { HiXMark } from "react-icons/hi2";
+import React, { ReactNode, cloneElement, createContext, useContext, useState } from 'react';
+import { createPortal } from 'react-dom';
+import { HiXMark } from 'react-icons/hi2';
+
 // import { useOutsideClick } from "../hooks/useOutsideClick";
-import { motion } from "framer-motion";
+import { motion } from 'framer-motion';
+
 interface ModalContextType {
   openName: string;
   close: () => void;
@@ -14,21 +16,19 @@ const ModalContext = createContext<ModalContextType | undefined>(undefined);
 export const useModal = () => {
   const context = useContext(ModalContext);
   if (!context) {
-    throw new Error("useModal must be used within a ModalProvider");
+    throw new Error('useModal must be used within a ModalProvider');
   }
   return context;
 };
 
 export default function Modal({ children }: { children: ReactNode }) {
-  const [openName, setIsOpenName] = useState<string>("");
+  const [openName, setIsOpenName] = useState<string>('');
 
-  const close = () => setIsOpenName("");
+  const close = () => setIsOpenName('');
   const open = (name: string) => setIsOpenName(name);
 
   return (
-    <ModalContext.Provider value={{ openName, close, open }}>
-      {children}
-    </ModalContext.Provider>
+    <ModalContext.Provider value={{ openName, close, open }}>{children}</ModalContext.Provider>
   );
 }
 
@@ -57,10 +57,10 @@ function Window({ children, name }: WindowProps) {
 
   return createPortal(
     <motion.div
-      initial={{ y: "-10%", opacity: 0 }}
+      initial={{ y: '-10%', opacity: 0 }}
       animate={{ y: 0, opacity: 1 }}
-      exit={{ y: "-100%", opacity: 0 }}
-      transition={{ duration: 0.5, ease: "easeInOut" }}
+      exit={{ y: '-100%', opacity: 0 }}
+      transition={{ duration: 0.5, ease: 'easeInOut' }}
       className="fixed inset-0 w-full h-screen bg-slate-950/20 dark:bg-slate-950/20 backdrop-blur-sm z-[1000] flex items-center justify-center p-1"
     >
       <div className="flex flex-col w-auto h-auto max-w-full max-h-full bg-slate-200 dark:bg-gray-900 rounded-lg shadow-lg overflow-auto border border-slate-300 dark:border-slate-700">
@@ -70,9 +70,7 @@ function Window({ children, name }: WindowProps) {
         >
           <HiXMark />
         </div>
-        <div className="px-0">
-          {cloneElement(children as React.ReactElement, { close })}
-        </div>
+        <div className="px-0">{cloneElement(children as React.ReactElement, { close })}</div>
       </div>
     </motion.div>,
     document.body

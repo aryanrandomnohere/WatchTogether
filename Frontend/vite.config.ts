@@ -12,7 +12,7 @@ export default defineConfig({
             rewrite: (path) => path.replace(/^\/api/, ''),
         },
     },
-    port: 80
+    port: 8000
 },
 
 })
