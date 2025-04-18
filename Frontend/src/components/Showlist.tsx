@@ -1,9 +1,11 @@
-import Show from "./Show";
-import Modal from "../ui/Modal";
-import { useRecoilState } from "recoil";
-import { MovieInfoState } from "../State/MovieInfoState";
-import { RiInformation2Fill } from "react-icons/ri";
-import ShowInfo from "./Showinfo";
+import { RiInformation2Fill } from 'react-icons/ri';
+
+import { useRecoilState } from 'recoil';
+
+import { MovieInfoState } from '../State/MovieInfoState';
+import Modal from '../ui/Modal';
+import Show from './Show';
+import ShowInfo from './Showinfo';
 
 interface mData {
   adult: boolean;
@@ -12,8 +14,8 @@ interface mData {
   first_air_date: string;
   genre_ids: number[] | genreId[];
   id: number;
-  season?:number;
-  episode?:number;
+  season?: number;
+  episode?: number;
   media_type?: string;
   name?: string;
   origin_country?: string[] | originalCountry[];
@@ -28,8 +30,8 @@ interface mData {
 
 interface mediaData {
   listType: string;
-  episode:  number;
-  season: number
+  episode: number;
+  season: number;
   movie: mData;
 }
 
@@ -41,24 +43,34 @@ interface genreId {
   genre_id: number;
 }
 
-
-export default function ShowsList({shows, title}:{shows: mediaData[] | mData[] | null | undefined, title:string}) {
-  const [MovieInfo, setMovieInfo] =  useRecoilState(MovieInfoState);
-  function  handleClick(item:mData) {
-    setMovieInfo(item);  
-   }
-
+export default function ShowsList({
+  shows,
+  title,
+}: {
+  shows: mediaData[] | mData[] | null | undefined;
+  title: string;
+}) {
+  const [MovieInfo, setMovieInfo] = useRecoilState(MovieInfoState);
+  function handleClick(item: mData) {
+    setMovieInfo(item);
+  }
 
   return (
     <div className="flex flex-col">
       <div className="text-slate-800 dark:text-white font-bold text-2xl sm:text-3xl self-start mb-2 mt-1 w-full">
         {title}
       </div>
-      <div className={`flex items-center justify-start overflow-x-auto sm:overflow-x-visible overflow-y-hidden mb-3 h-fit space-x-3 scrollbar-none`}>
+      <div
+        className={`flex items-center justify-start overflow-x-auto sm:overflow-x-visible overflow-y-hidden mb-3 h-fit space-x-3 scrollbar-none`}
+      >
         {shows &&
-          shows.map((item) => (
+          shows.map(item => (
             //@ts-ignore
-            <Show key={item?.movie?.id ?? item?.id} item={item?.movie || item} onClick={() => handleClick(item?.movie || item)}>
+            <Show
+              key={item?.movie?.id ?? item?.id}
+              item={item?.movie || item}
+              onClick={() => handleClick(item?.movie || item)}
+            >
               <Modal>
                 <Modal.open opens="Showinfo">
                   <button
@@ -77,6 +89,5 @@ export default function ShowsList({shows, title}:{shows: mediaData[] | mData[] |
           ))}
       </div>
     </div>
-  )
+  );
 }
-

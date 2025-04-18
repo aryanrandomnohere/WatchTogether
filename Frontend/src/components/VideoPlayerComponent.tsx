@@ -47,7 +47,7 @@
 //         >
 //           {isPlaying ? 'Pause' : 'Play'}
 //         </button>
-        
+
 //         <input
 //           type="range"
 //           min="0"
@@ -56,7 +56,7 @@
 //           onChange={handleVolumeChange}
 //           className="w-24 h-2 bg-gray-600 rounded-lg appearance-none cursor-pointer"
 //         />
-        
+
 //         <button
 //           onClick={toggleFullscreen}
 //           className="bg-gray-700 hover:bg-gray-600 text-white font-semibold py-2 px-4 rounded"

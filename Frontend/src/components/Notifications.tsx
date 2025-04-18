@@ -1,8 +1,10 @@
-import { useState } from "react";
-import Notification from "./Notification";
-import { useRecoilValue } from "recoil";
-import { FriendRequests } from "../State/FriendRequests";
-import { BsBellFill } from "react-icons/bs";
+import { useState } from 'react';
+import { BsBellFill } from 'react-icons/bs';
+
+import { useRecoilValue } from 'recoil';
+
+import { FriendRequests } from '../State/FriendRequests';
+import Notification from './Notification';
 
 export default function Notifications() {
   const [isOpen, setIsOpen] = useState(false);
@@ -25,12 +27,10 @@ export default function Notifications() {
               {FriendRequestValue.length}
             </span>
           </div>
-          <span className="font-medium text-slate-700 dark:text-slate-200">
-            Friend Requests
-          </span>
+          <span className="font-medium text-slate-700 dark:text-slate-200">Friend Requests</span>
         </div>
       </button>
-      
+
       {isOpen && (
         <div className="space-y-2 pl-11">
           {FriendRequestValue.map((req, index) => (

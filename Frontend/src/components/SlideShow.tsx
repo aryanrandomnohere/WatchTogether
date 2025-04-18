@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useEffect, useState } from 'react';
 
 export default function SlideShow(): JSX.Element {
   const slides = [
@@ -20,7 +20,7 @@ export default function SlideShow(): JSX.Element {
 
   useEffect(() => {
     const interval = setInterval(() => {
-      setCurrentSlide((prev) => (prev + 1) % slides.length);
+      setCurrentSlide(prev => (prev + 1) % slides.length);
     }, 8000); // Change slides every 8 seconds
 
     return () => clearInterval(interval); // Cleanup interval on component unmount
@@ -39,11 +39,7 @@ export default function SlideShow(): JSX.Element {
               transform: `translateX(-${currentSlide * 100}%)`,
             }}
           >
-            <img
-              src={imageUrl}
-              alt={`Slide ${index + 1}`}
-              className="w-full rounded-lg  "
-            />
+            <img src={imageUrl} alt={`Slide ${index + 1}`} className="w-full rounded-lg  " />
           </div>
         ))}
       </div>
@@ -51,15 +47,13 @@ export default function SlideShow(): JSX.Element {
       {/* Navigation buttons (optional for manual control) */}
       <div className="absolute left-0 right-0 top-1/3 flex justify-between shadow-md">
         <button
-          onClick={() =>
-            setCurrentSlide((prev) => (prev === 0 ? slides.length - 1 : prev - 1))
-          }
+          onClick={() => setCurrentSlide(prev => (prev === 0 ? slides.length - 1 : prev - 1))}
           className="btn-lg text-2xl"
         >
           ❮
         </button>
         <button
-          onClick={() => setCurrentSlide((prev) => (prev + 1) % slides.length)}
+          onClick={() => setCurrentSlide(prev => (prev + 1) % slides.length)}
           className="btn-lg text-2xl"
         >
           ❯

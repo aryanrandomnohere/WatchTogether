@@ -1,6 +1,7 @@
-import { useRecoilValue } from "recoil";
-import { userInfo } from "../State/userState";
-import MsgAction from "./MsgAction";
+import { useRecoilValue } from 'recoil';
+
+import { userInfo } from '../State/userState';
+import MsgAction from './MsgAction';
 
 interface Message {
   id: number;
@@ -46,19 +47,23 @@ export default function ReplyTo({ replyTo }: { replyTo: Message }) {
   const isEmojiOnly = (message: string) => {
     const emojiRegex = /^([\p{Emoji}\u200d\uFE0F]+)$/u;
     return emojiRegex.test(message);
-};
+  };
   return (
     <div className="w-full min-w-full shadow-md">
       <div
         className={`flex p-2 pb-1 flex-col w-full rounded border border-stone-700 h-fit shadow-md ${
-          replyTo.displayname !== Info.displayname ? "bg-slate-800" : "bg-slate-800"
+          replyTo.displayname !== Info.displayname ? 'bg-slate-800' : 'bg-slate-800'
         }`}
       >
         {/* Header: Display Name & Actions */}
         <div className="flex w-full justify-between">
           <div className="text-slate-400 font-bold text-sm mb-0.5">{replyTo.displayname}</div>
           <div className="text-xs">
-            <MsgAction chatId={replyTo.id} message={replyTo.message} displayname={replyTo.displayname} />
+            <MsgAction
+              chatId={replyTo.id}
+              message={replyTo.message}
+              displayname={replyTo.displayname}
+            />
           </div>
         </div>
 
@@ -66,8 +71,10 @@ export default function ReplyTo({ replyTo }: { replyTo: Message }) {
         <div className="flex flex-col rounded-md border-l border-l-yellow-600 bg-slate-700 w-full mb-0.5">
           <div className="px-2 py-1">
             <div className="text-slate-400 text-sm">{replyTo.replyTo?.displayname}</div>
-            <div className={` ${isEmojiOnly(replyTo.message) ? "text-4xl" : "text-sm"} ${replyTo.replyTo?.message ? "text-white" : "font-thin text-zinc-200"}`}>
-              {replyTo.replyTo?.message || "Deleted for everyone"}
+            <div
+              className={` ${isEmojiOnly(replyTo.message) ? 'text-4xl' : 'text-sm'} ${replyTo.replyTo?.message ? 'text-white' : 'font-thin text-zinc-200'}`}
+            >
+              {replyTo.replyTo?.message || 'Deleted for everyone'}
             </div>
           </div>
         </div>
@@ -81,4 +88,3 @@ export default function ReplyTo({ replyTo }: { replyTo: Message }) {
     </div>
   );
 }
-

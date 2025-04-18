@@ -1,18 +1,18 @@
-import { CgProfile } from "react-icons/cg";
-import { IoSettingsOutline } from "react-icons/io5";
-import { LuLogOut } from "react-icons/lu";
-import useAuth from "../hooks/useAuth";
+import { CgProfile } from 'react-icons/cg';
+import { IoSettingsOutline } from 'react-icons/io5';
 // import { SiGoogleclassroom } from "react-icons/si";
-import { LiaUserFriendsSolid } from "react-icons/lia";
-import Modal from "../ui/Modal";
-import Notifications from "./Notifications";
-import Actions from "./Actions";
+import { LiaUserFriendsSolid } from 'react-icons/lia';
+import { LuLogOut } from 'react-icons/lu';
+
+import useAuth from '../hooks/useAuth';
+import Modal from '../ui/Modal';
+import Actions from './Actions';
+import Notifications from './Notifications';
+
 // import ProfileActions from "./Profile/ProfileActions";
 
-
-
 export default function UserActions() {
-  const {logout} = useAuth();
+  const { logout } = useAuth();
   return (
     <div className="w-48 bg-white dark:bg-slate-800 min-w-full rounded-xl shadow-lgoverflow-hidden">
       <div className="flex flex-col py-1">
@@ -21,14 +21,15 @@ export default function UserActions() {
             <Actions>
               <div className="flex items-center gap-3 px-4 py-2.5 hover:bg-slate-50 dark:hover:bg-slate-700/50 transition-colors duration-200">
                 <CgProfile className="text-xl text-slate-600 dark:text-slate-300" />
-                <span className="text-sm font-medium text-slate-700 dark:text-slate-200">Profile</span>
+                <span className="text-sm font-medium text-slate-700 dark:text-slate-200">
+                  Profile
+                </span>
               </div>
             </Actions>
           </Modal.open>
           <Modal.window name="profile">
             <></>
-                    {/* <ProfileActions /> */}
-                   
+            {/* <ProfileActions /> */}
           </Modal.window>
         </Modal>
 
@@ -38,7 +39,9 @@ export default function UserActions() {
               <Modal.open opens="noti">
                 <div className="flex items-center gap-3 px-4 py-2.5 hover:bg-slate-50 dark:hover:bg-slate-700/50 transition-colors duration-200">
                   <LiaUserFriendsSolid className="text-xl text-slate-600 dark:text-slate-300" />
-                  <span className="text-sm font-medium text-slate-700 dark:text-slate-200">Notifications</span>
+                  <span className="text-sm font-medium text-slate-700 dark:text-slate-200">
+                    Notifications
+                  </span>
                 </div>
               </Modal.open>
               <Modal.window name="noti">
@@ -65,8 +68,5 @@ export default function UserActions() {
         </Actions>
       </div>
     </div>
-  )
+  );
 }
-
-
-

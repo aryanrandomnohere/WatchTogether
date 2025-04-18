@@ -4,7 +4,6 @@
 // import Authentication from "../pages/Authentication";
 // import PreviouslyWatched from "./PreviouslyWatched";
 
-
 // export default function HomePageItems() {
 //   const isAuthenticated = useRecoilValue(isAuthenticatedState);
 
@@ -14,7 +13,7 @@
 //         <PreviouslyWatched/>
 //       ) : (
 //         <div className=" fixed inset-0 w-full h-screen bg-slate-950  bg-opacity-20 backdrop-blur-md z-[1000] transition-all duration-500 flex items-center justify-center p-1">
-        
+
 //           <div className="text-white text-center">
 //             Please log in to access your home page content.
 //             <div className="mb-12">

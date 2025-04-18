@@ -1,11 +1,11 @@
-import { ReactNode } from "react";
+import { ReactNode } from 'react';
 
 interface mData {
   adult: boolean;
   title?: string;
   backdrop_path: string;
   first_air_date: string;
-  genre_ids: number[] | genreId[] ;
+  genre_ids: number[] | genreId[];
   id: number;
   media_type?: string;
   name?: string;
@@ -20,11 +20,11 @@ interface mData {
 }
 
 interface originalCountry {
-country:string
+  country: string;
 }
 
 interface genreId {
-  genre_id:number
+  genre_id: number;
 }
 
 export default function Show({
@@ -48,7 +48,7 @@ export default function Show({
           <img
             loading="lazy"
             src={imageUrl}
-            alt={item.name || item.title || "Unknown Item"}
+            alt={item.name || item.title || 'Unknown Item'}
             className="w-full h-full object-cover aspect-w-2 aspect-h-3"
           />
         ) : (
