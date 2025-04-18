@@ -1,4 +1,4 @@
-import { atom, selector } from "recoil";
+import { atom, selector } from 'recoil';
 
 // Interfaces
 interface mData {
@@ -22,8 +22,8 @@ interface mData {
 
 interface mediaData {
   listType: string;
-  episode:  number;
-  season: number
+  episode: number;
+  season: number;
   movie: mData;
 }
 
@@ -37,46 +37,42 @@ interface genreId {
 
 // Atom for user media
 export const userMedia = atom<null | mediaData[]>({
-  key: "userMedia",
+  key: 'userMedia',
   default: null, // Default value can be null or an empty array []
 });
 
 // Selector for recently watched movies
 export const recentlyWatched = selector<mediaData[] | null>({
-  key: "recentlyWatchedSelector",
+  key: 'recentlyWatchedSelector',
   get: ({ get }) => {
     const media = get(userMedia);
     if (!media) return null;
 
     // Filter for "Recently Watched"
-    return media
-      .filter((item) => item.listType === "Recently Watched");
+    return media.filter(item => item.listType === 'Recently Watched');
   },
 });
 
 // Selector for watch later movies
 export const watchLater = selector<mediaData[] | null>({
-  key: "watchLaterSelector",
+  key: 'watchLaterSelector',
   get: ({ get }) => {
     const media = get(userMedia);
     if (!media) return [];
 
     // Filter for "Watch Later"
-    return media
-      .filter((item) => item.listType === "Watch Later")
+    return media.filter(item => item.listType === 'Watch Later');
   },
 });
 
 // Selector for favourite movies
 export const Favourite = selector<mediaData[] | null>({
-  key: "favouriteSelector",
+  key: 'favouriteSelector',
   get: ({ get }) => {
     const media = get(userMedia);
     if (!media) return null;
 
     // Filter for "Favourite"
-    return media
-      .filter((item) => item.listType === "Favourite")
-      
+    return media.filter(item => item.listType === 'Favourite');
   },
 });

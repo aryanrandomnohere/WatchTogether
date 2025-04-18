@@ -1,11 +1,11 @@
-import { atom } from "recoil";
+import { atom } from 'recoil';
 
 interface ReplyToType {
-    displayname:string,
-    chatId:null | number;
-    message:string
+  displayname: string;
+  chatId: null | number;
+  message: string;
 }
 export const replyingToState = atom<ReplyToType | null>({
-    key:"replyingTo",
-    default:null
-})
+  key: 'replyingTo',
+  default: null,
+});

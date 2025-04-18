@@ -1,4 +1,4 @@
-import { useEffect, useRef } from "react";
+import { useEffect, useRef } from 'react';
 
 export function useOutsideClick(close: () => void, listenCapturing = true) {
   const ref = useRef<HTMLDivElement>(null); // Use HTMLDivElement
@@ -10,10 +10,10 @@ export function useOutsideClick(close: () => void, listenCapturing = true) {
       }
     };
 
-    document.addEventListener("click", handleClick, listenCapturing);
+    document.addEventListener('click', handleClick, listenCapturing);
 
     return () => {
-      document.removeEventListener("click", handleClick, listenCapturing);
+      document.removeEventListener('click', handleClick, listenCapturing);
     };
   }, [close, listenCapturing]);
 

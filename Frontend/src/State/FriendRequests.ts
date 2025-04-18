@@ -1,9 +1,10 @@
-import { atom } from "recoil";
+import { atom } from 'recoil';
+
 interface requests {
-    from:string;
-    fromUsername:string;
-} 
+  from: string;
+  fromUsername: string;
+}
 export const FriendRequests = atom<requests[]>({
-    key:"All Requests",
-    default: []
-})
+  key: 'All Requests',
+  default: [],
+});

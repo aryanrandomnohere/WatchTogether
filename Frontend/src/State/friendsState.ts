@@ -1,12 +1,12 @@
-import { atom } from "recoil";
+import { atom } from 'recoil';
 
 interface Friend {
-    id:string;
-    status:string;
-    displayname:string;
-    username:string
+  id: string;
+  status: string;
+  displayname: string;
+  username: string;
 }
 export const Friends = atom<Friend[]>({
-    key :"Friends",
-    default: []
-})
+  key: 'Friends',
+  default: [],
+});

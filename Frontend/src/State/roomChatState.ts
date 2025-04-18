@@ -1,26 +1,27 @@
-import { atom } from "recoil";
+import { atom } from 'recoil';
+
 interface Message {
   id: number;
-  type:string;
+  type: string;
   displayname: string;
   edited: boolean;
   multipleVotes: boolean;
   time: string;
   message: string;
-  options?: Option[]; 
-  replyTo?: Reply | null; 
+  options?: Option[];
+  replyTo?: Reply | null;
 }
 
 interface Option {
-  chatId:number;
+  chatId: number;
   option: string;
   id: number;
-  votes?: Vote[]|null; 
+  votes?: Vote[] | null;
 }
 
 interface Vote {
-  chatId:number;
-  userId:string;
+  chatId: number;
+  userId: string;
   id: number;
   optionId: number;
   user: User;
@@ -29,7 +30,7 @@ interface Vote {
 interface User {
   id: string;
   displayname: string;
-  username: string; 
+  username: string;
 }
 
 interface Reply {
@@ -37,11 +38,10 @@ interface Reply {
   displayname: string;
   message: string;
 }
-  
 
 const initialState: Message[] = [];
 
 export const roomMessages = atom<Message[]>({
-    key:"roomMessages",
-    default: initialState,
-})
+  key: 'roomMessages',
+  default: initialState,
+});

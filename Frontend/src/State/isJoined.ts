@@ -1,6 +1,6 @@
-import { atom } from "recoil";
+import { atom } from 'recoil';
 
 export const joinedStatus = atom({
-    key:"isJoinedCall",
-    default: false
-}) 
+  key: 'isJoinedCall',
+  default: false,
+});
