@@ -47,7 +47,7 @@ function Window({ children, name }: { children: ReactNode; name: string }) {
       animate={{ y: 0, opacity: 1 }}
       exit={{ y: '-100%', opacity: 0 }}
       transition={{ duration: 0.5, ease: 'easeInOut' }}
-      className="fixed inset-0 w-full h-screen bg-opacity-5 backdrop-blur-0 z-[1000] flex items-start justify-center"
+      className="fixed inset-0 w-full h-screen bg-opacity-5 backdrop-blur-0 z-[1000]  flex rounded items-start justify-center"
     >
       <div
         ref={ref}
@@ -57,7 +57,6 @@ function Window({ children, name }: { children: ReactNode; name: string }) {
           className="fixed z-10 self-end p-1 hover:bg-opacity-45 hover:bg-slate-300 dark:hover:bg-slate-700 rounded-sm m-2 text-slate-700 dark:text-slate-300 text-3xl cursor-pointer flex"
           onClick={close}
         >
-          <div className="text-base p-1">GOT IT</div>
         </div>
         <div className="px-0">{cloneElement(children as React.ReactElement, { close })}</div>
       </div>
