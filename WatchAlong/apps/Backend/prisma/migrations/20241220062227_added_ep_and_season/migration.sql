@@ -1,0 +1,3 @@
+-- AlterTable
+ALTER TABLE "UserMovieList" ADD COLUMN     "episode" INTEGER NOT NULL DEFAULT 1,
+ADD COLUMN     "season" INTEGER NOT NULL DEFAULT 1;
