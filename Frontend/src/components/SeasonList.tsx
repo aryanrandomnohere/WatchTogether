@@ -1,49 +1,30 @@
-import { Dispatch, SetStateAction, useEffect, useState } from 'react';
-import { FaLongArrowAltRight } from 'react-icons/fa';
-
-import axios from 'axios';
-import { useRecoilValue } from 'recoil';
-
-import { epState } from '../State/epState';
+import React, { useState, useEffect } from 'react';
+import { EpisodeType, APIEpisodeType } from '../types';
 import EpisodeBox from './EpisodeBox';
+import axios from 'axios';
 
-interface seasonType {
-  name: string;
-  poster_path: string;
-  vote_average: string;
-  season_number: string;
+const TOKEN = 'eyJhbGciOiJIUzI1NiJ9.eyJhdWQiOiI0NzI5NmMxNjY1NWI1NGE1MzU0MTA4NzIyZWVmMjFhNSIsIm5iZiI6MTczMDkyMTU4My44NzM5OTk4LCJzdWIiOiI2NzJiYzQ2ZjQzM2M4MmVhMjY3ZWExNWEiLCJzY29wZXMiOlsiYXBpX3JlYWQiXSwidmVyc2lvbiI6MX0.T9tYHXZGv0OisrEbFuVodRU7ppPEKLvLAsKMbmJElkA';
+
+interface SeasonListProps {
+  seasonInfo: {
+    name: string;
+    season_number: number;
+    poster_path: string | null;
+  };
+  tvId?: string | number;
 }
 
-interface EpisodeType {
-  episode_number: number; // Assuming this is always a number
-  episode_type: string; // You may need to adjust based on API response
-  id: number; // Assuming IDs are strings
-  name: string; // Most likely a string
-  overview: string; // Most likely a string
-  season_number: number; // Assuming this is always a number
-  show_id: number; // Assuming this is a string
-  still_path?: string; // Optional, as some episodes may not have an image
-  vote_average: number; // Typically a numeric rating
-}
+const SeasonList: React.FC<SeasonListProps> = ({ seasonInfo, tvId }) => {
+  const [isOpen, setIsOpen] = useState(false);
+  const [episodes, setEpisodes] = useState<EpisodeType[]>([]);
+  const [isLoading, setIsLoading] = useState(false);
+  const [episodeCount, setEpisodeCount] = useState<number>(0);
 
-const TOKEN =
-  'eyJhbGciOiJIUzI1NiJ9.eyJhdWQiOiI0NzI5NmMxNjY1NWI1NGE1MzU0MTA4NzIyZWVmMjFhNSIsIm5iZiI6MTczMDkyMTU4My44NzM5OTk4LCJzdWIiOiI2NzJiYzQ2ZjQzM2M4MmVhMjY3ZWExNWEiLCJzY29wZXMiOlsiYXBpX3JlYWQiXSwidmVyc2lvbiI6MX0.T9tYHXZGv0OisrEbFuVodRU7ppPEKLvLAsKMbmJElkA';
-
-export default function SeasonList({
-  seasonInfo,
-  tvId,
-  isOpen,
-  setIsOpen,
-}: {
-  seasonInfo: seasonType;
-  tvId: string | number | undefined;
-  isOpen: number | string | null;
-  setIsOpen: Dispatch<SetStateAction<number | string | null>>;
-}) {
-  const Ep = useRecoilValue(epState);
-  const [episodes, setEpisodes] = useState<EpisodeType[]>();
+  // Fetch episode count on mount
   useEffect(() => {
-    async function getEpisodes() {
+    async function getEpisodeCount() {
+      if (!tvId) return;
+      
       try {
         const url = `https://api.themoviedb.org/3/tv/${tvId}/season/${seasonInfo.season_number}`;
         const response = await axios.get(url, {
@@ -51,9 +32,30 @@ export default function SeasonList({
             Authorization: `Bearer ${TOKEN}`,
           },
         });
+        setEpisodeCount(response.data.episodes.length);
+      } catch (error) {
+        console.error('Error fetching episode count:', error);
+      }
+    }
 
-        //@ts-ignore
-        const requiredData = response.data.episodes.map(ep => ({
+    getEpisodeCount();
+  }, [tvId, seasonInfo.season_number]);
+
+  // Fetch full episode details when opened
+  useEffect(() => {
+    async function getEpisodes() {
+      if (!tvId || !isOpen) return;
+      
+      try {
+        setIsLoading(true);
+        const url = `https://api.themoviedb.org/3/tv/${tvId}/season/${seasonInfo.season_number}`;
+        const response = await axios.get(url, {
+          headers: {
+            Authorization: `Bearer ${TOKEN}`,
+          },
+        });
+
+        const requiredData = response.data.episodes.map((ep: APIEpisodeType) => ({
           episode_number: ep.episode_number,
           episode_type: ep.episode_type,
           id: ep.id,
@@ -65,66 +67,73 @@ export default function SeasonList({
           vote_average: ep.vote_average,
         }));
 
-        setEpisodes(() => requiredData);
-        console.log(episodes);
+        setEpisodes(requiredData);
       } catch (error) {
         console.error('Error fetching episodes:', error);
+      } finally {
+        setIsLoading(false);
       }
     }
 
-    getEpisodes();
-  }, [tvId]);
-
-  if (seasonInfo.name === 'Specials') return null;
+    if (isOpen) {
+      getEpisodes();
+    }
+  }, [tvId, seasonInfo.season_number, isOpen]);
 
   return (
-    <div className={`flex flex-col items-center w-full px-1 pt-1.5`}>
-      {/* Season Header */}
+    <div className="flex flex-col w-full">
       <div
-        className={`flex items-center px-3 py-2.5 w-full justify-between border-b border-slate-200/10 dark:border-slate-400/10 hover:bg-slate-100/5 dark:hover:bg-slate-800/20 hover:cursor-pointer transition-all duration-200 ease-in-out rounded-t`}
-        onClick={() =>
-          setIsOpen(is => (is === seasonInfo.season_number ? '' : seasonInfo.season_number))
-        }
+        onClick={() => setIsOpen(!isOpen)}
+        className="flex items-center justify-between w-full p-3 rounded-lg cursor-pointer hover:bg-slate-100 dark:hover:bg-slate-800/50 transition-colors duration-200"
       >
-        <h1
-          className={`${
-            Ep.season_number === Number(seasonInfo.season_number)
-              ? 'text-slate-900 dark:text-slate-200'
-              : 'text-slate-700 dark:text-slate-400'
-          } text-sm md:text-base max-w-56 font-bold transition-colors duration-200`}
-        >
-          {seasonInfo.name}
-        </h1>
-        <FaLongArrowAltRight
-          className={`text-2xl ${
-            Ep.season_number === Number(seasonInfo.season_number)
-              ? 'text-slate-900 dark:text-slate-200 border-slate-900 dark:border-slate-200'
-              : 'text-slate-600 dark:text-slate-400 border-slate-600 dark:border-slate-400'
-          } border rounded-full p-1 m-1 transform transition-all duration-200 ease-in-out ${
-            isOpen === seasonInfo.season_number ? 'rotate-90' : ''
-          }`}
-        />
+        <div className="flex items-center gap-3">
+          <div className="w-10 h-10 rounded-lg overflow-hidden bg-slate-200 dark:bg-slate-700">
+            {seasonInfo.poster_path ? (
+              <img
+                src={`https://image.tmdb.org/t/p/w92${seasonInfo.poster_path}`}
+                alt={seasonInfo.name}
+                className="w-full h-full object-cover"
+              />
+            ) : (
+              <div className="w-full h-full flex items-center justify-center text-slate-400 dark:text-slate-500">
+                <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                </svg>
+              </div>
+            )}
+          </div>
+          <div className="flex flex-col">
+            <h3 className="text-sm font-medium text-slate-800 dark:text-slate-200">{seasonInfo.name}</h3>
+            <p className="text-xs text-slate-500 dark:text-slate-400">
+              {episodeCount} Episodes
+            </p>
+          </div>
+        </div>
+        <button className="text-slate-400 dark:text-slate-500 hover:text-slate-600 dark:hover:text-slate-300 transition-colors duration-200">
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            className={`h-5 w-5 transform transition-transform duration-200 ${isOpen ? 'rotate-180' : ''}`}
+            fill="none"
+            viewBox="0 0 24 24"
+            stroke="currentColor"
+          >
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+          </svg>
+        </button>
       </div>
-
-      {/* Episode List */}
-      <div
-        className={`w-full transition-all duration-300 ease-in-out ${
-          isOpen === seasonInfo.season_number
-            ? 'opacity-100 max-h-[1000px]'
-            : 'opacity-0 max-h-0 overflow-hidden'
-        }`}
-      >
-        {isOpen === seasonInfo.season_number &&
-          (episodes ? (
-            <div className="w-full transform transition-transform duration-200">
-              <EpisodeBox episodes={episodes} />
+      {isOpen && (
+        <div className="pl-4 pr-2 py-1">
+          {isLoading ? (
+            <div className="flex justify-center items-center py-4">
+              <span className="loading loading-dots loading-md text-slate-600 dark:text-slate-400"></span>
             </div>
           ) : (
-            <div className="text-red-500 dark:text-red-400 mt-2 text-center font-medium">
-              Internal Server Error
-            </div>
-          ))}
-      </div>
+            <EpisodeBox episodes={episodes} />
+          )}
+        </div>
+      )}
     </div>
   );
-}
+};
+
+export default SeasonList;

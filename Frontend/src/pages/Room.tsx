@@ -22,6 +22,7 @@ import Series from '../components/Series';
 import getSocket from '../services/getSocket';
 import AlertBox from '../ui/AlertBox';
 import Modal from '../ui/Modal';
+import InviteLinkModal from '../components/InviteLinkModal';
 
 const socket = getSocket();
 interface isPlayingType {
@@ -141,15 +142,13 @@ export default function Room() {
         <div className="sm:text-lg font-bold text-slate-800 dark:text-white">{roomName}</div>
         <AlertBox>
           <AlertBox.open opens="inviteLink">
-            <div className=" py-1 px-3 bg-slate-300 dark:bg-slate-600 text-slate-800 dark:text-white max-w-36 flex items-center hover:cursor-pointer gap-2 hover:bg-slate-400 dark:hover:bg-slate-800 ">
-              <FcInvite className="sm:text-xl" />
-              Invite Link
+            <div className="py-2 px-4 bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 rounded-lg flex items-center gap-2 hover:bg-slate-200 dark:hover:bg-slate-700 transition-colors duration-200 cursor-pointer">
+              <FcInvite className="text-xl" />
+              <span className="font-medium">Invite Friends</span>
             </div>
           </AlertBox.open>
           <AlertBox.window name="inviteLink">
-            <div className="h-44 px-16 py-10 text-slate-800 dark:text-white">
-              Copy your invite link and share it to your friends to watch together
-            </div>
+            {roomId && <InviteLinkModal roomId={roomId} />}
           </AlertBox.window>
         </AlertBox>
       </div>

@@ -59,13 +59,19 @@ export default function RequestActions({ id, fromUsername }: { id: string; fromU
   }
 
   return (
-    <div className="flex items-center gap-4">
-      <div onClick={handleRejection}>
-        <RxCross2 className="text-slate-400 text-xl hover:cursor-pointer hover:border-b-slate-400" />
-      </div>
-      <div onClick={handleAcceptance}>
-        <IoMdCheckmark className="text-xl hover:cursor-pointer hover:border-b-slate-400  text-slate-400" />
-      </div>
+    <div className="flex items-center gap-2">
+      <button 
+        onClick={handleRejection}
+        className="p-1.5 rounded-full bg-red-50 dark:bg-red-900/20 text-red-500 hover:bg-red-100 dark:hover:bg-red-900/40 transition-colors duration-200"
+      >
+        <RxCross2 className="text-lg" />
+      </button>
+      <button 
+        onClick={handleAcceptance}
+        className="p-1.5 rounded-full bg-green-50 dark:bg-green-900/20 text-green-500 hover:bg-green-100 dark:hover:bg-green-900/40 transition-colors duration-200"
+      >
+        <IoMdCheckmark className="text-lg" />
+      </button>
     </div>
   );
 }
