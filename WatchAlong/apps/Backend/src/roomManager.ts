@@ -75,11 +75,10 @@ export class roomManager {
             return roomId
       }
       }
-    public joinCall(roomId:string,userId:string,sdp:RTCSessionDescriptionInit) {
+    public joinCall(roomId:string,userId:string,sdp:RTCSessionDescriptionInit | null) {
       const room = this.rooms.get(roomId);
       if(!room) return false;
-      console.log(room.inCall,"room.inCall");
-      if(room.inCall?.people.size === 0){
+      if(room.inCall?.people.size === 0 && sdp){
         room.inCall.people.add(userId);
         room.inCall.firstOffer = sdp;
         return true;

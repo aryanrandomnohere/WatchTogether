@@ -1,6 +1,6 @@
 import express, { Request, Response } from "express";
-import AuthMiddleware from "../AuthMiddleware";
-import {prisma as prismaClient} from "../db"
+import AuthMiddleware from "../AuthMiddleware.js";
+import {prisma as prismaClient} from "../db.js"
 
 
 const MediaRouter = express.Router();

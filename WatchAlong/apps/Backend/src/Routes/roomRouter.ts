@@ -1,8 +1,8 @@
 import { PrismaClient } from "@prisma/client";
-import AuthMiddleware from "../AuthMiddleware"
+import AuthMiddleware from "../AuthMiddleware.js"
 import express, { Request, Response } from "express";
-import { roomManager } from "../roomManager";
-import { prisma } from "../db";
+import { roomManager } from "../roomManager.js";
+import { prisma } from "../db.js";
 
 const roomRouter = express.Router()
 roomRouter.use(AuthMiddleware)
@@ -157,7 +157,7 @@ roomRouter.get("/call/:roomId", async (req: Request, res: Response) => {
     
     // Convert Set to array of strings
     const stringArray: string[] = room.inCall?.people ? Array.from(room.inCall.people) : [];
-    res.status(200).json(stringArray);
+    res.status(200).json({callCount:stringArray,sdp:room.inCall?.firstOffer});
   } catch (error) {
     res.status(400).json({ msg: "Internal server error" });
   }

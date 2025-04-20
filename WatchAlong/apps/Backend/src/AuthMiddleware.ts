@@ -1,6 +1,7 @@
 import { Response, Request, NextFunction } from "express";
-import { decode, verify } from "jsonwebtoken";
-import JWT_SECRET from "./JWT_SECRET";
+import pkg from "jsonwebtoken";
+const { decode, verify } = pkg;
+import JWT_SECRET from "./JWT_SECRET.js";
 
 
 //@ts-ignore

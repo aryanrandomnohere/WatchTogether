@@ -1,16 +1,16 @@
 import express, { Request, Response } from 'express';
 import cors from 'cors'; // Correct import
 import http from "http";
-import mainRouter from './Routes/index';
+import mainRouter from './Routes/index.js';
 import { Server } from 'socket.io';
-import videoEvents from './Events/videoEvents';
-import chatEvents from './Events/chatEvents';
-import userEvents from './Events/userEvents';
-import FriendActionEvents from './Events/FriendActionsEvent';
-import p2pEvents from './Events/p2pEvents';
-import { roomManager } from './roomManager';
-import { UserManager } from './UserManager';
-import { prisma } from "./db";
+import videoEvents from './Events/videoEvents.js';
+import chatEvents from './Events/chatEvents.js';
+import userEvents from './Events/userEvents.js';
+import FriendActionEvents from './Events/FriendActionsEvent.js';
+import p2pEvents from './Events/p2pEvents.js';
+import { roomManager } from './roomManager.js';
+import { UserManager } from './UserManager.js';
+import { prisma } from "./db.js";
 import { log } from 'console';
 const app = express();
 
@@ -123,8 +123,8 @@ socket.on("disconnect",async () => {
         select: { friendId: true },
       });
   
-      const friendIds = userFriends.map((f) => f.friendId);
-      friendIds.forEach((friendId) => {
+      const friendIds = userFriends.map((f:{friendId:string}) => f.friendId);
+      friendIds.forEach((friendId:string) => {
         io.to(friendId).emit("friend-status-update", {
           userId,
           newStatus:"OFFLINE", 

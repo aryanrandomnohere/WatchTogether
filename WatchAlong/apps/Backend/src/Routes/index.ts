@@ -1,9 +1,9 @@
 import express, {Request, Response} from 'express';
-import authRouter from "./AuthRouter";
-import UserRouter from './UserRouter';
-import SocialRouter from './SocialRouter';
-import MediaRouter from './MediaRelation';
-import roomRouter from './roomRouter';
+import authRouter from "./AuthRouter.js";
+import UserRouter from './UserRouter.js';
+import SocialRouter from './SocialRouter.js';
+import MediaRouter from './MediaRelation.js';
+import roomRouter from './roomRouter.js';
 const mainRouter = express.Router();
 
 mainRouter.use("/Auth", authRouter)
