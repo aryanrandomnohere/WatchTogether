@@ -1,8 +1,8 @@
 import { log } from "console";
 import { Server, Socket } from "socket.io";
 import { number } from "zod";
-import { roomManager } from "../roomManager";
-import { prisma } from "../db";;
+import { roomManager } from "../roomManager.js";
+import { prisma } from "../db.js";
 
 export default function videoEvents(io:Server, socket:Socket) {
     socket.on("change-video", async({playing,roomId}:{playing:{id:string, title:string, type:string, animeId?:string},roomId:string})=>{

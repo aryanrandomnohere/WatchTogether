@@ -1,11 +1,12 @@
 import express, { Response, Request } from "express";
 import { PrismaClient } from "@prisma/client";
-import { sign } from "jsonwebtoken";
+import pkg from "jsonwebtoken";
+const { sign } = pkg;
 import bcrypt from "bcrypt";
-import JWT_SECRET from "../JWT_SECRET";
+import JWT_SECRET from "../JWT_SECRET.js";
 import zod from 'zod'
 import rateLimit from "express-rate-limit";
-import { prisma } from "../db";
+import { prisma } from "../db.js";
 
 const signUpSchema = zod.object({
     displayname: zod.string(),

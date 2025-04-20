@@ -1,6 +1,6 @@
 import { Server, Socket } from "socket.io";
-import { UserManager } from "../UserManager";
-import { prisma } from "../db";;
+import { UserManager } from "../UserManager.js";
+import { prisma } from "../db.js";
 
 export default function userEvents(io: Server, socket: Socket) {
     // Handle user registration
@@ -44,10 +44,10 @@ export default function userEvents(io: Server, socket: Socket) {
                 select: { friendId: true },
               });
           
-              const friendIds = userFriends.map((f) => f.friendId);
+              const friendIds = userFriends.map((f:{friendId:string}) => f.friendId);
           
               // Notify all friends by broadcasting to their rooms
-              friendIds.forEach((friendId) => {
+              friendIds.forEach((friendId:string) => {
                 io.to(friendId).emit("friend-status-update", {
                   userId,
                   newStatus:"ONLINE", 
@@ -83,10 +83,10 @@ export default function userEvents(io: Server, socket: Socket) {
             select: { friendId: true },
           });
       
-          const friendIds = userFriends.map((f) => f.friendId);
+          const friendIds = userFriends.map((f:{friendId:string}) => f.friendId);
       
           // Notify all friends by broadcasting to their rooms
-          friendIds.forEach((friendId) => {
+          friendIds.forEach((friendId: string) => {
             io.to(friendId).emit("friend-status-update", {
               userId,
               newStatus, // e.g., 'online', 'offline', etc.
@@ -135,7 +135,7 @@ export default function userEvents(io: Server, socket: Socket) {
     socket.on("accept-friend-request", async ({userId, friendId}:{userId:string, friendId:string}) => {
         try {
             
-            await prisma.$transaction(async (tx) => {
+            await prisma.$transaction(async (tx:any) => {
                 await tx.friendship.createMany({
                     data: [
                         { userId, friendId },

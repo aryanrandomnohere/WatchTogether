@@ -1,6 +1,6 @@
 import express, { Request, Response } from "express";
-import AuthMiddleware from "../AuthMiddleware";
-import { prisma } from "../db";
+import AuthMiddleware from "../AuthMiddleware.js";
+import { prisma } from "../db.js";
 
 const SocialRouter = express.Router();
 SocialRouter.use(AuthMiddleware)
@@ -50,7 +50,7 @@ const userId = req.userId;
     friendId:true
   }
 })
-const friendIds = userFriends.map(f => f.friendId);
+const friendIds = userFriends.map((f:{friendId:string}) => f.friendId);
 
 const mutualFriends = await prisma.friendship.findMany({
     where: {
@@ -70,7 +70,7 @@ const mutualFriends = await prisma.friendship.findMany({
   });
   
 
-const actualFriends = mutualFriends.map(f => f.user);
+const actualFriends = mutualFriends.map((f:{user:any}) => f.user);
 
 res.json({actualFriends});
 return
