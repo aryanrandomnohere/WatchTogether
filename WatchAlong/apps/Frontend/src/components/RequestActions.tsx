@@ -1,6 +1,7 @@
 import toast from 'react-hot-toast';
 import { IoMdCheckmark } from 'react-icons/io';
 import { RxCross2 } from 'react-icons/rx';
+import { motion } from 'framer-motion';
 
 import axios from 'axios';
 import { useRecoilState, useRecoilValue } from 'recoil';
@@ -10,6 +11,7 @@ import { userInfo } from '../State/userState';
 import getSocket from '../services/getSocket';
 
 const socket = getSocket();
+
 export default function RequestActions({ id, fromUsername }: { id: string; fromUsername: string }) {
   const [requests, setFriendRequests] = useRecoilState(FriendRequests);
   const UserInfo = useRecoilValue(userInfo);
@@ -27,13 +29,14 @@ export default function RequestActions({ id, fromUsername }: { id: string; fromU
         }
       );
 
-      const afterDeletion = requests.filter(req => req.fromUsername !== fromUsername); // Fixed line
+      const afterDeletion = requests.filter(req => req.fromUsername !== fromUsername);
       setFriendRequests(afterDeletion);
       toast.success('Request Rejected');
     } catch (error) {
       console.error('Error rejecting the friend request:', error);
     }
   }
+
   async function handleAcceptance() {
     console.log(UserInfo.id);
 
@@ -43,7 +46,7 @@ export default function RequestActions({ id, fromUsername }: { id: string; fromU
     };
 
     socket.emit('accept-friend-request', acceptdata);
-    const afterDeletion = requests.filter(req => req.fromUsername !== fromUsername); // Fixed line
+    const afterDeletion = requests.filter(req => req.fromUsername !== fromUsername);
     await axios.put(
       //@ts-ignore
       `${import.meta.env.VITE_BACKEND_APP_API_BASE_URL}/api/v1/social/rejectrequest`,
@@ -59,13 +62,23 @@ export default function RequestActions({ id, fromUsername }: { id: string; fromU
   }
 
   return (
-    <div className="flex items-center gap-4">
-      <div onClick={handleRejection}>
-        <RxCross2 className="text-slate-400 text-xl hover:cursor-pointer hover:border-b-slate-400" />
-      </div>
-      <div onClick={handleAcceptance}>
-        <IoMdCheckmark className="text-xl hover:cursor-pointer hover:border-b-slate-400  text-slate-400" />
-      </div>
+    <div className="flex items-center gap-1.5">
+      <motion.button 
+        whileHover={{ scale: 1.1 }}
+        whileTap={{ scale: 0.9 }}
+        onClick={handleRejection}
+        className="p-1.5 rounded-full bg-red-500/10 text-red-500 hover:bg-red-500/20 transition-colors duration-200"
+      >
+        <RxCross2 size={16} />
+      </motion.button>
+      <motion.button 
+        whileHover={{ scale: 1.1 }}
+        whileTap={{ scale: 0.9 }}
+        onClick={handleAcceptance}
+        className="p-1.5 rounded-full bg-green-500/10 text-green-500 hover:bg-green-500/20 transition-colors duration-200"
+      >
+        <IoMdCheckmark size={16} />
+      </motion.button>
     </div>
   );
 }

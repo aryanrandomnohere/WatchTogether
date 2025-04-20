@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
 
 import SeasonList from './SeasonList';
 
@@ -51,24 +52,59 @@ export default function SeasonBox({ tvId }: { tvId?: string | number }) {
 
   if (isLoading || !seasonInfo)
     return (
-      <div className="flex justify-center items-center h-full w-full border-slate-400">
-        {' '}
-        <span className="loading loading-dots loading-lg"></span>
-      </div>
+      <motion.div 
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        className="flex justify-center items-center h-full w-full"
+      >
+        <span className="loading loading-dots loading-lg text-slate-600 dark:text-slate-400"></span>
+      </motion.div>
     );
 
   return (
-    <div className="flex flex-wrap items-center justify-between w-full border-l border-slate-300/10 dark:border-white/10 gap-2 bg-white/5 dark:bg-slate-950/50 backdrop-blur-sm max-h-96 md:max-h-[650px] overflow-y-auto scrollbar-thin scrollbar-track-slate-200 dark:scrollbar-track-slate-800 scrollbar-thumb-slate-400 dark:scrollbar-thumb-slate-600">
-      {seasonInfo.map((s: seasonType) => (
-        <SeasonList
-          key={s.season_number}
-          isOpen={isOpen}
-          setIsOpen={setIsOpen}
-          tvId={tvId}
-          seasonInfo={s}
-        />
-      ))}
-    </div>
+    <motion.div 
+      initial={{ opacity: 0, x: -20 }}
+      animate={{ opacity: 1, x: 0 }}
+      transition={{ duration: 0.3 }}
+      className="flex flex-col w-full border-l border-slate-200 border-2 dark:border-slate-800 bg-white/50 dark:bg-slate-900 backdrop-blur-sm max-h-[700px] overflow-y-auto scrollbar-thin scrollbar-track-slate-100 dark:scrollbar-track-slate-800 scrollbar-thumb-slate-300 dark:scrollbar-thumb-slate-700 hover:scrollbar-thumb-slate-400 dark:hover:scrollbar-thumb-slate-600 transition-all duration-200"
+    >
+      <motion.div 
+        initial={{ opacity: 0, y: -10 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.3, delay: 0.1 }}
+        className="sticky top-0 z-10 bg-white/80 dark:bg-slate-950/40 backdrop-blur-sm px-4 py-3"
+      >
+        <h2 className="text-lg font-semibold text-slate-800 dark:text-slate-200">Seasons</h2>
+      </motion.div>
+      <motion.div 
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ duration: 0.3, delay: 0.2 }}
+        className="flex flex-col gap-1 p-2"
+      >
+        <AnimatePresence>
+          {seasonInfo.map((s: seasonType, index) => { 
+            if(s.name === "Specials") return null;
+            return (
+              <motion.div
+                key={s.season_number}
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -20 }}
+                transition={{ duration: 0.3, delay: index * 0.1 }}
+              >
+                <SeasonList
+                  isOpen={isOpen}
+                  setIsOpen={setIsOpen}
+                  tvId={tvId}
+                  seasonInfo={s}
+                />
+              </motion.div>
+            );
+          })}
+        </AnimatePresence>
+      </motion.div>
+    </motion.div>
   );
 }
 

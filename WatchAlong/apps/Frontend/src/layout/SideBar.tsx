@@ -48,14 +48,14 @@ export default function SideBar() {
             </button>
 
             {/* Friends content */}
-            <div className={`space-y-2 pl-11 ${fOpen ? 'block' : 'hidden'}`}>
+            <div className={`space-y-2  ${fOpen ? 'block' : 'hidden'}`}>
               <AllFriends />
               <AddFriend />
             </div>
           </div>
 
           {/* Notifications */}
-          <div className="px-4">
+          <div className="">
             <Notifications />
           </div>
         </div>

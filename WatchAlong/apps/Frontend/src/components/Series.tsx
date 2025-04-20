@@ -186,7 +186,7 @@ export default function Series({
     console.log(AnimeId);
     return (
       <iframe
-        className={` ${leftIsOpen ? 'sm:h-full' : 'sm:h-full'} w-screen h-16 max-w-[73rem]  rounded `}
+        className={` ${leftIsOpen ? 'sm:h-full' : 'sm:h-full'} w-full h-16 max-w-[73rem]  rounded `}
         src={`https://2anime.xyz/embed/${AnimeId}-episode-${episode_number}`}
         frameBorder="0"
         allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
@@ -198,7 +198,7 @@ export default function Series({
   if (id && type === 'Series') {
     return (
       <iframe
-        className="w-screen h-56 lg:h-[600px]  sm:h-full rounded"
+        className="w-full h-56 lg:h-[600px]  sm:h-full rounded"
         src={`https://www.2embed.cc/embedtv/${id}&s=${season_number}&e=${episode_number}`}
         frameBorder="0"
         allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
@@ -217,7 +217,7 @@ export default function Series({
     if (id && type === 'Movie') {
       return (
         <iframe
-          className="w-screen h-52 lg:h-[525px] rounded sm:h-full "
+          className="w-full h-52 lg:h-[525px] rounded sm:h-full "
           src={`https://www.2embed.cc/embed/${id}`}
           frameBorder="0"
           allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
@@ -229,7 +229,7 @@ export default function Series({
         <div>
           {type === 'Movie' ? (
             <iframe
-              className="w-screen h-[190px] lg:h-[525px] rounded sm:h-full"
+              className="w-full h-[190px] lg:h-[525px] rounded sm:h-full"
               src={`https://www.2embed.cc/embed/${id}`}
               frameBorder="0"
               allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"

@@ -6,6 +6,7 @@ import { MovieInfoState } from '../State/MovieInfoState';
 import Modal from '../ui/Modal';
 import Show from './Show';
 import ShowInfo from './Showinfo';
+import ShowSkeleton from './ShowSkeleton';
 
 interface mData {
   adult: boolean;
@@ -46,9 +47,11 @@ interface genreId {
 export default function ShowsList({
   shows,
   title,
+  isLoading = false,
 }: {
   shows: mediaData[] | mData[] | null | undefined;
   title: string;
+  isLoading?: boolean;
 }) {
   const [MovieInfo, setMovieInfo] = useRecoilState(MovieInfoState);
   function handleClick(item: mData) {
@@ -63,7 +66,17 @@ export default function ShowsList({
       <div
         className={`flex items-center justify-start overflow-x-auto sm:overflow-x-visible overflow-y-hidden mb-3 h-fit space-x-3 scrollbar-none`}
       >
-        {shows &&
+        {isLoading ? (
+          <>
+            <ShowSkeleton />
+            <ShowSkeleton />
+            <ShowSkeleton />
+            <ShowSkeleton />
+            <ShowSkeleton />
+            <ShowSkeleton />
+          </>
+        ) : (
+          shows &&
           shows.map(item => (
             //@ts-ignore
             <Show
@@ -86,7 +99,8 @@ export default function ShowsList({
                 </Modal.window>
               </Modal>
             </Show>
-          ))}
+          ))
+        )}
       </div>
     </div>
   );

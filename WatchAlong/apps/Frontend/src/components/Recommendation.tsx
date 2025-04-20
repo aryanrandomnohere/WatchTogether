@@ -121,7 +121,7 @@ export default function Recommendation() {
   };
 
   return (
-    <div className="relative md:min-h-[35rem] min-h-52 w-full bg-slate-200 dark:bg-slate-950 flex justify-center items-center overflow-hidden">
+    <div className="relative md:min-h-[42rem] min-h-52 w-full bg-slate-200 dark:bg-slate-950 flex justify-center items-center overflow-hidden">
       <div className="relative w-full h-full flex justify-center items-center">
         <AnimatePresence custom={direction} mode="popLayout">
           {popular.length > 0 && (
