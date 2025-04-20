@@ -1,9 +1,10 @@
-import { FormEvent, useEffect, useState } from 'react';
+import { FormEvent, useEffect, useRef, useState } from 'react';
 import toast from 'react-hot-toast';
 import { BiSend } from 'react-icons/bi';
 import { FaLink } from 'react-icons/fa';
 import { GiCancel } from 'react-icons/gi';
 import { useParams } from 'react-router-dom';
+import { motion } from 'framer-motion';
 
 import axios from 'axios';
 import { useRecoilState, useRecoilValue, useSetRecoilState } from 'recoil';
@@ -67,6 +68,7 @@ export default function FullChat() {
   const [replyTo, setReplyTo] = useRecoilState(replyingToState);
   const ref = useOutsideClick(handleClearChatOption);
   const setWasPlaying = useSetRecoilState(wasPlaying);
+  const inputRef = useRef<HTMLInputElement>(null);
   const handleLoadState = async () => {
     try {
       //@ts-ignore
@@ -159,56 +161,85 @@ export default function FullChat() {
     setChatOptionIsOpen(false);
   }
 
+  useEffect(() => {
+    if(replyTo){
+      inputRef.current?.focus();
+    }
+  },[replyTo])
+
   return (
-    <div className="flex flex-col gap-0 h-full">
-      <ChatBox messages={messages} />
+    <div className="flex flex-col h-full bg-slate-900">
+      <div className="flex-1 min-h-0 relative">
+        <ChatBox messages={messages} />
+      </div>
 
-      <div
-        ref={ref}
-        className={`relative ${replyTo ? '' : 'mt-0'} flex flex-col h-14 justify-center items-center w-full`}
-      >
-        {replyTo ? (
-          <div className="absolute right-0 bottom-[50px] bg-slate-200 dark:bg-slate-950 border-l border-r border-t border-slate-300 dark:border-slate-400 flex items-center justify-between w-full h-fit rounded">
-            <div className="m-3 rounded w-full px-2 py-1 h-fit flex flex-col justify-between items-start bg-slate-300 dark:bg-slate-800">
-              <h1 className="text-sm text-slate-700 dark:text-slate-400">{replyTo.displayname}</h1>
-              <h1 className="text-xs text-slate-800 dark:text-slate-200">{replyTo.message}</h1>
-            </div>
-            <div
-              className="hover:cursor-pointer pr-4 pl-2 hover:text-slate-700 dark:hover:text-slate-400"
-              onClick={handleClearReplyTo}
-            >
-              <GiCancel />
-            </div>
-          </div>
-        ) : null}
-
-        <form onSubmit={sendMessage} className="flex items-center w-full">
-          <div
-            onClick={() => setChatOptionIsOpen(state => !state)}
-            className="flex justify-center w-full h-full hover:cursor-pointer hover:text-slate-700 dark:hover:text-slate-400 items-center"
+      <div ref={ref} className="relative flex flex-col w-full px-4 py-2 bg-slate-950 backdrop-blur-sm">
+        {replyTo && (
+          <motion.div 
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -10 }}
+            transition={{ duration: 0.2 }}
+            className="mb-2 bg-slate-800/80 rounded-lg p-5 flex items-center justify-between"
           >
-            <FaLink className="absolute left-4 hover:cursor-pointer hover:text-slate-700 dark:hover:text-slate-400" />
+            <div className="flex flex-col  ">
+              <span className="text-sm font-medium text-slate-400">Replying to {replyTo.displayname}</span>
+              <span className="text-xs text-slate-500 mt-0.5">{replyTo.message}</span>
+            </div>
+            <motion.button
+              whileHover={{ scale: 1.1 }}
+              whileTap={{ scale: 0.9 }}
+              onClick={handleClearReplyTo}
+              className="text-slate-500 hover:text-slate-400 p-1"
+            >
+              <GiCancel size={16} />
+            </motion.button>
+          </motion.div>
+        )}
+
+        <form onSubmit={sendMessage} className="flex items-center gap-2">
+          <div className="relative">
+            <motion.button
+              whileHover={{ scale: 1.1 }}
+              whileTap={{ scale: 0.9 }}
+              type="button"
+              onClick={() => setChatOptionIsOpen(state => !state)}
+              className= " flex items-center justify-center text-slate-400 hover:text-slate-300 rounded-full hover:bg-slate-700/50"
+            >
+              <FaLink size={18} />
+            </motion.button>
+
+            {chatOptionIsOpen && (
+              <motion.div
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -10 }}
+                transition={{ duration: 0.2 }}
+                className="absolute bottom-full left-0 mb-2 w-48 bg-slate-800 rounded-lg shadow-lg border border-slate-700 overflow-hidden z-50"
+              >
+                <ChatAction />
+              </motion.div>
+            )}
           </div>
 
           <input
+            ref={inputRef}
             type="text"
             value={newMessage}
             onChange={e => setNewMessage(e.target.value)}
-            placeholder="Type here"
-            className="bg-slate-400 placeholder:text-slate-700 dark:placeholder:text-white/80 dark:bg-slate-950 pl-10 pr-10 min-w-full mr-14 rounded h-10 text-sm md:text-base outline-8 outline-blue-300 text-slate-800 dark:text-slate-400 border border-slate-300 dark:border-slate-700"
+            placeholder="Type a message..."
+            className="flex-1 bg-slate-800/80 text-slate-200 placeholder-slate-500 px-4 py-2 rounded-xl border border-slate-700 focus:outline-none focus:ring-2 focus:ring-blue-500"
           />
-          <button
+
+          <motion.button
+            whileHover={{ scale: 1.1 }}
+            whileTap={{ scale: 0.9 }}
             type="submit"
-            className="absolute text-xl hover:bg-slate-300 dark:hover:bg-slate-800 hover:cursor-pointer right-3"
+            className="p-2 bg-blue-500 hover:bg-blue-600 text-white rounded-full"
           >
-            <BiSend className="hover:text-slate-700 dark:hover:text-slate-400" />
-          </button>
+            <BiSend size={18} />
+          </motion.button>
         </form>
-        {chatOptionIsOpen && (
-          <div className="absolute right-52 sm:right-64 bottom-12">
-            <ChatAction />
-          </div>
-        )}
       </div>
     </div>
   );

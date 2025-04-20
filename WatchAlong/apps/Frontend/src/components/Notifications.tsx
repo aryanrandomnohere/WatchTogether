@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { BsBellFill } from 'react-icons/bs';
+import { motion, AnimatePresence } from 'framer-motion';
 
 import { useRecoilValue } from 'recoil';
 
@@ -16,28 +17,49 @@ export default function Notifications() {
 
   return (
     <div className="space-y-2">
-      <button
+      <motion.button
+        whileHover={{ scale: 1.02 }}
+        whileTap={{ scale: 0.98 }}
         onClick={() => setIsOpen(!isOpen)}
-        className="flex items-center justify-between w-full px-4 py-2 text-left rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors duration-200"
+        className="flex items-center justify-between w-full px-4 py-2 text-left rounded-lg  hover:bg-slate-800/70 transition-colors duration-200"
       >
         <div className="flex items-center space-x-3">
           <div className="relative">
-            <BsBellFill className="text-slate-500 dark:text-slate-400" />
-            <span className="absolute -top-1 -right-1 w-4 h-4 bg-red-500 rounded-full text-xs text-white flex items-center justify-center">
+            <BsBellFill size={18} color="rgb(203 213 225)" />
+            <motion.span 
+              initial={{ scale: 0 }}
+              animate={{ scale: 1 }}
+              className="absolute -top-1 -right-1 w-3.5 h-3.5 bg-red-500 rounded-full text-xs text-white flex items-center justify-center"
+            >
               {FriendRequestValue.length}
-            </span>
+            </motion.span>
           </div>
-          <span className="font-medium text-slate-700 dark:text-slate-200">Friend Requests</span>
+          <span className="font-medium text-slate-200">Friend Requests</span>
         </div>
-      </button>
+      </motion.button>
 
-      {isOpen && (
-        <div className="space-y-2 pl-11">
-          {FriendRequestValue.map((req, index) => (
-            <Notification key={index} request={req} />
-          ))}
-        </div>
-      )}
+      <AnimatePresence>
+        {isOpen && (
+          <motion.div
+            initial={{ opacity: 0, height: 0 }}
+            animate={{ opacity: 1, height: "auto" }}
+            exit={{ opacity: 0, height: 0 }}
+            transition={{ duration: 0.2 }}
+            className="space-y-2 overflow-hidden"
+          >
+            {FriendRequestValue.map((req, index) => (
+              <motion.div
+                key={index}
+                initial={{ x: -20, opacity: 0 }}
+                animate={{ x: 0, opacity: 1 }}
+                transition={{ delay: index * 0.1 }}
+              >
+                <Notification request={req} />
+              </motion.div>
+            ))}
+          </motion.div>
+        )}
+      </AnimatePresence>
     </div>
   );
 }

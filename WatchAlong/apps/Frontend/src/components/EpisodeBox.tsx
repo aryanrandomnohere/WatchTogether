@@ -1,4 +1,5 @@
 import { useParams } from 'react-router-dom';
+import { motion } from 'framer-motion';
 
 import axios from 'axios';
 import { useRecoilState, useRecoilValue } from 'recoil';
@@ -33,8 +34,8 @@ export default function EpisodeBox({ episodes }: { episodes: EpisodeType[] }) {
     try {
       const token = localStorage.getItem('token');
 
-      const response = await axios.put(
-        //@ts-ignore
+      //@ts-expect-error - VITE_BACKEND_APP_API_BASE_URL is defined in env
+      await axios.put(
         `${import.meta.env.VITE_BACKEND_APP_API_BASE_URL}/api/v1/media/setmedia`,
         {
           episode: episode.episode_number,
@@ -59,34 +60,108 @@ export default function EpisodeBox({ episodes }: { episodes: EpisodeType[] }) {
     });
   };
 
-  return (
-    <div className="flex justify-center items-center w-full pt-2 pb-3">
-      <div className="flex-wrap flex w-full max-w-96 gap-2 justify-between px-2">
-        {episodes.map(episode => {
-          const paddingClass =
-            episode.episode_number.toString().length > 2
-              ? 'px-1.5'
-              : episode.episode_number.toString().length > 1
-                ? 'px-2.5'
-                : 'px-3';
-          const activeClass =
-            episode.episode_number === Ep.episode_number &&
-            episode.season_number === Ep.season_number
-              ? 'bg-slate-800 dark:bg-slate-700 text-yellow-400 dark:text-yellow-300 ring-2 ring-yellow-400/50 dark:ring-yellow-300/50'
-              : 'bg-slate-200 dark:bg-slate-800 text-slate-700 dark:text-slate-300 hover:bg-slate-300 dark:hover:bg-slate-700 hover:text-slate-900 dark:hover:text-slate-100';
+  // Filter out special episodes
+  const regularEpisodes = episodes.filter(episode => episode.episode_type !== 'special');
 
-          return (
-            <div
-              key={episode.id}
-              onClick={() => handleEpisodeClick(episode)}
-              aria-label={`Episode ${episode.episode_number}`}
-              className={`p-1.5 ${paddingClass} ${activeClass} rounded shadow-sm font-medium transition-all duration-200 ease-in-out transform hover:scale-105 hover:cursor-pointer`}
+  const container = {
+    hidden: { opacity: 0 },
+    show: {
+      opacity: 1,
+      transition: {
+        staggerChildren: 0.1
+      }
+    }
+  };
+
+  const item = {
+    hidden: { opacity: 0, y: 20 },
+    show: { opacity: 1, y: 0 }
+  };
+
+  return (
+    <motion.div 
+      variants={container}
+      initial="hidden"
+      animate="show"
+      className="flex flex-col w-full space-y-2 py-2"
+    >
+      {regularEpisodes.map(episode => {
+        const isActive = episode.episode_number === Ep.episode_number && episode.season_number === Ep.season_number;
+        const activeClass = isActive
+          ? 'bg-slate-100 dark:bg-slate-800 ring-2 ring-yellow-400/50 dark:ring-yellow-300/50'
+          : 'hover:bg-slate-50 dark:hover:bg-slate-800/50';
+
+        return (
+          <motion.div
+            key={episode.id}
+            variants={item}
+            onClick={() => handleEpisodeClick(episode)}
+            className={`flex items-center gap-3 p-2 rounded-lg cursor-pointer transition-all duration-200 ${activeClass}`}
+            whileHover={{ scale: 1.01, x: 4 }}
+            whileTap={{ scale: 0.99 }}
+          >
+            <motion.div 
+              className="relative w-24 h-14 flex-shrink-0"
+              whileHover={{ scale: 1.05 }}
             >
-              {episode.episode_number}
+              {episode.still_path ? (
+                <motion.img
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  transition={{ duration: 0.3 }}
+                  src={`https://image.tmdb.org/t/p/w185${episode.still_path}`}
+                  alt={episode.name}
+                  className="w-full h-full object-cover rounded-md"
+                />
+              ) : (
+                <div className="w-full h-full bg-slate-200 dark:bg-slate-700 rounded-md flex items-center justify-center">
+                  <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6 text-slate-400 dark:text-slate-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                  </svg>
+                </div>
+              )}
+              <motion.div 
+                className="absolute bottom-1 right-1 bg-black/70 text-white text-xs px-1.5 py-0.5 rounded"
+                initial={{ opacity: 0, scale: 0.8 }}
+                animate={{ opacity: 1, scale: 1 }}
+                transition={{ delay: 0.2 }}
+              >
+                {episode.episode_number}
+              </motion.div>
+            </motion.div>
+            <div className="flex flex-col flex-grow min-w-0">
+              <motion.h3 
+                className="text-sm font-medium text-slate-800 dark:text-slate-200 truncate"
+                initial={{ opacity: 0, y: 5 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.2 }}
+              >
+                {episode.name}
+              </motion.h3>
+              <motion.p 
+                className="text-xs text-slate-500 dark:text-slate-400 line-clamp-2"
+                initial={{ opacity: 0, y: 5 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.2, delay: 0.1 }}
+              >
+                {episode.overview}
+              </motion.p>
             </div>
-          );
-        })}
-      </div>
-    </div>
+            {isActive && (
+              <motion.div 
+                className="flex-shrink-0 text-yellow-400 dark:text-yellow-300"
+                initial={{ scale: 0 }}
+                animate={{ scale: 1 }}
+                transition={{ type: "spring", stiffness: 500, damping: 25 }}
+              >
+                <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                  <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
+                </svg>
+              </motion.div>
+            )}
+          </motion.div>
+        );
+      })}
+    </motion.div>
   );
 }

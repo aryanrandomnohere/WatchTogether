@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { toast } from 'react-hot-toast';
 import { BsSendFill } from 'react-icons/bs';
 import { IoArrowBackCircleSharp } from 'react-icons/io5';
-import { LuMinusCircle, LuPlusCircle } from 'react-icons/lu';
+import { IoRemoveCircle, IoAddCircle } from 'react-icons/io5';
 import { useParams } from 'react-router-dom';
 
 import { useRecoilValue, useSetRecoilState } from 'recoil';
@@ -82,7 +82,7 @@ export default function PollWindow() {
   return (
     <div className=" border border-t-0 border-slate-400/15  justify-between h-64 md:h-[40.5rem] ">
       <div className="mx-3 mb-10 hover:cursor-pointer max-w-72" onClick={goBack}>
-        <IoArrowBackCircleSharp className="text-3xl hover:text-slate-400" />
+        <IoArrowBackCircleSharp size={32} color="currentColor" />
       </div>{' '}
       <form
         onSubmit={handleSendPoll}
@@ -119,20 +119,18 @@ export default function PollWindow() {
                 className="flex justify-center items-center hover:cursor-pointer  hover:text-yellow-900 max-w-72"
                 onClick={() => {
                   if (options.length <= 2) return;
-                  const newOptions = [...options]; // Clone the array
-                  newOptions.pop(); // Remove last option
-                  setOptions(newOptions); // Update the state with the new array
+                  const newOptions = [...options];
+                  newOptions.pop();
+                  setOptions(newOptions);
                 }}
               >
-                <LuMinusCircle />
-                ...
+                <IoRemoveCircle size={24} color="currentColor" />
               </div>
               <div
                 className="flex justify-center items-center hover:cursor-pointer hover:text-yellow-900 max-w-72"
                 onClick={addOption}
               >
-                ...
-                <LuPlusCircle />
+                <IoAddCircle size={24} color="currentColor" />
               </div>
             </div>
           </div>

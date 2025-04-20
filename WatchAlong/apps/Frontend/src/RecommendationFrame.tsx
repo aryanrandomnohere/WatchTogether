@@ -1,3 +1,4 @@
+import { motion } from 'framer-motion';
 import axios from 'axios';
 import { useRecoilValue, useSetRecoilState } from 'recoil';
 
@@ -37,6 +38,7 @@ export default function RecommendationFrame({ show }: { show: mData }) {
   const Info = useRecoilValue(userInfo);
   //@ts-ignore
   const setNowPlaying = useSetRecoilState(nowPlaying);
+
   //@ts-ignore
   async function getNewNames() {
     const url = `https://api.themoviedb.org/3/tv/${show.id}/alternative_titles`;
@@ -60,6 +62,7 @@ export default function RecommendationFrame({ show }: { show: mData }) {
     const Id = FullId.split('-episode')[0];
     return Id;
   }
+
   function handleWatchNow() {
     //@ts-ignore
     axios.post(
@@ -76,52 +79,97 @@ export default function RecommendationFrame({ show }: { show: mData }) {
       }
     );
   }
+
   if (!show) return <></>;
+
   return (
     <div className="relative w-full h-full text-slate-800 dark:text-white flex items-center">
-      {/* Background Image (Now Behind the Text) */}
+      {/* Background Image with Gradient Overlay */}
       <div className="absolute inset-0 w-full flex justify-end h-full">
-        <div className="relative w-2/3 h-full">
-          {/* Image */}
-          <img
+        <div className="relative w-2/3 h-full overflow-hidden">
+          <motion.img
+            initial={{ scale: 1.02, opacity: 0.5 }}
+            animate={{ scale: 1, opacity: 1 }}
+            transition={{ duration: 1.2, ease: "easeOut" }}
             src={`https://image.tmdb.org/t/p/original/${show.backdrop_path}`}
             className="w-full h-full object-cover"
+            alt={show.title || show.name || "Show backdrop"}
           />
-
-          {/* Faded Overlay (Now Covers the Image Properly) */}
-          <div className="absolute inset-0 bg-gradient-to-r from-slate-200 dark:from-slate-950 via-transparent to-transparent"></div>
+          <div className="absolute inset-0 bg-gradient-to-l from-transparent via-slate-950/5 to-slate-950/90"></div>
         </div>
+        <div className="absolute inset-0 bg-gradient-to-r from-slate-950 via-slate-950/60 to-transparent"></div>
       </div>
 
-      {/* Text Content */}
-      <div className="relative flex flex-col ml-3 md:ml-10 justify-center max-w-[60%]">
-        <h1 className="text-3xl md:text-6xl font-stencil mb-0.5 md:mb-1">
+      {/* Content Container */}
+      <motion.div 
+        initial={{ opacity: 0, x: -20 }}
+        animate={{ opacity: 1, x: 0 }}
+        transition={{ duration: 0.5, delay: 0.2 }}
+        className="relative z-10 flex flex-col ml-4 md:ml-16 justify-center max-w-[90%] md:max-w-[45%] py-6 md:py-12"
+      >
+        {/* Title */}
+        <motion.h1 
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5, delay: 0.3 }}
+          className="text-3xl md:text-6xl font-bold text-white mb-2 md:mb-4"
+        >
           {show.title || show.name || show.original_name}
-        </h1>
-        <div className="flex items-center text-xs gap-5 mb-3 max-w-96 text-slate-800 dark:text-white font-extrabold">
-          <div className="border border-slate-400 dark:border-slate-600 p-0.5 rounded text-xs">
-            {show.media_type?.toLocaleUpperCase()}
-          </div>
-          <div className="border hidden md:block border-slate-400 dark:border-slate-600 p-0.5 rounded text-xs">
-            {show.first_air_date || show.release_date}
-          </div>
-          <div className="border border-slate-400 dark:border-slate-600 p-0.5 rounded text-xs">
-            {show.original_language?.toUpperCase()}
-          </div>
-          <div className="border border-slate-400 dark:border-slate-600 p-0.5 rounded text-xs">
-            {show.vote_average}
-          </div>
-        </div>
-        <p className="max-w-80 md:max-w-2xl md:text-base font-comic text-xs hidden md:block">
+        </motion.h1>
+
+        {/* Metadata */}
+        <motion.div 
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ duration: 0.5, delay: 0.4 }}
+          className="flex flex-wrap items-center gap-3 mb-4 text-sm"
+        >
+          {show.media_type && (
+            <span className="px-2 py-1 bg-slate-800/60 rounded-md text-slate-200 font-medium">
+              {show.media_type.toUpperCase()}
+            </span>
+          )}
+          {(show.first_air_date || show.release_date) && (
+            <span className="px-2 py-1 bg-slate-800/60 rounded-md text-slate-200 font-medium hidden md:block">
+              {new Date(show.first_air_date || show.release_date || '').getFullYear()}
+            </span>
+          )}
+          {show.original_language && (
+            <span className="px-2 py-1 bg-slate-800/60 rounded-md text-slate-200 font-medium">
+              {show.original_language.toUpperCase()}
+            </span>
+          )}
+          <span className="px-2 py-1 bg-slate-800/60 rounded-md text-slate-200 font-medium">
+            ★ {show.vote_average.toFixed(1)}
+          </span>
+        </motion.div>
+
+        {/* Overview */}
+        <motion.p 
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5, delay: 0.5 }}
+          className="text-sm md:text-base text-slate-300 max-w-xl mb-6 line-clamp-3 md:line-clamp-none hidden md:block"
+        >
           {show.overview}
-        </p>
-        <div
+        </motion.p>
+
+        {/* Watch Now Button */}
+        <motion.button
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          whileHover={{ scale: 1.05 }}
+          whileTap={{ scale: 0.95 }}
+          transition={{ duration: 0.2 }}
           onClick={handleWatchNow}
-          className="p-1 md:p-2 text-yellow-600 hover:bg-slate-300 dark:hover:bg-slate-600 text-slate-800 dark:text-white hover:cursor-pointer border border-slate-400 dark:border-slate-600 hover:border-slate-500 dark:hover:border-slate-500 mt-5 md:mt-10 w-24 md:w-32 flex justify-center text-xs md:text-base font-extrabold rounded font-comic"
+          className="px-6 py-3 bg-slate-200 dark:bg-slate-800 hover:bg-slate-300 dark:hover:bg-slate-700 
+                   text-slate-900 dark:text-slate-100 font-semibold rounded-lg 
+                   shadow-lg hover:shadow-slate-500/20 transition-all duration-200 w-fit
+                   flex items-center gap-2 text-sm md:text-base"
         >
           Watch Now
-        </div>
-      </div>
+        </motion.button>
+      </motion.div>
     </div>
   );
 }

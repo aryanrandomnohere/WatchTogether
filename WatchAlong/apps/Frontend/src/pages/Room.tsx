@@ -5,10 +5,8 @@ import { RiExchangeLine } from 'react-icons/ri';
 import { TbArrowBarToLeft, TbArrowBarToRight } from 'react-icons/tb';
 import { TfiViewList } from 'react-icons/tfi';
 import { useParams } from 'react-router-dom';
-
 import axios from 'axios';
 import { useRecoilState, useRecoilValue, useSetRecoilState } from 'recoil';
-
 import { isAuthenticatedState } from '../State/authState';
 import { epState } from '../State/epState';
 import { lefSideIsOpen } from '../State/leftRoomSpace';
@@ -22,6 +20,7 @@ import Series from '../components/Series';
 import getSocket from '../services/getSocket';
 import AlertBox from '../ui/AlertBox';
 import Modal from '../ui/Modal';
+import InviteLinkModal from '../components/InviteLinkModal';
 
 const socket = getSocket();
 interface isPlayingType {
@@ -141,29 +140,27 @@ export default function Room() {
         <div className="sm:text-lg font-bold text-slate-800 dark:text-white">{roomName}</div>
         <AlertBox>
           <AlertBox.open opens="inviteLink">
-            <div className=" py-1 px-3 bg-slate-300 dark:bg-slate-600 text-slate-800 dark:text-white max-w-36 flex items-center hover:cursor-pointer gap-2 hover:bg-slate-400 dark:hover:bg-slate-800 ">
-              <FcInvite className="sm:text-xl" />
-              Invite Link
+            <div className="py-2 px-4 bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 rounded-lg flex items-center gap-2 hover:bg-slate-200 dark:hover:bg-slate-700 transition-colors duration-200 cursor-pointer">
+              <FcInvite className="text-xl" />
+              <span className="font-medium">Invite Friends</span>
             </div>
           </AlertBox.open>
           <AlertBox.window name="inviteLink">
-            <div className="h-44 px-16 py-10 text-slate-800 dark:text-white">
-              Copy your invite link and share it to your friends to watch together
-            </div>
+            {roomId && <InviteLinkModal roomId={roomId} />}
           </AlertBox.window>
         </AlertBox>
       </div>
 
       <div
-        className={`flex flex-col w-full md:grid ${
-          isOpen && ['Series', 'Anime', 'AnimeUrl'].includes(isPlaying.type)
-            ? 'md:grid-cols-4'
-            : 'md:grid-cols-4'
-        } gap-2.5 mt-0 transition-all  `}
+        className={`flex w-full gap-2.5 mt-0 transition-all duration-300 ease-in-out`}
       >
         {/* Left Sidebar */}
         <div
-          className={`w-full md:w-92  ${isOpen && ['Series', 'Anime', 'AnimeUrl'].includes(isPlaying.type) ? '' : 'hidden'}`}
+          className={`${
+            isOpen && ['Series', 'Anime', 'AnimeUrl'].includes(isPlaying.type)
+              ? 'w-96'
+              : 'w-0'
+          } flex-shrink-0 transition-all duration-300 ease-in-out overflow-hidden`}
         >
           {['Series', 'Anime', 'AnimeUrl'].includes(isPlaying.type) && (
             <SeasonBox tvId={isPlaying.id} />
@@ -171,51 +168,39 @@ export default function Room() {
         </div>
 
         {/* Middle Content */}
-        <div
-          className={`flex w-full  pr-4 min- ${
-            isOpen && ['Series', 'Anime', 'AnimeUrl'].includes(isPlaying.type) && chatIsOpen
-              ? 'md:col-span-2'
-              : chatIsOpen
-                ? 'md:col-span-3'
-                : isOpen
-                  ? 'md:col-span-3'
-                  : 'md:col-span-4'
-          }`}
-        >
-          <div
-            className={`flex w-full   ${
-              isOpen && ['Series', 'Anime', 'AnimeUrl'].includes(isPlaying.type) && chatIsOpen
-                ? 'md:col-span-2'
-                : 'md:col-span-4'
-            } transition-all duration-700 md:h-[44rem] ease-in-out justify-center items-center bg-slate-200 dark:bg-zinc-950 min-h-full    border border-slate-300 dark:border-white/20 p-1.5 `}
-          >
-            <Series
-              id={isPlaying.id}
-              type={isPlaying.type}
-              title={isPlaying.title}
-              animeId={isPlaying.animeId}
-            />
+        <div className="flex-1 flex min-w-0">
+          <div className="flex-1 w-full items-center justify-center h-full min-w-0 bg-black/50 rounded-lg  p-1.5">
+            <div className={`flex items-center justify-center w-full ${!chatIsOpen && !isOpen ? "h-full" : "h-[44rem]" }  overflow-hidden`}>
+              <Series
+                id={isPlaying.id}
+                type={isPlaying.type}
+                title={isPlaying.title}
+                animeId={isPlaying.animeId}
+              />
+            </div>
           </div>
-          <div className="  h-full  gap-0 hidden md:block  items-center">
-            <div className="w-[1px] h-full bg-slate-950 flex items-center relative">
-              <div className="hover:cursor-pointer " onClick={() => setChatIsOpen(!chatIsOpen)}>
-                {!chatIsOpen ? (
-                  <TbArrowBarToLeft className=" absolute top-1/2 -right-3 text-white  font-extrabold bg-slate-950 rounded-full p-1 text-2xl" />
-                ) : (
-                  <TbArrowBarToRight className=" absolute top-1/2 -right-3 text-white  font-extrabold bg-slate-950 rounded-full p-1 text-2xl" />
-                )}
-              </div>
-            </div>{' '}
+          <div className="w-[1px] h-[44rem] bg-slate-400 dark:bg-white/50 flex items-center relative ml-4">
+            <div className="hover:cursor-pointer" onClick={() => setChatIsOpen(!chatIsOpen)}>
+              {!chatIsOpen ? (
+                <TbArrowBarToLeft className="absolute top-1/2 -right-3 text-white dark:text-black dark:bg-white font-extrabold bg-slate-950 rounded-full p-1 text-2xl" />
+              ) : (
+                <TbArrowBarToRight className="absolute top-1/2 -right-3 text-white dark:text-black dark:bg-white font-extrabold bg-slate-950 rounded-full p-1 text-2xl" />
+              )}
+            </div>
           </div>
         </div>
 
         {/* Right Sidebar */}
-        <div className="flex">
-          <div
-            className={`flex flex-col justify-between border-slate-300 dark:border-white/20 bg-slate-200 dark:bg-slate-900 w-full ${chatIsOpen ? 'md:col-span-1' : 'hidden'} h-fit md:h-auto`}
-          >
+        <div
+          className={`${
+            chatIsOpen ? 'w-96' : 'w-0'
+          } flex-shrink-0 transition-all duration-300 ease-in-out overflow-hidden`}
+        >
+        <div>
             <Chatnav />
+            <div className="flex flex-col justify-between border-slate-300 dark:border-white/20 bg-slate-200 dark:bg-slate-900 h-[42rem]">
             <ChatWindow />
+          </div>
           </div>
         </div>
       </div>
