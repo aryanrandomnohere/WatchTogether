@@ -33,7 +33,7 @@ export default function Sfu() {
 
     const identity = `${asPublisher ? 'pub' : 'sub'}-${Math.random().toString(36).substring(7)}`;
     try {
-      const response = await axios.get(`${BACKEND_URL}?identity=${identity}&room=${roomId}`, {
+      const response = await axios.get(`${import.meta.env.VITE_BACKEND_APP_API_BASE_URL}/api/v1/room/get-token?identity=${identity}&room=${roomId}`, {
         headers: {
           authorization: localStorage.getItem('token') || '',
         },
