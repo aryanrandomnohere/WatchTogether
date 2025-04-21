@@ -1,0 +1,13 @@
+version: '3.3'
+
+services:
+  livekit:
+    container_name: livekit
+    image: livekit/livekit-server
+    environment:
+      LIVEKIT_KEYS: "my_key: pCJKscVoP+Ar4d8ZgC/9As256CBPRWUtZHlanu2P308="
+    ports:
+      - "5349:5349/udp"  # TURN/STUN
+      - "7880:7880"      # LiveKit main API port
+      - "7881:7881"      # LiveKit WebSocket (RTC) port
+    restart: unless-stopped

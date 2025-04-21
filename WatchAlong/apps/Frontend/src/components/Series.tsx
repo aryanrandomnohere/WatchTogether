@@ -8,22 +8,24 @@ import { epState } from '../State/epState';
 import { lefSideIsOpen } from '../State/leftRoomSpace';
 import { userInfo } from '../State/userState';
 import getSocket from '../services/getSocket';
+import Sfu from './Sfu';
 
 const socket = getSocket();
 
-export default function Series({
+export default function Series({ 
+  screenShare,
   id,
   type,
-  title,
   animeId = '',
 }: {
+  screenShare: boolean;
   id: number | string;
   type: string;
   title?: string | undefined;
   animeId?: string;
 }) {
   const videoRef = useRef<HTMLVideoElement>(null);
-  const [isPlay, setIsPlaying] = useState(false);
+  const [isPlaying, setIsPlaying] = useState(false);
   const leftIsOpen = useRecoilValue(lefSideIsOpen);
   const [lastTime, setLastTime] = useState(0);
   const [hasAccess, setHasAccess] = useState(false);
@@ -31,9 +33,9 @@ export default function Series({
   const { roomId } = useParams();
   const { episode_number, season_number } = useRecoilValue(epState);
   const [AnimeId, setAnimeId] = useState<string>('');
+  console.log(isPlaying)
   useEffect(() => {
     if (videoRef.current) {
-      // videoRef.current.load(); // Reload the video when the source changes
       const video = videoRef.current;
       const handlePlayPause = (isPlaying: boolean) => {
         if (isPlaying) {
@@ -157,15 +159,15 @@ export default function Series({
         getDifferentSeasonLink();
       }
     }
+
   }, [animeId, season_number, type]);
 
   const handleAccessClick = async () => {
     setHasAccess(true);
     socket.emit('join-player', { roomId });
-    //@ts-ignore
     const response = await axios.get(
       `${import.meta.env.VITE_BACKEND_APP_API_BASE_URL}/api/v1/room/currentState/${roomId}`,
-      {
+      { 
         headers: {
           authorization: localStorage.getItem('token'),
         },
@@ -182,29 +184,13 @@ export default function Series({
     }
   };
 
-  if ((id && type === 'Anime') || type === 'AniMov') {
-    console.log(AnimeId);
+  // If no id is provided, show a message
+  if(screenShare){
     return (
-      <iframe
-        className={` ${leftIsOpen ? 'sm:h-full' : 'sm:h-full'} w-full h-16 max-w-[73rem]  rounded `}
-        src={`https://2anime.xyz/embed/${AnimeId}-episode-${episode_number}`}
-        frameBorder="0"
-        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-        allowFullScreen
-      ></iframe>
-    );
-  }
-
-  if (id && type === 'Series') {
-    return (
-      <iframe
-        className="w-full h-56 lg:h-[600px]  sm:h-full rounded"
-        src={`https://www.2embed.cc/embedtv/${id}&s=${season_number}&e=${episode_number}`}
-        frameBorder="0"
-        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-        allowFullScreen
-      ></iframe>
-    );
+      <div>
+        <Sfu />
+      </div>
+    )
   }
 
   if (!id) {
@@ -213,56 +199,71 @@ export default function Series({
         There is no media link or any IMDb ID present
       </div>
     );
-  } else {
-    if (id && type === 'Movie') {
-      return (
-        <iframe
-          className="w-full h-52 lg:h-[525px] rounded sm:h-full "
-          src={`https://www.2embed.cc/embed/${id}`}
-          frameBorder="0"
-          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-          allowFullScreen
-        ></iframe>
-      );
-    } else {
-      return id ? (
-        <div>
-          {type === 'Movie' ? (
-            <iframe
-              className="w-full h-[190px] lg:h-[525px] rounded sm:h-full"
-              src={`https://www.2embed.cc/embed/${id}`}
-              frameBorder="0"
-              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-              allowFullScreen
-            ></iframe>
-          ) : (
-            <div>
-              {!hasAccess ? (
-                <button
-                  onClick={handleAccessClick} // Add a handler for interaction
-                  className="px-4 py-2 bg-orange-600 text-white rounded"
-                >
-                  Get Access to the Video
-                </button>
-              ) : (
-                <div>
-                  <video ref={videoRef} controls className="h-64 lg:h-[600px] sm:h-full">
-                    <source src={id.toString()} type="video/mp4" />
-                    Your browser does not support the video tag.
-                  </video>
-                  {/* <div className="flex gap-2 text-base border sm:py-1 py-[0.5px] h-8 px-1 sm:mt-2.5 w-20 text-orange-600 border-orange-600 justify-center items-center">
-                        Live <CgMediaLive className="text-1xl" />
-                      </div> */}
-                </div>
-              )}
-            </div>
-          )}
-        </div>
-      ) : (
-        <div className="flex justify-center items-center text-lg md:text-2xl lg:text-3xl mt-36 lg:mt-72 text-center px-4 font-medium text-zinc-600">
-          There is no media link or any IMDb ID present
-        </div>
-      );
-    }
   }
+
+  // For direct video sources (not iframes)
+  if (type !== 'Anime' && type !== 'AniMov' && type !== 'Series' && type !== 'Movie') {
+    return (
+      <div>
+        {!hasAccess ? (
+          <button
+            onClick={handleAccessClick}
+            className="px-4 py-2 bg-orange-600 text-white rounded"
+          >
+            Get Access to the Video
+          </button>
+        ) : (
+          <div>
+            <video ref={videoRef} controls className="h-64 lg:h-[600px] sm:h-full">
+              <source src={id.toString()} type="video/mp4" />
+              Your browser does not support the video tag.
+            </video>
+          </div>
+        )}
+      </div>
+    );
+  }
+
+  // For iframe sources
+  const getIframeSource = () => {
+    if ((id && type === 'Anime') || type === 'AniMov') {
+      return `https://2anime.xyz/embed/${AnimeId}-episode-${episode_number}`;
+    } else if (id && type === 'Series') {
+      return `https://www.2embed.cc/embedtv/${id}&s=${season_number}&e=${episode_number}`;
+    } else if (id && type === 'Movie') {
+      return `https://www.2embed.cc/embed/${id}`;
+    }
+    return '';
+  };
+
+  const iframeSource = getIframeSource();
+  if (!iframeSource) {
+    return (
+      <div className="flex justify-center items-center text-lg md:text-2xl lg:text-3xl mt-36 lg:mt-72 text-center px-4 font-medium text-zinc-600">
+        There is no media link or any IMDb ID present
+      </div>
+    );
+  }
+
+  // Determine iframe height based on type
+  const getIframeHeight = () => {
+    if (type === 'Anime' || type === 'AniMov') {
+      return leftIsOpen ? 'sm:h-full' : 'sm:h-full';
+    } else if (type === 'Series') {
+      return 'h-56 lg:h-full sm:h-full';
+    } else if (type === 'Movie') {
+      return 'h-52 lg:h-full sm:h-full';
+    }
+    return 'h-52 lg:h-full sm:h-full';
+  };
+
+  return (
+    <iframe
+      className={`w-full ${getIframeHeight()} max-w-[73rem] rounded`}
+      src={iframeSource}
+      frameBorder="0"
+      allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+      allowFullScreen
+    ></iframe>
+  );
 }
