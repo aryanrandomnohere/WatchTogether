@@ -3,7 +3,9 @@ import AuthMiddleware from "../AuthMiddleware.js"
 import express, { Request, Response } from "express";
 import { roomManager } from "../roomManager.js";
 import { prisma } from "../db.js";
-
+import { AccessToken } from "livekit-server-sdk";
+const API_KEY = "my_key";
+const API_SECRET = process.env.LIVEKIT_SERVER_SECRET;
 const roomRouter = express.Router()
 roomRouter.use(AuthMiddleware)
 
@@ -92,12 +94,22 @@ roomRouter.get("/loadstate/:roomId",async (req:Request,res:Response)=>{
               }
             
 })
+roomRouter.get('/get-token', async (req:Request, res:Response) => {
+  const identity = String(req.query.identity || 'anonymous');
+  const room = String(req.query.room || 'screen-room');
+  const token = new AccessToken(API_KEY, API_SECRET, { identity });
+  token.addGrant({ roomJoin: true, room });
+  const newToken = await token.toJwt();
+  console.log(newToken);
+  res.json({ token: newToken });
+});
+
 //@ts-ignore
 roomRouter.get("/currentState/:roomId",async (req:ExtendedRequest,res:Response)=>{
   try{const userId = req.userId;
    const roomId = req.params.roomId; 
    let pastState;
-   const room = roomManager.getInstance().getRoom(roomId)
+   const room = roomManager.getInstance().getRoom(roomId) 
    if(room?.roomStatus){
     const { isPlaying, currentTime} = room?.roomStatus;
     pastState = { isPlaying,currentTime} 
@@ -162,6 +174,8 @@ roomRouter.get("/call/:roomId", async (req: Request, res: Response) => {
     res.status(400).json({ msg: "Internal server error" });
   }
 });
+
+
 
 
 

@@ -13,6 +13,7 @@
     "prepare": "husky install"
   },
   "dependencies": {
+    "@livekit/components-react": "^2.9.2",
     "axios": "^1.7.7",
     "dotenv": "^16.4.7",
     "framer-motion": "^11.16.1",

@@ -66,13 +66,13 @@ export default function SeasonBox({ tvId }: { tvId?: string | number }) {
       initial={{ opacity: 0, x: -20 }}
       animate={{ opacity: 1, x: 0 }}
       transition={{ duration: 0.3 }}
-      className="flex flex-col w-full border-l border-slate-200 border-2 dark:border-slate-800 bg-white/50 dark:bg-slate-900 backdrop-blur-sm max-h-[700px] overflow-y-auto scrollbar-thin scrollbar-track-slate-100 dark:scrollbar-track-slate-800 scrollbar-thumb-slate-300 dark:scrollbar-thumb-slate-700 hover:scrollbar-thumb-slate-400 dark:hover:scrollbar-thumb-slate-600 transition-all duration-200"
+      className="flex flex-col w-full  dark:border-slate-800 bg-white/50 dark:bg-slate-950 backdrop-blur-sm max-h-[720px] overflow-y-auto scrollbar-thin scrollbar-track-slate-100 dark:scrollbar-track-slate-800 scrollbar-thumb-slate-300 dark:scrollbar-thumb-slate-700 hover:scrollbar-thumb-slate-400 dark:hover:scrollbar-thumb-slate-600 transition-all duration-200"
     >
       <motion.div 
         initial={{ opacity: 0, y: -10 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.3, delay: 0.1 }}
-        className="sticky top-0 z-10 bg-white/80 dark:bg-slate-950/40 backdrop-blur-sm px-4 py-3"
+        className="sticky top-0 z-10 bg-white/80 dark:bg-slate-950 backdrop-blur-sm px-4 py-3"
       >
         <h2 className="text-lg font-semibold text-slate-800 dark:text-slate-200">Seasons</h2>
       </motion.div>
