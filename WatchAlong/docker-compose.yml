@@ -1,13 +1,17 @@
 version: '3.3'
 
 services:
-  livekit:
-    container_name: livekit
-    image: livekit/livekit-server
+  mediasoup:
+    container_name: mediasoup
+    image: node:18-alpine
+    working_dir: /app
+    volumes:
+      - ./apps/Backend:/app
     environment:
-      LIVEKIT_KEYS: "my_key: pCJKscVoP+Ar4d8ZgC/9As256CBPRWUtZHlanu2P308="
+      - NODE_ENV=development
     ports:
-      - "5349:5349/udp"  # TURN/STUN
-      - "7880:7880"      # LiveKit main API port
-      - "7881:7881"      # LiveKit WebSocket (RTC) port
+      - "4443:4443"  # HTTPS
+      - "4444:4444"  # WebSocket
+      - "40000-49999:40000-49999/udp"  # RTP ports
+    command: npm start
     restart: unless-stopped

@@ -184,10 +184,10 @@ export default function Series({
     }
   };
 
-  // If no id is provided, show a message
+  // If screenShare is true, show the ScreenShare component
   if(screenShare){
     return (
-      <div>
+      <div className="screen-share-container">
         <Sfu />
       </div>
     )

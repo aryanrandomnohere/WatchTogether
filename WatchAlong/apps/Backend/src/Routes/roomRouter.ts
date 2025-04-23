@@ -4,11 +4,10 @@ import express, { Request, Response } from "express";
 import { roomManager } from "../roomManager.js";
 import { prisma } from "../db.js";
 import { AccessToken } from "livekit-server-sdk";
-const API_KEY = "my_key";
-const API_SECRET = process.env.LIVEKIT_SERVER_SECRET;
 const roomRouter = express.Router()
 roomRouter.use(AuthMiddleware)
-
+const API_KEY = "my_key";
+const API_SECRET = "pCJKscVoP+Ar4d8ZgC/9As256CBPRWUtZHlanu2P308=";
 interface ExtendedRequest extends Request {
   userId:string,
 }
