@@ -4,9 +4,9 @@ import { BiSend } from 'react-icons/bi';
 import { FaLink } from 'react-icons/fa';
 import { GiCancel } from 'react-icons/gi';
 import { useParams } from 'react-router-dom';
-import { motion } from 'framer-motion';
 
 import axios from 'axios';
+import { motion } from 'framer-motion';
 import { useRecoilState, useRecoilValue, useSetRecoilState } from 'recoil';
 
 import { wasPlaying } from '../State/playingOnState';
@@ -162,10 +162,10 @@ export default function FullChat() {
   }
 
   useEffect(() => {
-    if(replyTo){
+    if (replyTo) {
       inputRef.current?.focus();
     }
-  },[replyTo])
+  }, [replyTo]);
 
   return (
     <div className="flex flex-col h-full bg-slate-900">
@@ -173,9 +173,12 @@ export default function FullChat() {
         <ChatBox messages={messages} />
       </div>
 
-      <div ref={ref} className="relative flex flex-col w-full px-4 py-2 bg-slate-950 backdrop-blur-sm">
+      <div
+        ref={ref}
+        className="relative flex flex-col w-full px-4 py-2 bg-slate-950 backdrop-blur-sm"
+      >
         {replyTo && (
-          <motion.div 
+          <motion.div
             initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -10 }}
@@ -183,7 +186,9 @@ export default function FullChat() {
             className="mb-2 bg-slate-800/80 rounded-lg p-5 flex items-center justify-between"
           >
             <div className="flex flex-col  ">
-              <span className="text-sm font-medium text-slate-400">Replying to {replyTo.displayname}</span>
+              <span className="text-sm font-medium text-slate-400">
+                Replying to {replyTo.displayname}
+              </span>
               <span className="text-xs text-slate-500 mt-0.5">{replyTo.message}</span>
             </div>
             <motion.button
@@ -204,7 +209,7 @@ export default function FullChat() {
               whileTap={{ scale: 0.9 }}
               type="button"
               onClick={() => setChatOptionIsOpen(state => !state)}
-              className= " flex items-center justify-center text-slate-400 hover:text-slate-300 rounded-full hover:bg-slate-700/50"
+              className=" flex items-center justify-center text-slate-400 hover:text-slate-300 rounded-full hover:bg-slate-700/50"
             >
               <FaLink size={18} />
             </motion.button>

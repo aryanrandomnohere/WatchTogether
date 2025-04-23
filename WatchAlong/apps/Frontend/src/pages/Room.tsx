@@ -1,8 +1,11 @@
 import { useEffect, useState } from 'react';
+import { HiDesktopComputer } from 'react-icons/hi';
 import { TbArrowBarToLeft, TbArrowBarToRight } from 'react-icons/tb';
 import { useParams } from 'react-router-dom';
+
 import axios from 'axios';
 import { useRecoilState, useRecoilValue, useSetRecoilState } from 'recoil';
+
 import { isAuthenticatedState } from '../State/authState';
 import { epState } from '../State/epState';
 import { lefSideIsOpen } from '../State/leftRoomSpace';
@@ -10,13 +13,11 @@ import { controlledPlaying, nowPlaying, wasPlaying } from '../State/playingOnSta
 import { userInfo } from '../State/userState';
 import ChatWindow from '../components/ChatWindow';
 import Chatnav from '../components/Chatnav';
+// import AlertBox from '../ui/AlertBox';
+import RoomNav from '../components/RoomNav';
 import SeasonBox from '../components/SeasonBox';
 import Series from '../components/Series';
 import getSocket from '../services/getSocket';
-// import AlertBox from '../ui/AlertBox';
-import RoomNav from '../components/RoomNav';
-import { HiDesktopComputer } from 'react-icons/hi';
-
 
 const socket = getSocket();
 interface isPlayingType {
@@ -118,7 +119,7 @@ export default function Room() {
   useEffect(() => {
     async function fetchRelatedShows() {
       if (!isPlaying.id || !['Series', 'Movie'].includes(isPlaying.type)) return;
-      
+
       setIsLoadingRelated(true);
       try {
         const mediaType = isPlaying.type.toLowerCase();
@@ -131,7 +132,7 @@ export default function Room() {
             },
           }
         );
-        
+
         // Filter out shows without posters and limit to 6
         const filteredShows = response.data.results
           .filter((show: mData) => show.poster_path)
@@ -140,7 +141,7 @@ export default function Room() {
             ...show,
             media_type: mediaType,
           }));
-        
+
         setRelatedShows(filteredShows);
       } catch (error) {
         console.error('Error fetching related shows:', error);
@@ -159,7 +160,7 @@ export default function Room() {
         setBackgroundImage('');
         return;
       }
-      
+
       try {
         const mediaType = isPlaying.type.toLowerCase();
         const response = await axios.get(
@@ -171,7 +172,7 @@ export default function Room() {
             },
           }
         );
-        
+
         if (response.data.backdrop_path) {
           setBackgroundImage(`https://image.tmdb.org/t/p/original${response.data.backdrop_path}`);
         } else {
@@ -190,32 +191,37 @@ export default function Room() {
     <div className="bg-slate-200 dark:bg-gray-900 min-h-screen flex flex-col px-1 pt-4 items-start relative">
       {/* Background Image */}
       {backgroundImage && (
-        <div 
+        <div
           className="absolute inset-0 z-0 bg-cover bg-center bg-no-repeat"
-          style={{ 
+          style={{
             backgroundImage: `url(${backgroundImage})`,
-            filter: 'blur(8px) brightness(0.3)'
+            filter: 'blur(8px) brightness(0.3)',
           }}
         ></div>
       )}
-      
+
       {/* Content */}
       <div className="relative z-10 w-full">
-      <div className="sm:mt-10 mt-28"></div>
-        { navIsOpen ? 
-         <RoomNav isPlaying={isPlaying} setIsOpen={setIsOpen} isOpen={isOpen} roomName={roomName} roomId={roomId} />
-         : <div className="sm:mt-10 mt-28" onClick={() => setNavIsOpen(!navIsOpen)}><HiDesktopComputer className='text-2xl' /></div>
-         }
+        <div className="sm:mt-10 mt-28"></div>
+        {navIsOpen ? (
+          <RoomNav
+            isPlaying={isPlaying}
+            setIsOpen={setIsOpen}
+            isOpen={isOpen}
+            roomName={roomName}
+            roomId={roomId}
+          />
+        ) : (
+          <div className="sm:mt-10 mt-28" onClick={() => setNavIsOpen(!navIsOpen)}>
+            <HiDesktopComputer className="text-2xl" />
+          </div>
+        )}
 
-        <div
-          className={`flex w-full gap-2.5 mt-0 transition-all duration-300 ease-in-out`}
-        >
+        <div className={`flex w-full gap-2.5 mt-0 transition-all duration-300 ease-in-out`}>
           {/* Left Sidebar */}
           <div
             className={`${
-              isOpen && ['Series', 'Anime', 'AnimeUrl'].includes(isPlaying.type)
-                ? 'w-96'
-                : 'w-0'
+              isOpen && ['Series', 'Anime', 'AnimeUrl'].includes(isPlaying.type) ? 'w-96' : 'w-0'
             } flex-shrink-0 transition-all duration-300 ease-in-out overflow-hidden`}
           >
             {['Series', 'Anime', 'AnimeUrl'].includes(isPlaying.type) && (
@@ -226,7 +232,9 @@ export default function Room() {
           {/* Middle Content */}
           <div className="flex-1 flex min-w-0">
             <div className="flex-1 w-full items-center justify-center h-full min-w-0 bg-black rounded-lg p-1.5">
-              <div className={`flex items-center justify-center w-full ${!chatIsOpen && !isOpen ? "h-full" : "h-[44rem]" } overflow-hidden`}>
+              <div
+                className={`flex items-center justify-center w-full ${!chatIsOpen && !isOpen ? 'h-full' : 'h-[44rem]'} overflow-hidden`}
+              >
                 <Series
                   screenShare={screenShare}
                   id={isPlaying.id}

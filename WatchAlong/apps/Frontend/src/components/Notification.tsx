@@ -19,9 +19,7 @@ export default function Notification({ request }: { request: requests }) {
           </div>
         </div>
         <div className="flex flex-col">
-          <h1 className="text-sm font-semibold text-slate-200">
-            {request.fromUsername}
-          </h1>
+          <h1 className="text-sm font-semibold text-slate-200">{request.fromUsername}</h1>
           <p className="text-xs text-slate-400">sent you a friend request</p>
         </div>
       </div>

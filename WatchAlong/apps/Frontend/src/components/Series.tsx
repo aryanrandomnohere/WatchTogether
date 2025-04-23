@@ -12,7 +12,7 @@ import Sfu from './Sfu';
 
 const socket = getSocket();
 
-export default function Series({ 
+export default function Series({
   screenShare,
   id,
   type,
@@ -33,7 +33,7 @@ export default function Series({
   const { roomId } = useParams();
   const { episode_number, season_number } = useRecoilValue(epState);
   const [AnimeId, setAnimeId] = useState<string>('');
-  console.log(isPlaying)
+  console.log(isPlaying);
   useEffect(() => {
     if (videoRef.current) {
       const video = videoRef.current;
@@ -159,7 +159,6 @@ export default function Series({
         getDifferentSeasonLink();
       }
     }
-
   }, [animeId, season_number, type]);
 
   const handleAccessClick = async () => {
@@ -167,7 +166,7 @@ export default function Series({
     socket.emit('join-player', { roomId });
     const response = await axios.get(
       `${import.meta.env.VITE_BACKEND_APP_API_BASE_URL}/api/v1/room/currentState/${roomId}`,
-      { 
+      {
         headers: {
           authorization: localStorage.getItem('token'),
         },
@@ -185,12 +184,12 @@ export default function Series({
   };
 
   // If screenShare is true, show the ScreenShare component
-  if(screenShare){
+  if (screenShare) {
     return (
       <div className="screen-share-container">
         <Sfu />
       </div>
-    )
+    );
   }
 
   if (!id) {

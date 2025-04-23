@@ -1,8 +1,9 @@
 import { useState } from 'react';
-import { FiCopy } from 'react-icons/fi';
-import { FaUserPlus } from 'react-icons/fa';
-import { motion } from 'framer-motion';
 import toast from 'react-hot-toast';
+import { FaUserPlus } from 'react-icons/fa';
+import { FiCopy } from 'react-icons/fi';
+
+import { motion } from 'framer-motion';
 
 interface InviteLinkModalProps {
   roomId: string;
@@ -24,7 +25,7 @@ export default function InviteLinkModal({ roomId }: InviteLinkModalProps) {
   };
 
   return (
-    <motion.div 
+    <motion.div
       initial={{ opacity: 0, scale: 0.95 }}
       animate={{ opacity: 1, scale: 1 }}
       exit={{ opacity: 0, scale: 0.95 }}
@@ -36,7 +37,7 @@ export default function InviteLinkModal({ roomId }: InviteLinkModalProps) {
       </div>
 
       <h2 className="text-2xl font-semibold text-slate-100">Invite Friends</h2>
-      
+
       <p className="text-center text-slate-400 text-sm">
         Share this link with your friends to watch together in real-time
       </p>
@@ -51,7 +52,7 @@ export default function InviteLinkModal({ roomId }: InviteLinkModalProps) {
               className="w-full bg-transparent text-slate-200 text-sm px-4 py-3 outline-none"
             />
           </div>
-          
+
           <motion.button
             whileHover={{ scale: 1.05 }}
             whileTap={{ scale: 0.95 }}
@@ -83,4 +84,4 @@ export default function InviteLinkModal({ roomId }: InviteLinkModalProps) {
       </div>
     </motion.div>
   );
-} 
+}

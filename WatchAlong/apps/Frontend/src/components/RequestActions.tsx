@@ -1,9 +1,9 @@
 import toast from 'react-hot-toast';
 import { IoMdCheckmark } from 'react-icons/io';
 import { RxCross2 } from 'react-icons/rx';
-import { motion } from 'framer-motion';
 
 import axios from 'axios';
+import { motion } from 'framer-motion';
 import { useRecoilState, useRecoilValue } from 'recoil';
 
 import { FriendRequests } from '../State/FriendRequests';
@@ -63,7 +63,7 @@ export default function RequestActions({ id, fromUsername }: { id: string; fromU
 
   return (
     <div className="flex items-center gap-1.5">
-      <motion.button 
+      <motion.button
         whileHover={{ scale: 1.1 }}
         whileTap={{ scale: 0.9 }}
         onClick={handleRejection}
@@ -71,7 +71,7 @@ export default function RequestActions({ id, fromUsername }: { id: string; fromU
       >
         <RxCross2 size={16} />
       </motion.button>
-      <motion.button 
+      <motion.button
         whileHover={{ scale: 1.1 }}
         whileTap={{ scale: 0.9 }}
         onClick={handleAcceptance}

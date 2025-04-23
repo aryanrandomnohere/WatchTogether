@@ -1,8 +1,8 @@
 import toast from 'react-hot-toast';
-import { useNavigate } from 'react-router-dom';
 import { FaUserFriends } from 'react-icons/fa';
 import { IoClose } from 'react-icons/io5';
 import { MdCheck } from 'react-icons/md';
+import { useNavigate } from 'react-router-dom';
 
 interface ToastType {
   id: string;
@@ -19,12 +19,12 @@ export default function Invite({
   fromId: string;
 }) {
   const navigate = useNavigate();
-  
+
   const handleDismiss = () => {
     // Immediately dismiss the toast
     toast.dismiss(t.id);
   };
-  
+
   const handleJoin = () => {
     // Immediately dismiss the toast
     toast.dismiss(t.id);
@@ -33,7 +33,7 @@ export default function Invite({
       navigate(`/watch/${fromId}`);
     }, 50);
   };
-  
+
   return (
     <div
       className={`${
@@ -46,12 +46,10 @@ export default function Invite({
         </div>
         <div className="ml-3 flex-1">
           <p className="text-sm font-medium text-slate-800 dark:text-slate-200">{from}</p>
-          <p className="text-xs text-slate-600 dark:text-slate-400">
-            wants to watch with you
-          </p>
+          <p className="text-xs text-slate-600 dark:text-slate-400">wants to watch with you</p>
         </div>
       </div>
-      
+
       <div className="flex border-t border-slate-300 dark:border-slate-700">
         <button
           onClick={handleDismiss}

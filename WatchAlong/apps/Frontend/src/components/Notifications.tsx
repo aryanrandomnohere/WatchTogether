@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { BsBellFill } from 'react-icons/bs';
-import { motion, AnimatePresence } from 'framer-motion';
 
+import { AnimatePresence, motion } from 'framer-motion';
 import { useRecoilValue } from 'recoil';
 
 import { FriendRequests } from '../State/FriendRequests';
@@ -26,7 +26,7 @@ export default function Notifications() {
         <div className="flex items-center space-x-3">
           <div className="relative">
             <BsBellFill size={18} color="rgb(203 213 225)" />
-            <motion.span 
+            <motion.span
               initial={{ scale: 0 }}
               animate={{ scale: 1 }}
               className="absolute -top-1 -right-1 w-3.5 h-3.5 bg-red-500 rounded-full text-xs text-white flex items-center justify-center"
@@ -42,7 +42,7 @@ export default function Notifications() {
         {isOpen && (
           <motion.div
             initial={{ opacity: 0, height: 0 }}
-            animate={{ opacity: 1, height: "auto" }}
+            animate={{ opacity: 1, height: 'auto' }}
             exit={{ opacity: 0, height: 0 }}
             transition={{ duration: 0.2 }}
             className="space-y-2 overflow-hidden"

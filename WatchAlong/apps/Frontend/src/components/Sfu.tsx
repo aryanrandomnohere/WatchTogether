@@ -1,7 +1,8 @@
-import { useState, useEffect, useRef } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { useParams } from 'react-router-dom';
-import { io, Socket } from 'socket.io-client';
+
 import * as mediasoupClient from 'mediasoup-client';
+import { Socket, io } from 'socket.io-client';
 
 const SERVER_URL = 'https://localhost:4443';
 
@@ -10,7 +11,7 @@ export default function Sfu() {
   const [error, setError] = useState<string | null>(null);
   const [isConnected, setIsConnected] = useState(false);
   const { roomId } = useParams();
-  
+
   const socketRef = useRef<Socket | null>(null);
   const deviceRef = useRef<mediasoupClient.types.Device | null>(null);
   const sendTransportRef = useRef<mediasoupClient.types.Transport | null>(null);
@@ -35,7 +36,7 @@ export default function Sfu() {
       socketRef.current = io(SERVER_URL, {
         transports: ['websocket', 'polling'],
         rejectUnauthorized: false,
-        secure: true
+        secure: true,
       });
 
       // Initialize MediaSoup device
@@ -49,7 +50,7 @@ export default function Sfu() {
       const { transportOptions } = await socketRef.current.emitWithAck('createWebRtcTransport', {
         forceTcp: false,
         producing: true,
-        consuming: false
+        consuming: false,
       });
 
       sendTransportRef.current = deviceRef.current.createSendTransport(transportOptions);
@@ -59,7 +60,7 @@ export default function Sfu() {
         try {
           await socketRef.current!.emitWithAck('connectTransport', {
             transportId: sendTransportRef.current!.id,
-            dtlsParameters
+            dtlsParameters,
           });
           callback();
         } catch (err) {
@@ -72,7 +73,7 @@ export default function Sfu() {
           const { id } = await socketRef.current!.emitWithAck('produce', {
             transportId: sendTransportRef.current!.id,
             kind,
-            rtpParameters
+            rtpParameters,
           });
           callback({ id });
         } catch (err) {
@@ -81,11 +82,14 @@ export default function Sfu() {
       });
 
       // Create WebRTC transport for receiving
-      const { transportOptions: recvTransportOptions } = await socketRef.current.emitWithAck('createWebRtcTransport', {
-        forceTcp: false,
-        producing: false,
-        consuming: true
-      });
+      const { transportOptions: recvTransportOptions } = await socketRef.current.emitWithAck(
+        'createWebRtcTransport',
+        {
+          forceTcp: false,
+          producing: false,
+          consuming: true,
+        }
+      );
 
       recvTransportRef.current = deviceRef.current.createRecvTransport(recvTransportOptions);
 
@@ -94,7 +98,7 @@ export default function Sfu() {
         try {
           await socketRef.current!.emitWithAck('connectTransport', {
             transportId: recvTransportRef.current!.id,
-            dtlsParameters
+            dtlsParameters,
           });
           callback();
         } catch (err) {
@@ -121,9 +125,9 @@ export default function Sfu() {
         video: {
           frameRate: 30,
           width: { ideal: 1280 },
-          height: { ideal: 720 }
+          height: { ideal: 720 },
         },
-        audio: true
+        audio: true,
       });
 
       const videoTrack = stream.getVideoTracks()[0];
@@ -135,12 +139,12 @@ export default function Sfu() {
             {
               rid: 'r0',
               maxBitrate: 100000,
-              scalabilityMode: 'S1T3'
-            }
+              scalabilityMode: 'S1T3',
+            },
           ],
           codecOptions: {
-            videoGoogleStartBitrate: 1000
-          }
+            videoGoogleStartBitrate: 1000,
+          },
         });
       }
 
@@ -164,7 +168,7 @@ export default function Sfu() {
       for (const producer of producers) {
         const consumer = await recvTransportRef.current!.consume({
           producerId: producer.id,
-          paused: false
+          paused: false,
         });
 
         const { track } = consumer;
@@ -174,7 +178,7 @@ export default function Sfu() {
         }
 
         await socketRef.current!.emitWithAck('resumeConsumer', {
-          consumerId: consumer.id
+          consumerId: consumer.id,
         });
       }
     } catch (error) {
@@ -186,31 +190,31 @@ export default function Sfu() {
   return (
     <div style={{ padding: 20 }}>
       {error && <div style={{ color: 'red', marginBottom: 10 }}>{error}</div>}
-      
+
       {!isConnected ? (
         <div style={{ display: 'flex', gap: 10 }}>
-          <button 
+          <button
             onClick={() => joinRoom(true)}
-            style={{ 
-              padding: '10px 20px', 
-              backgroundColor: '#4CAF50', 
-              color: 'white', 
-              border: 'none', 
+            style={{
+              padding: '10px 20px',
+              backgroundColor: '#4CAF50',
+              color: 'white',
+              border: 'none',
               borderRadius: 4,
-              cursor: 'pointer'
+              cursor: 'pointer',
             }}
           >
             Start Screen Share
           </button>
-          <button 
+          <button
             onClick={() => joinRoom(false)}
-            style={{ 
-              padding: '10px 20px', 
-              backgroundColor: '#2196F3', 
-              color: 'white', 
-              border: 'none', 
+            style={{
+              padding: '10px 20px',
+              backgroundColor: '#2196F3',
+              color: 'white',
+              border: 'none',
               borderRadius: 4,
-              cursor: 'pointer'
+              cursor: 'pointer',
             }}
           >
             Join as Viewer

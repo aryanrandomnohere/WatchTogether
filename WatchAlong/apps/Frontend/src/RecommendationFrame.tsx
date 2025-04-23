@@ -1,5 +1,5 @@
-import { motion } from 'framer-motion';
 import axios from 'axios';
+import { motion } from 'framer-motion';
 import { useRecoilValue, useSetRecoilState } from 'recoil';
 
 import { nowPlaying } from './State/playingOnState';
@@ -90,10 +90,10 @@ export default function RecommendationFrame({ show }: { show: mData }) {
           <motion.img
             initial={{ scale: 1.02, opacity: 0.5 }}
             animate={{ scale: 1, opacity: 1 }}
-            transition={{ duration: 1.2, ease: "easeOut" }}
+            transition={{ duration: 1.2, ease: 'easeOut' }}
             src={`https://image.tmdb.org/t/p/original/${show.backdrop_path}`}
             className="w-full h-full object-cover"
-            alt={show.title || show.name || "Show backdrop"}
+            alt={show.title || show.name || 'Show backdrop'}
           />
           <div className="absolute inset-0 bg-gradient-to-l from-transparent via-slate-950/5 to-slate-950/90"></div>
         </div>
@@ -101,14 +101,14 @@ export default function RecommendationFrame({ show }: { show: mData }) {
       </div>
 
       {/* Content Container */}
-      <motion.div 
+      <motion.div
         initial={{ opacity: 0, x: -20 }}
         animate={{ opacity: 1, x: 0 }}
         transition={{ duration: 0.5, delay: 0.2 }}
         className="relative z-10 flex flex-col ml-4 md:ml-16 justify-center max-w-[90%] md:max-w-[45%] py-6 md:py-12"
       >
         {/* Title */}
-        <motion.h1 
+        <motion.h1
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5, delay: 0.3 }}
@@ -118,7 +118,7 @@ export default function RecommendationFrame({ show }: { show: mData }) {
         </motion.h1>
 
         {/* Metadata */}
-        <motion.div 
+        <motion.div
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ duration: 0.5, delay: 0.4 }}
@@ -145,7 +145,7 @@ export default function RecommendationFrame({ show }: { show: mData }) {
         </motion.div>
 
         {/* Overview */}
-        <motion.p 
+        <motion.p
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5, delay: 0.5 }}
