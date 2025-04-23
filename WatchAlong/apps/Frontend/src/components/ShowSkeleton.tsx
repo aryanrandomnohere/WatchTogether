@@ -11,7 +11,7 @@ export default function ShowSkeleton() {
       transition={{
         duration: 1.5,
         repeat: Infinity,
-        ease: "easeInOut"
+        ease: 'easeInOut',
       }}
     >
       <div className="relative w-full aspect-[2/3]">
@@ -23,4 +23,4 @@ export default function ShowSkeleton() {
       </div>
     </motion.div>
   );
-} 
+}

@@ -67,15 +67,15 @@
 
 //     socket.on("change-video", async({url,roomId})=>{
 //         console.log(url);
-        
-//        try{ 
+
+//        try{
 //         const playing = await prisma.room.update({
 //             where:{userId:roomId},
 //             data:{playing:url},
 //             select:{playing:true}
 //         })
 //         console.log(playing);
-        
+
 //     io.to(roomId).emit("receive-playing", playing)
 //     }catch(error){
 //             console.error("Error saving video:", error);

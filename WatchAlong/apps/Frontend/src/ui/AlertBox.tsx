@@ -56,8 +56,7 @@ function Window({ children, name }: { children: ReactNode; name: string }) {
         <div
           className="fixed z-10 self-end p-1 hover:bg-opacity-45 hover:bg-slate-300 dark:hover:bg-slate-700 rounded-sm m-2 text-slate-700 dark:text-slate-300 text-3xl cursor-pointer flex"
           onClick={close}
-        >
-        </div>
+        ></div>
         <div className="px-0">{cloneElement(children as React.ReactElement, { close })}</div>
       </div>
     </motion.div>,

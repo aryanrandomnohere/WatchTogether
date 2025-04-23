@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { BsChatDots } from 'react-icons/bs';
 import { FaUsers } from 'react-icons/fa';
+
 import { useRecoilValue, useSetRecoilState } from 'recoil';
 
 import { chatType } from '../State/chatWindowState';

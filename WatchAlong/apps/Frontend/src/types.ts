@@ -19,4 +19,4 @@ export interface APIEpisodeType {
   season_number: number;
   still_path: string | null;
   vote_average: number;
-} 
+}

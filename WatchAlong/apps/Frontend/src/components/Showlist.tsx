@@ -5,8 +5,8 @@ import { useRecoilState } from 'recoil';
 import { MovieInfoState } from '../State/MovieInfoState';
 import Modal from '../ui/Modal';
 import Show from './Show';
-import ShowInfo from './Showinfo';
 import ShowSkeleton from './ShowSkeleton';
+import ShowInfo from './Showinfo';
 
 interface mData {
   adult: boolean;
@@ -84,7 +84,7 @@ export default function ShowsList({
               item={item?.movie || item}
               onClick={() => handleClick(item?.movie || item)}
             >
-              <Modal> 
+              <Modal>
                 <Modal.open opens="Showinfo">
                   <button
                     className="absolute bottom-1/2 left-1/2 transform -translate-x-1/2 text-slate-800 dark:text-white py-1 px-4 rounded opacity-0 transition-opacity duration-300 group-hover:opacity-100"
