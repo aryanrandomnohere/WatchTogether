@@ -64,7 +64,7 @@ export default function ShowsList({
         {title}
       </div>
       <div
-        className={`flex items-center justify-start overflow-x-auto sm:overflow-x-visible overflow-y-hidden mb-3 h-fit space-x-3 scrollbar-none`}
+        className={`flex items-center justify-start overflow-x-auto sm:overflow-x-visible overflow-y-hidden mb-3 h-fit space-x-2 scrollbar-none`}
       >
         {isLoading ? (
           <>
@@ -84,7 +84,7 @@ export default function ShowsList({
               item={item?.movie || item}
               onClick={() => handleClick(item?.movie || item)}
             >
-              <Modal>
+              <Modal> 
                 <Modal.open opens="Showinfo">
                   <button
                     className="absolute bottom-1/2 left-1/2 transform -translate-x-1/2 text-slate-800 dark:text-white py-1 px-4 rounded opacity-0 transition-opacity duration-300 group-hover:opacity-100"
