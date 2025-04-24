@@ -4,9 +4,6 @@ import { prisma as prismaClient } from "../db.js";
 
 const MediaRouter = express.Router();
 const VALID_LIST_TYPES = ["Favourite", "Recently Watched", "Watch Later"];
-interface UpdateEpisodeRequest extends Request {
-  userId?: string; // Added by AuthMiddleware
-}
 // Get all media for a user
 MediaRouter.get(
   "/allmedia",
@@ -247,7 +244,7 @@ MediaRouter.post(
 MediaRouter.put(
   "/setmedia",
   AuthMiddleware,
-  async (req: UpdateEpisodeRequest, res: Response) => {
+  async (req: Request, res: Response) => {
     try {
       const userId = req.userId;
       if (!userId) {
