@@ -1,13 +1,23 @@
 import { PrismaClient } from "@prisma/client";
 import AuthMiddleware from "../AuthMiddleware.js";
-import express, { Request, Response } from "express";
+import express, { Request, Response, RequestHandler } from "express";
 import { roomManager } from "../roomManager.js";
 import { prisma } from "../db.js";
 import { AccessToken } from "livekit-server-sdk";
+
+declare global {
+  namespace Express {
+    interface Request {
+      userId: string;
+    }
+  }
+}
+
 const roomRouter = express.Router();
 roomRouter.use(AuthMiddleware);
 const API_KEY = "my_key";
 const API_SECRET = "pCJKscVoP+Ar4d8ZgC/9As256CBPRWUtZHlanu2P308=";
+
 interface ExtendedRequest extends Request {
   userId: string;
 }
@@ -102,7 +112,7 @@ roomRouter.get("/get-token", async (req: Request, res: Response) => {
 //@ts-ignore
 roomRouter.get(
   "/currentState/:roomId",
-  async (req: ExtendedRequest, res: Response) => {
+  (async (req: Request & { userId: string }, res: Response) => {
     try {
       const userId = req.userId;
       const roomId = req.params.roomId;
@@ -133,7 +143,7 @@ roomRouter.get(
         .status(400)
         .json({ msg: "Problem faced while loading the last state" });
     }
-  },
+  }) as RequestHandler
 );
 
 roomRouter.get("/getRoomName/:roomId", async (req: Request, res: Response) => {

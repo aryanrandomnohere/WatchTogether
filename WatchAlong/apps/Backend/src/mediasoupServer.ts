@@ -84,18 +84,25 @@ io.on("connection", (socket) => {
 
   socket.on("join", async ({ roomId, peerId }) => {
     try {
+      console.log(`Client ${peerId} attempting to join room ${roomId}`);
+      
       if (!rooms.has(roomId)) {
+        console.log(`Creating new room ${roomId}`);
         await createRoom(roomId);
       }
 
       const room = rooms.get(roomId)!;
-      room.peers.set(peerId, {
-        transports: new Map(),
-        producers: new Map(),
-        consumers: new Map(),
-      });
+      if (!room.peers.has(peerId)) {
+        console.log(`Adding peer ${peerId} to room ${roomId}`);
+        room.peers.set(peerId, {
+          transports: new Map(),
+          producers: new Map(),
+          consumers: new Map(),
+        });
+      }
 
       socket.join(roomId);
+      console.log(`Client ${peerId} joined room ${roomId}`);
       socket.emit("joined", { roomId, peerId });
     } catch (error) {
       console.error("Error joining room:", error);
@@ -103,8 +110,25 @@ io.on("connection", (socket) => {
     }
   });
 
+  socket.on("getRouterRtpCapabilities", async ({ roomId }) => {
+    try {
+      console.log(`Getting router capabilities for room ${roomId}`);
+      const room = rooms.get(roomId);
+      if (!room) throw new Error("Room not found");
+
+      socket.emit("routerRtpCapabilities", {
+        rtpCapabilities: room.router.rtpCapabilities,
+      });
+      console.log(`Router capabilities sent for room ${roomId}`);
+    } catch (error) {
+      console.error("Error getting router capabilities:", error);
+      socket.emit("error", { error: "Failed to get router capabilities" });
+    }
+  });
+
   socket.on("createWebRtcTransport", async ({ roomId, peerId }) => {
     try {
+      console.log(`Creating WebRTC transport for peer ${peerId} in room ${roomId}`);
       const room = rooms.get(roomId);
       if (!room) throw new Error("Room not found");
 
@@ -123,6 +147,7 @@ io.on("connection", (socket) => {
       const peer = room.peers.get(peerId)!;
       peer.transports.set(transport.id, transport);
 
+      console.log(`WebRTC transport created for peer ${peerId}`);
       socket.emit("transportCreated", {
         id: transport.id,
         iceParameters: transport.iceParameters,
@@ -248,8 +273,8 @@ io.on("connection", (socket) => {
 // Start the server
 async function startServer() {
   await createWorkers();
-  httpServer.listen(4443, () => {
-    console.log("MediaSoup server running on port 4443");
+  httpServer.listen(4440, () => {
+    console.log("MediaSoup server running on port 4440");
   });
 }
 
