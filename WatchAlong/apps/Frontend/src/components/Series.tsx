@@ -2,28 +2,29 @@ import { useEffect, useRef, useState } from 'react';
 import { useParams } from 'react-router-dom';
 
 import axios from 'axios';
-import { useRecoilValue } from 'recoil';
+import {  useRecoilValue } from 'recoil';
 
 import { epState } from '../State/epState';
 import { lefSideIsOpen } from '../State/leftRoomSpace';
 import { userInfo } from '../State/userState';
 import getSocket from '../services/getSocket';
-import Sfu from './Sfu';
+import { screenShareState } from '../State/screenShareState';
 
 const socket = getSocket();
 
 export default function Series({
-  screenShare,
+  screenShareRef,
   id,
   type,
   animeId = '',
 }: {
-  screenShare: boolean;
+  screenShareRef: React.RefObject<HTMLVideoElement>;
   id: number | string;
   type: string;
   title?: string | undefined;
   animeId?: string;
 }) {
+  const screenShare = useRecoilValue(screenShareState);
   const videoRef = useRef<HTMLVideoElement>(null);
   const [isPlaying, setIsPlaying] = useState(false);
   const leftIsOpen = useRecoilValue(lefSideIsOpen);
@@ -34,7 +35,47 @@ export default function Series({
   const { episode_number, season_number } = useRecoilValue(epState);
   const [AnimeId, setAnimeId] = useState<string>(animeId);
   const [isPart2, setIsPart2] = useState(false);
-  console.log(isPlaying);
+  console.log(isPlaying,isPart2);
+
+
+  async function viewerInit() {
+    const peer = createViewerPeer();
+    peer.addTransceiver("video", { direction: "recvonly" })
+}
+
+function createViewerPeer() {
+    const peer = new RTCPeerConnection({
+        iceServers: [
+            {
+                urls: "stun:stun.stunprotocol.org"
+            }
+        ]
+    });
+    peer.ontrack = handleViewerTrackEvent;
+    peer.onnegotiationneeded = () => handleViewerNegotiationNeededEvent(peer);
+
+    return peer;
+}
+
+async function handleViewerNegotiationNeededEvent(peer: RTCPeerConnection) {
+    const offer = await peer.createOffer();
+    await peer.setLocalDescription(offer);
+    const payload = {
+        sdp: peer.localDescription
+    };
+
+    const { data } = await axios.post('/consumer', payload);
+    const desc = new RTCSessionDescription(data.sdp);
+    peer.setRemoteDescription(desc).catch(e => console.log(e));
+}
+
+function handleViewerTrackEvent(e: RTCTrackEvent) {
+    if (videoRef.current) {
+        videoRef.current.srcObject = e.streams[0];
+    }
+};
+
+
   useEffect(() => {
     if (videoRef.current) {
       const video = videoRef.current;
@@ -169,6 +210,7 @@ export default function Series({
     setHasAccess(true);
     socket.emit('join-player', { roomId });
     const response = await axios.get(
+      //@ts-expect-error just a test
       `${import.meta.env.VITE_BACKEND_APP_API_BASE_URL}/api/v1/room/currentState/${roomId}`,
       {
         headers: {
@@ -188,12 +230,28 @@ export default function Series({
   };
 
   // If screenShare is true, show the ScreenShare component
-  if (!screenShare) {
+  if (screenShare.screenShare) {
+    if(screenShare.screenSharerId === Info.id){
     return (
       <div className="screen-share-container">
-        <Sfu />
+        <video  className="w-full h-full" autoPlay playsInline ref={screenShareRef} />
       </div>
     );
+  }else if(!screenShareRef.current){
+    return (
+      <div onClick={viewerInit} className="screen-share-container">
+        <div className="my-button bg-slate-300 dark:bg-slate-600 text-slate-800 dark:text-white p-1.5 hover:cursor-pointer flex text-sm justify-center items-center gap-2 hover:bg-slate-400 dark:hover:bg-slate-800">
+          Get Access to the Video
+        </div>
+      </div>
+    );
+  } else {
+    return (
+      <div className="screen-share-container">
+        <video  className="w-full h-full" autoPlay playsInline ref={screenShareRef} />
+      </div>
+    );
+  }
   }
 
   if (!id) {
