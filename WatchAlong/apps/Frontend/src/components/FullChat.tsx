@@ -17,6 +17,7 @@ import { useOutsideClick } from '../hooks/useOutsideClick';
 import getSocket from '../services/getSocket';
 import ChatAction from './ChatAction';
 import ChatBox from './ChatBox';
+import { screenShareState } from '../State/screenShareState';
 
 interface Message {
   id: number;
@@ -70,10 +71,11 @@ export default function FullChat() {
   const setWasPlaying = useSetRecoilState(wasPlaying);
   const inputRef = useRef<HTMLInputElement>(null);
   const notificationSound = useRef<HTMLAudioElement | null>(null);
-
+  const setScreenShare = useSetRecoilState(screenShareState);
   const handleLoadState = async () => {
     try {
       const response = await axios.get(
+        // @ts-expect-error roomId is not undefined
         `${import.meta.env.VITE_BACKEND_APP_API_BASE_URL}/api/v1/room/loadstate/${roomId}`,
         {
           headers: { authorization: localStorage.getItem('token') },
@@ -88,8 +90,9 @@ export default function FullChat() {
         playingType: type,
         playingAnimeId: animeId,
       } = response.data.playing;
+      const { screenShare } = response.data;
       setWasPlaying({ id, title, type, animeId });
-
+      setScreenShare(screenShare);
       socket.emit('update-status', Info.id, `Watching ${title}`);
     } catch (error) {
       console.error('Error loading state:', error);
@@ -118,7 +121,7 @@ export default function FullChat() {
   // Fetch initial data only once
   useEffect(() => {
     handleLoadState();
-  }, []);
+  });
 
   // Handle socket events (runs only once)
   useEffect(() => {
@@ -129,7 +132,7 @@ export default function FullChat() {
       socket.off('receive-message', handleReceiveMessage);
       socket.off('new-poll', handleAddPoll);
     };
-  }, []); // Removed `messages` dependency
+  }); // Removed `messages` dependency
 
   function sendMessage(e: FormEvent) {
     e.preventDefault();

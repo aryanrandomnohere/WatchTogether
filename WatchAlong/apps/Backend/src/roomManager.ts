@@ -1,3 +1,4 @@
+
 interface roomStatusInterface {
   playingId: string;
   playingTitle: string;
@@ -12,10 +13,17 @@ interface roomStatusInterface {
 interface Call {
   people: Set<string>;
 }
+
+interface screenShareType {
+  screenShare: boolean;
+  screenSharerId: string | undefined;
+}
+
 interface roomInterface {
   roomStatus: roomStatusInterface;
   subscribers: Map<string, string>;
   inCall: Call;
+  screenShare: screenShareType;
 }
 
 export class roomManager {
@@ -37,6 +45,10 @@ export class roomManager {
         subscribers: new Map(),
         inCall: {
           people: new Set(),
+        },
+        screenShare: {
+          screenShare: false,
+          screenSharerId: undefined,
         },
       });
     }
@@ -119,4 +131,28 @@ export class roomManager {
     if (!this.rooms.get(id)) return 0;
     return this.rooms.get(id)?.subscribers.size;
   }
+
+
+  public setScreenShare(roomId: string, bywhom: string, bywhomId: string) {
+    const room = this.rooms.get(roomId);
+    if (!room) return;
+    if(!room.screenShare){
+      room.screenShare = {
+        screenShare: true,
+        screenSharerId: bywhomId,
+      };
+    }
+  }
+
+  public endScreenShare(roomId: string) {
+    const room = this.rooms.get(roomId);
+    if (!room) return;
+    room.screenShare = {
+      screenShare: false,
+      screenSharerId: undefined,
+    };
+  }
+
+
+
 }

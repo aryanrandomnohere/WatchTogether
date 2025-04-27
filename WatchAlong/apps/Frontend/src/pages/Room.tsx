@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { HiDesktopComputer } from 'react-icons/hi';
 import { TbArrowBarToLeft, TbArrowBarToRight } from 'react-icons/tb';
 import { useParams } from 'react-router-dom';
@@ -63,6 +63,7 @@ export default function Room() {
   const [navIsOpen, setNavIsOpen] = useState(true);
   const [screenShare, setScreenShare] = useState(true);
   const isPlaying: isPlayingType = playing ?? wasplaying ?? { id: '', title: '', type: 'Custom' };
+  const videoRef = useRef<HTMLVideoElement>(null);
 
   useEffect(() => {
     if (!roomId || !isAuthenticated) return;
@@ -187,6 +188,7 @@ export default function Room() {
     fetchBackgroundImage();
   }, [isPlaying.id, isPlaying.type]);
 
+
   return (
     <div className="bg-slate-200 dark:bg-gray-900 min-h-screen flex flex-col px-1 pt-4 items-start relative">
       {/* Background Image */}
@@ -210,6 +212,7 @@ export default function Room() {
             isOpen={isOpen}
             roomName={roomName}
             roomId={roomId}
+            videoRef={videoRef}
           />
         ) : (
           <div className="sm:mt-10 mt-28" onClick={() => setNavIsOpen(!navIsOpen)}>
@@ -236,7 +239,7 @@ export default function Room() {
                 className={`flex items-center justify-center w-full ${!chatIsOpen && !isOpen ? 'h-full' : 'h-[44rem]'} overflow-hidden`}
               >
                 <Series
-                  screenShare={screenShare}
+                  screenShareRef={videoRef}
                   id={isPlaying.id}
                   type={isPlaying.type}
                   title={isPlaying.title}
