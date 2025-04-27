@@ -41,32 +41,32 @@ export default function Chatnav() {
   }, []);
 
   return (
-    <div className="flex-none min-h-fit bg-slate-950 backdrop-blur-sm border-b border-slate-700">
-      <div className="flex items-center justify-center gap-10 p-2">
+    <div className="flex-none min-h-fit bg-slate-950/80 backdrop-blur-md border-b border-slate-700 shadow-md rounded-t-xl">
+      <div className="flex items-center justify-center gap-6 p-1.5">
         <button
           onClick={() => setChatType(ChatType.CHATS)}
-          className={`flex items-center gap-2 px-4 py-2 rounded-lg transition-all duration-200 ${
+          className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg font-medium text-sm transition-all duration-200 shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500/40 ${
             currentChatType === ChatType.CHATS
               ? 'bg-slate-700/80 text-white'
               : 'text-slate-300 hover:bg-slate-700/50'
           }`}
         >
-          <BsChatDots size={18} />
+          <BsChatDots size={16} />
           <span className="text-sm font-medium">Chat</span>
         </button>
 
         <button
           onClick={() => setChatType(ChatType.PEOPLE)}
-          className={`flex items-center gap-2 px-4 py-2 rounded-lg transition-all duration-200 ${
+          className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg font-medium text-sm transition-all duration-200 shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500/40 ${
             currentChatType === ChatType.PEOPLE
               ? 'bg-slate-700/80 text-white'
               : 'text-slate-300 hover:bg-slate-700/50'
           }`}
         >
           <div className="relative">
-            <FaUsers size={20} />
+            <FaUsers size={17} />
             {connectionCount > 0 && (
-              <span className="absolute -top-2 -right-2 bg-blue-500 text-white text-xs font-bold rounded-full w-4 h-4 flex items-center justify-center">
+              <span className="absolute -top-2 -right-2 bg-blue-500 text-white text-xs font-bold rounded-full w-4 h-4 flex items-center justify-center shadow">
                 {connectionCount}
               </span>
             )}

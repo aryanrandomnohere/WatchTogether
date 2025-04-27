@@ -73,7 +73,6 @@ export default function FullChat() {
 
   const handleLoadState = async () => {
     try {
-      //@ts-expect-error - Socket.io types are not properly defined
       const response = await axios.get(
         `${import.meta.env.VITE_BACKEND_APP_API_BASE_URL}/api/v1/room/loadstate/${roomId}`,
         {
@@ -180,14 +179,14 @@ export default function FullChat() {
   }, [replyTo]);
 
   return (
-    <div className="flex flex-col h-full bg-slate-900">
+    <div className="flex flex-col h-full bg-gradient-to-br from-slate-900 via-slate-950 to-slate-900 rounded-b-xl shadow-lg">
       <div className="flex-1 min-h-0 relative">
         <ChatBox messages={messages}  />
       </div>
 
       <div
         ref={ref}
-        className="relative flex flex-col w-full px-4 py-2 bg-slate-950 backdrop-blur-sm"
+        className="relative flex flex-col w-full px-3 py-2 bg-slate-950/90 backdrop-blur-md rounded-b-xl shadow-inner"
       >
         {replyTo && (
           <motion.div
@@ -195,10 +194,10 @@ export default function FullChat() {
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -10 }}
             transition={{ duration: 0.2 }}
-            className="mb-2 bg-slate-800/80 rounded-lg p-5 flex items-center justify-between"
+            className="mb-1 bg-slate-800/80 rounded-lg p-3 flex items-center justify-between shadow"
           >
             <div className="flex flex-col  ">
-              <span className="text-sm font-medium text-slate-400">
+              <span className="text-xs font-medium text-slate-400">
                 Replying to {replyTo.displayname}
               </span>
               <span className="text-xs text-slate-500 mt-0.5">{replyTo.message}</span>
@@ -209,21 +208,21 @@ export default function FullChat() {
               onClick={handleClearReplyTo}
               className="text-slate-500 hover:text-slate-400 p-1"
             >
-              <GiCancel size={16} />
+              <GiCancel size={14} />
             </motion.button>
           </motion.div>
         )}
 
-        <form onSubmit={sendMessage} className="flex items-center gap-2">
+        <form onSubmit={sendMessage} className="flex items-center gap-2 ">
           <div className="relative">
             <motion.button
               whileHover={{ scale: 1.1 }}
               whileTap={{ scale: 0.9 }}
               type="button"
               onClick={() => setChatOptionIsOpen(state => !state)}
-              className=" flex items-center justify-center text-slate-400 hover:text-slate-300 rounded-full hover:bg-slate-700/50"
+              className="flex items-center justify-center text-slate-400 hover:text-slate-300 rounded-full hover:bg-slate-700/50 p-1 shadow"
             >
-              <FaLink size={18} />
+              <FaLink size={14} />
             </motion.button>
 
             {chatOptionIsOpen && (
@@ -232,7 +231,7 @@ export default function FullChat() {
                 animate={{ opacity: 1, y: 0 }}
                 exit={{ opacity: 0, y: -10 }}
                 transition={{ duration: 0.2 }}
-                className="absolute bottom-full left-0 mb-2 w-48 bg-slate-800 rounded-lg shadow-lg border border-slate-700 overflow-hidden z-50"
+                className="absolute bottom-full left-0 mb-2 w-44 bg-slate-800 rounded-lg shadow-lg border border-slate-700 overflow-hidden z-50"
               >
                 <ChatAction />
               </motion.div>
@@ -245,16 +244,16 @@ export default function FullChat() {
             value={newMessage}
             onChange={e => setNewMessage(e.target.value)}
             placeholder="Type a message..."
-            className="flex-1 bg-slate-800/80 text-slate-200 placeholder-slate-500 px-4 py-2 rounded-xl border border-slate-700 focus:outline-none focus:ring-2 focus:ring-blue-500"
+            className="flex-1 bg-slate-800/90 text-slate-200 placeholder-slate-400 px-3 py-2 rounded-xl border border-slate-700 focus:outline-none focus:ring-2 focus:ring-blue-500 transition shadow text-sm"
           />
 
           <motion.button
             whileHover={{ scale: 1.1 }}
             whileTap={{ scale: 0.9 }}
             type="submit"
-            className="p-2 bg-blue-500 hover:bg-blue-600 text-white rounded-full"
+            className="p-2 bg-blue-600 hover:bg-blue-700 text-white rounded-full shadow-lg transition"
           >
-            <BiSend size={18} />
+            <BiSend size={16} />
           </motion.button>
         </form>
       </div>
