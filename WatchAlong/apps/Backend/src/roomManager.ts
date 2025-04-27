@@ -11,7 +11,6 @@ interface roomStatusInterface {
 
 interface Call {
   people: Set<string>;
-  firstOffer: RTCSessionDescriptionInit | null;
 }
 interface roomInterface {
   roomStatus: roomStatusInterface;
@@ -38,7 +37,6 @@ export class roomManager {
         subscribers: new Map(),
         inCall: {
           people: new Set(),
-          firstOffer: null,
         },
       });
     }
@@ -64,6 +62,7 @@ export class roomManager {
       const userId = room.subscribers.get(socketId);
       if(userId){
         room.inCall.people.delete(userId);
+        room.inCall.people.delete('');
       }
     }
     room.subscribers.delete(socketId);
@@ -78,9 +77,12 @@ export class roomManager {
       const userId = room.subscribers.get(socketId);
       if(userId){
         room.inCall.people.delete(userId);
+        room.inCall.people.delete('');
       }
     }
       room.subscribers.delete(socketId);
+      room.inCall.people.delete('');
+
       console.log(room.inCall.people);
       return roomId;
     }
@@ -88,18 +90,10 @@ export class roomManager {
   public joinCall(
     roomId: string,
     userId: string,
-    sdp: RTCSessionDescriptionInit | null,
   ) {
     const room = this.rooms.get(roomId);
     if (!room) return false;
-    if (room.inCall?.people.size === 0 && sdp) {
-      console.log("first offer");
-      room.inCall.people.add(userId);
-      room.inCall.firstOffer = sdp;
-      return true;
-    }
-    console.log("not first offer");
-    room.inCall?.people.add(userId);
+    room.inCall.people.add(userId);
     return true;
   }
   public leaveCall(roomId: string, userId: string) {

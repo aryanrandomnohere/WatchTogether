@@ -2,6 +2,18 @@ import { Server, Socket } from "socket.io";
 import { roomManager } from "../roomManager.js";
 
 export default function p2pEvents(io: Server, socket: Socket) {
+
+  socket.on("join-call", (roomId: string, userId: string) => {
+    console.log("Joining call:", roomId, userId);
+    const room = roomManager.getInstance().getRoom(roomId);
+    if (!room) {
+      socket.emit("join-call-error", { msg: "Room not found" });
+      return;
+    }
+    room.inCall?.people.add(userId);
+    socket.emit("join-call-success", { msg: "Joined call" });
+  });
+  
   // Handle offer initiation
   socket.on(
     "initiate-offer",
@@ -24,7 +36,7 @@ export default function p2pEvents(io: Server, socket: Socket) {
       // Store the user's offer in the room and mark them as in the call
       roomManager
         .getInstance()
-        .joinCall(roomId, userInfo.id, sdp);
+        .joinCall(roomId, userInfo.id);
 
       // If this is the first person joining (no specific target)
       if (!to) {
@@ -64,7 +76,7 @@ export default function p2pEvents(io: Server, socket: Socket) {
 
       // Add user to call if they're not already in
       if (!room.inCall?.people?.has(userId)) {
-        roomManager.getInstance().joinCall(roomId, userId, null);
+        roomManager.getInstance().joinCall(roomId, userId);
       }
       console.log("Sending answer to:", toUserId , "from:", userId);
       // Send the answer back to the user who sent the offer

@@ -22,6 +22,7 @@ interface P2pInstanceType {
 }
 
 const socket = getSocket();
+let ownStream: MediaStream | null = null;
 export default function Peoples() {
   const setChatType = useSetRecoilState(chatType);
   const members = useRecoilValue(people);
@@ -66,7 +67,6 @@ export default function Peoples() {
     if (index === -1) {
       console.error('Cannot find connection for ICE candidate from:', from);
       console.log(p2pConnections.current);
-      console.log(Info.id)
       return;
     }
     p2pConnections.current[index].instance
@@ -95,7 +95,7 @@ export default function Peoples() {
         localVideoRef.current.srcObject = stream;
         localVideoRef.current.play();
         console.log("Local description already set");
-        
+        ownStream = stream;
         // this is wrong, should propogate via a component
         stream.getTracks().forEach((track) => {
           console.error("track added");
@@ -131,18 +131,43 @@ export default function Peoples() {
       // Set up ICE candidate handling
       peerConnection.onicecandidate = event => {
         if (event.candidate) {
-          sendIceCandidate({ userId: Info.id, to: to || '', candidate: event.candidate });
+          sendIceCandidate({ userId: localStorage.getItem('userId'), to: to || '', candidate: event.candidate });
         }
       };
      
       // Handle incoming tracks
-      
+      const withUserId = p2pConnections.current[index].withUserId;
+      // Connection state monitoring
+      peerConnection.onconnectionstatechange = () => {
+        console.log('Connection state change:', peerConnection.connectionState, 'with peer:', withUserId);
+      };
+
+      peerConnection.oniceconnectionstatechange = () => {
+        console.log(
+          'ICE connection state change:',
+          peerConnection.iceConnectionState,
+          'with peer:',
+          withUserId
+        );
+      };
+      // Get local stream
+      peerConnection.ontrack = async event => {
+        if (!videoRef?.current) return;
+        videoRef.current.srcObject = new MediaStream([event.track]);
+        try {
+          await videoRef.current.play();
+          console.log('Remote video playing successfully');
+        } catch (err) {
+          console.error('Error playing remote video:', err);
+        }
+      };
 
       // Create the offer
       console.log('Creating offer');
       peerConnection.onnegotiationneeded = async () => {
       const offer = await peerConnection.createOffer();
       console.log('Setting local description (offer)');
+      getCameraStreamAndSend(peerConnection);
       await peerConnection.setLocalDescription(offer);
       if (offer) {
         console.log('Sending offer to user:', to);
@@ -150,7 +175,7 @@ export default function Peoples() {
           'initiate-offer',
           roomId,
           {
-            id: Info.id,
+            id:  localStorage.getItem('userId'),
             username: Info.username,
             displayname: Info.displayname,
           },
@@ -159,7 +184,6 @@ export default function Peoples() {
         );
       }
       };
-      getCameraStreamAndSend(peerConnection);
     } catch (error) {
       console.error('Error in create_Connection:', error);
       return null;
@@ -194,7 +218,7 @@ export default function Peoples() {
       peerConnection.onicecandidate = event => {
         if (event.candidate) {
           console.log('Sending ICE candidate to:', from);
-          sendIceCandidate({ userId: Info.id, to: from, candidate: event.candidate });
+          sendIceCandidate({ userId: localStorage.getItem('userId'), to: from, candidate: event.candidate });
         }
       };
 
@@ -232,19 +256,18 @@ export default function Peoples() {
       console.log('Setting remote description (offer)');
       await peerConnection.setRemoteDescription(sdp);
       console.log('Creating answer');
-      
       const answer = await peerConnection.createAnswer();
       console.log('Setting local description (answer)');
+      getCameraStreamAndSend(peerConnection);
       await peerConnection.setLocalDescription(answer);
       console.log(answer);
       if (answer) {
         console.log('Sending answer to initial caller');
-        socket.emit('answer-created', roomId, Info.id, from, peerConnection.localDescription);
+        socket.emit('answer-created', roomId, localStorage.getItem('userId'), from, peerConnection.localDescription);
         setIsJoined(true);
       } else {
         console.error('Failed to create answer');
       }
-      getCameraStreamAndSend(peerConnection);
 
     } catch (error) {
       console.error('Error in Create_Answer:', error);
@@ -260,6 +283,7 @@ export default function Peoples() {
     try {
       // Get current call status from server
       const response = await axios.get(
+        //@ts-expect-error TODO: change to use the backend api
         `${import.meta.env.VITE_BACKEND_APP_API_BASE_URL}/api/v1/room/call/${roomId}`,
         {
           headers: {
@@ -268,28 +292,22 @@ export default function Peoples() {
         }
       );
 
-      const { callCount, sdp } = response.data;
-      console.log('Call status from server:', { usersInCall: callCount, hasSdp: !!sdp });
+      const { callCount } = response.data;
 
-      // Case 1: Joining an existing call with 1 person
-      if (sdp && callCount.length === 1) {
-        console.log('Joining call with user:', callCount[0]);
-        await CreateAnswer(sdp, callCount[0]);
+      // Case 1: Joining an existing call with 0 people
+      if (callCount.length === 0) {
+        console.log('Joining call with user:', callCount[0] || null);
+        socket.emit('join-call', roomId, localStorage.getItem('userId'));
         setIsJoined(true);
         return;
       }
 
-      // Case 2: Starting a new call (no one in the call)
-      if (callCount.length < 1) {
-        console.log('Starting a new call (no one in call)');
-        await createConnection({ to: null });
-        setIsJoined(true);
-        return;
-      }
+    
       
-      // Case 3: Joining a call with multiple people
+      // Case 2: Joining a call with multiple people
       console.log('Joining call with multiple people:', callCount);
       for (const userId of callCount) {
+
         console.log('Creating connection with user:', userId);
         await createConnection({ to: userId });
       }
@@ -327,7 +345,7 @@ export default function Peoples() {
       });
 
       // Tell the server the user has left the call
-      socket.emit('leave-call', roomId, Info.id);
+      socket.emit('leave-call', roomId, localStorage.getItem('userId'));
       setIsJoined(false);
     } catch (error) {
       console.error('Error ending call:', error);
@@ -336,7 +354,12 @@ export default function Peoples() {
 
   useEffect(() => {
     console.log('Setting up socket event listeners');
-
+    socket.on("join-call-success", () => {
+      toast.success("Joined call successfully");
+    });
+    socket.on("join-call-error", () => {
+      toast.error("Failed to join call");
+    });
     // Handle ICE candidates from other peers
     socket.on('ice-candidate', data => {
       console.log('Received ICE candidate from:', data.from);
@@ -355,7 +378,6 @@ export default function Peoples() {
       if(p2pConnections.current.length === 1){
         index = 0;
         console.log("Setting withUserId to:", from);
-        console.log(Info.id)
         p2pConnections.current[0].withUserId = from;
       }else{
         index = p2pConnections.current.findIndex(conn => conn.withUserId === from);
@@ -377,32 +399,7 @@ export default function Peoples() {
         });
 
       // Connection state monitoring
-      const videoRef = getVideoRef(index);
-      const withUserId = p2pConnections.current[index].withUserId;
-      // Connection state monitoring
-      peerConnection.onconnectionstatechange = () => {
-        console.log('Connection state change:', peerConnection.connectionState, 'with peer:', withUserId);
-      };
-
-      peerConnection.oniceconnectionstatechange = () => {
-        console.log(
-          'ICE connection state change:',
-          peerConnection.iceConnectionState,
-          'with peer:',
-          withUserId
-        );
-      };
-      // Get local stream
-      peerConnection.ontrack = async event => {
-        if (!videoRef?.current) return;
-        videoRef.current.srcObject = new MediaStream([event.track]);
-        try {
-          await videoRef.current.play();
-          console.log('Remote video playing successfully');
-        } catch (err) {
-          console.error('Error playing remote video:', err);
-        }
-      };
+     
     });
    
     // Handle call status updates
@@ -417,13 +414,7 @@ export default function Peoples() {
       async (msg: string, sdp: RTCSessionDescriptionInit, from: string) => {
         console.log('Received offer from:', from);
         JoinNotification(msg);
-        const answer = await CreateAnswer(sdp, from);
-        if (answer) {
-          console.log('Sending answer to:', from);
-          socket.emit('answer-created', roomId, Info.id, from, answer);
-        } else {
-          console.error('Failed to create answer');
-        }
+         await CreateAnswer(sdp, from);
       }
     );
 
@@ -434,6 +425,8 @@ export default function Peoples() {
       socket.off('answer-created');
       socket.off('call-status');
       socket.off('initiate-offer');
+      socket.off('join-call-success');
+      socket.off('join-call-error');
 
       // Close and clean up any existing peer connections
       p2pConnections.current.forEach(conn => {
