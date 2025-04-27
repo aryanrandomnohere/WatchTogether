@@ -1,14 +1,12 @@
 // socket.js
-import { io } from 'socket.io-client';
+import { io,Socket } from 'socket.io-client';
 
-//@ts-ignore
-let socketInstance = null;
+let socketInstance: Socket | null = null;
 
 export default function getSocket() {
-  //@ts-ignore
   if (!socketInstance) {
     // Create a new Socket.IO instance if not already created
-    //@ts-ignore
+    //@ts-expect-error - TODO: fix this
     socketInstance = io(`${import.meta.env.VITE_BACKEND_APP_API_BASE_URL}`, {
       transports: ['websocket'], // Optional, use WebSocket as the transport method
       autoConnect: false, // Optional: Disable auto connection
@@ -16,7 +14,6 @@ export default function getSocket() {
 
     // Add event listeners to the socket instance
     socketInstance.on('connect', () => {
-      //@ts-ignore
     });
 
     socketInstance.on('disconnect', () => {

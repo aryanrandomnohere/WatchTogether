@@ -1,10 +1,12 @@
 import axios from 'axios';
 import { motion } from 'framer-motion';
 import { useRecoilValue, useSetRecoilState } from 'recoil';
-
-import { nowPlaying } from './State/playingOnState';
+import { controlledPlaying, nowPlaying } from './State/playingOnState';
 import { userInfo } from './State/userState';
+import { useNavigate } from 'react-router-dom';
+import getSocket from './services/getSocket';
 
+const socket = getSocket();
 interface mData {
   adult: boolean;
   title?: string;
@@ -35,11 +37,19 @@ interface genreId {
 }
 
 export default function RecommendationFrame({ show }: { show: mData }) {
-  const Info = useRecoilValue(userInfo);
-  //@ts-ignore
+  const UserInfo = useRecoilValue(userInfo);
   const setNowPlaying = useSetRecoilState(nowPlaying);
+  const controlledInput = useSetRecoilState(controlledPlaying);
+  const navigate = useNavigate();
+  const mType =
+    show.media_type === 'movie'
+      ? show?.original_language === 'ja'
+        ? 'AniMov'
+        : 'Movie'
+      : show?.original_language === 'ja'
+        ? 'Anime'
+        : 'Series';
 
-  //@ts-ignore
   async function getNewNames() {
     const url = `https://api.themoviedb.org/3/tv/${show.id}/alternative_titles`;
     const options = {
@@ -63,13 +73,13 @@ export default function RecommendationFrame({ show }: { show: mData }) {
     return Id;
   }
 
-  function handleWatchNow() {
-    //@ts-ignore
+  async function handleWatchNow() {
     axios.post(
+      //@ts-expect-error - TODO: fix this
       `${import.meta.env.VITE_BACKEND_APP_API_BASE_URL}/api/v1/media/mediaaction`,
       {
-        userId: Info.id,
-        show,
+        userId: UserInfo.id,
+        movie: show,
         listType: 'Recently Watched',
       },
       {
@@ -78,6 +88,76 @@ export default function RecommendationFrame({ show }: { show: mData }) {
         },
       }
     );
+    try {
+      if (mType === 'Anime' || mType === 'AniMov') {
+        const response = await axios.get(`${import.meta.env.VITE_BACKEND_APP_API_BASE_URL}/api/v1/media/animeId/${show.id}`,{
+          headers:{
+            authorization:localStorage.getItem('token')
+          }
+        })
+        const {streamingId,status } = response.data;
+        console.log(streamingId,status);
+        let formattedId = streamingId;
+        if(!streamingId || status === false){
+        let alternateNames = '';
+        const name = show.name || show.title || '';
+        const formattedName = name.replace(/-/g, ' ').replace(/:/g, '');
+        console.log(formattedName);
+        const result = await axios.get(`/api/search?q=${formattedName}`);
+        console.log(result);
+
+        if (!result.data || !result?.data[0]?.link_url) {
+          alternateNames = await getNewNames();
+          console.log(alternateNames);
+        }
+
+        const fullId = result.data[0]?.link_url || alternateNames;
+        const id = fullId?.split('-episode')[0];
+        const finalId = id?.split('-season')[0];
+        if (!id) throw new Error('Invalid ID from API');
+        formattedId = finalId.replace(/ /g, '-');
+        console.log(formattedId);
+         await axios.post(`${import.meta.env.VITE_BACKEND_APP_API_BASE_URL}/api/v1/media/animeId`,{
+          id:show.id,
+          streamingId:formattedId
+        },{
+          headers:{
+            authorization:localStorage.getItem('token')
+          }
+        })
+      }
+        setNowPlaying({
+          id: formattedId,
+          title: show.name || show.title,
+          type: mType,
+          animeId: formattedId,
+        });
+        controlledInput({
+          id: show.id,
+          animeId: formattedId,
+          title: show.name || show.title,
+          type: mType,
+        });
+        socket.emit('update-status', UserInfo.id, `Watching ${show.name || show.title}`);
+        navigate(`/watch/${!UserInfo.id ? 'guest' : UserInfo.id}`);
+        return;
+      }
+
+      setNowPlaying({
+        id: show.id.toString(),
+        title: show.name || show.title,
+        type: mType,
+      });
+      controlledInput({
+        id: show.id,
+        title: show.name || show.title,
+        type: mType,
+      });
+      socket.emit('update-status', UserInfo.id, `Watching ${show.name || show.title}`);
+      navigate(`/watch/${!UserInfo.id ? 'guest' : UserInfo.id}`);
+    } catch (error) {
+      console.error('Error handling Watch Now action:', error);
+    }
   }
 
   if (!show) return <></>;
@@ -105,7 +185,7 @@ export default function RecommendationFrame({ show }: { show: mData }) {
         initial={{ opacity: 0, x: -20 }}
         animate={{ opacity: 1, x: 0 }}
         transition={{ duration: 0.5, delay: 0.2 }}
-        className="relative z-10 flex flex-col ml-4 md:ml-16 justify-center max-w-[90%] md:max-w-[45%] py-6 md:py-12"
+        className="relative z-10 flex flex-col ml-4 md:ml-10 justify-center max-w-[90%] md:max-w-[45%] py-6 md:py-12"
       >
         {/* Title */}
         <motion.h1

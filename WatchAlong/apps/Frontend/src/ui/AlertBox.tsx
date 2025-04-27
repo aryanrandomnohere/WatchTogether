@@ -47,11 +47,12 @@ function Window({ children, name }: { children: ReactNode; name: string }) {
       animate={{ y: 0, opacity: 1 }}
       exit={{ y: '-100%', opacity: 0 }}
       transition={{ duration: 0.5, ease: 'easeInOut' }}
+      
       className="fixed inset-0 w-full h-screen bg-opacity-5 backdrop-blur-0 z-[1000]  flex rounded items-start justify-center"
     >
       <div
         ref={ref}
-        className="flex flex-col w-auto h-auto max-w-full max-h-full bg-slate-200 dark:bg-slate-800 rounded shadow-lg overflow-auto items-end justify-end"
+        className="flex flex-col w-auto h-auto max-w-full max-h-full bg-slate-200 dark:bg-slate-800 rounded-xl shadow-lg overflow-auto items-end justify-end"
       >
         <div
           className="fixed z-10 self-end p-1 hover:bg-opacity-45 hover:bg-slate-300 dark:hover:bg-slate-700 rounded-sm m-2 text-slate-700 dark:text-slate-300 text-3xl cursor-pointer flex"

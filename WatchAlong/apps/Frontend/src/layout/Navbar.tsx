@@ -86,7 +86,7 @@ export default function Navbar() {
               },
             }
           );
-
+          localStorage.setItem('userId', response.data.userWithMovies.id);
           const { id, username, email, displayname, avatar }: UserInfoType =
             response.data.userWithMovies;
           setUserInfo({ id, username, email, displayname, avatar });

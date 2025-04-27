@@ -78,7 +78,7 @@ const ShowInfo: React.FC<ShowInfoProps> = ({ movie, ep = 1, season = 1 }) => {
       method: 'GET',
       headers: {
         accept: 'application/json',
-        //@ts-ignore
+        //@ts-expect-error because i dont know the structure of error
         Authorization: `${import.meta.env.VITE_TMDB_AUTHORIZATION_KEY}`,
       },
     };
@@ -99,8 +99,8 @@ const ShowInfo: React.FC<ShowInfoProps> = ({ movie, ep = 1, season = 1 }) => {
       const filteredMedia =
         Media?.filter(m => !(m.movie.id === movie.id && m.listType === 'Favourite')) || null;
       setMedia(filteredMedia);
-      //@ts-ignore
       const response = await axios.put(
+        //@ts-expect-error because i dont know the structure of error
         `${import.meta.env.VITE_BACKEND_APP_API_BASE_URL}/api/v1/media/removefavourite`,
         {
           movieId: movie.id,
@@ -123,10 +123,9 @@ const ShowInfo: React.FC<ShowInfoProps> = ({ movie, ep = 1, season = 1 }) => {
     try {
       toast.success('Added to Favourites');
       const newFavourite: mediaData = { listType: 'Favourite', episode: 1, season: 1, movie };
-      //@ts-ignore
-      setMedia(m => [...m, newFavourite]);
-      //@ts-ignore
+      setMedia(m => [...(m || []), newFavourite]);
       await axios.post(
+        //@ts-expect-error because i dont know the structure of error
         `${import.meta.env.VITE_BACKEND_APP_API_BASE_URL}/api/v1/media/mediaaction`,
         {
           movie,
@@ -139,13 +138,13 @@ const ShowInfo: React.FC<ShowInfoProps> = ({ movie, ep = 1, season = 1 }) => {
         }
       );
     } catch (error) {
-      //@ts-expect-error because i dont know the structure of error
+        //@ts-expect-error because i dont know the structure of error
       toast.error(error.response.data.error);
     }
   };
   async function handleWatchNow() {
-    //@ts-ignore
     axios.post(
+      //@ts-expect-error because i dont know the structure of error
       `${import.meta.env.VITE_BACKEND_APP_API_BASE_URL}/api/v1/media/mediaaction`,
       {
         userId: UserInfo.id,
@@ -161,13 +160,23 @@ const ShowInfo: React.FC<ShowInfoProps> = ({ movie, ep = 1, season = 1 }) => {
     try {
       setEp({ episode_number: ep, season_number: season });
       if (mType === 'Anime' || mType === 'AniMov') {
+        const response = await axios.get(`${import.meta.env.VITE_BACKEND_APP_API_BASE_URL}/api/v1/media/animeId/${movie.id}`,{
+          headers:{
+            authorization:localStorage.getItem('token')
+          }
+        })
+        const {streamingId,status } = response.data;
+        console.log(streamingId,status);
+        let formattedId = streamingId;
+        if(!streamingId || status === false){
         let alternateNames = '';
         const name = movie.name || movie.title || '';
-        const formattedName = name.replace(/ /g, '-').replace(/:/g, '');
+        const formattedName = name.replace(/-/g, ' ').replace(/:/g, '');
+        console.log(formattedName);
         const result = await axios.get(`/api/search?q=${formattedName}`);
         console.log(result);
 
-        if (!result?.data[0]?.link_url) {
+        if (!result.data || !result?.data[0]?.link_url) {
           alternateNames = await getNewNames();
           console.log(alternateNames);
         }
@@ -176,9 +185,17 @@ const ShowInfo: React.FC<ShowInfoProps> = ({ movie, ep = 1, season = 1 }) => {
         const id = fullId?.split('-episode')[0];
         const finalId = id?.split('-season')[0];
         if (!id) throw new Error('Invalid ID from API');
-        const formattedId = finalId.replace(/ /g, '-');
+        formattedId = finalId.replace(/ /g, '-');
         console.log(formattedId);
-
+         await axios.post(`${import.meta.env.VITE_BACKEND_APP_API_BASE_URL}/api/v1/media/animeId`,{
+          id:movie.id,
+          streamingId:formattedId
+        },{
+          headers:{
+            authorization:localStorage.getItem('token')
+          }
+        })
+      }
         setNowPlaying({
           id: formattedId,
           title: movie.name || movie.title,
@@ -226,7 +243,7 @@ const ShowInfo: React.FC<ShowInfoProps> = ({ movie, ep = 1, season = 1 }) => {
     <div className="flex flex-col items-center ">
       <div className="relative min-w-fit bg-slate-950 ">
         <img
-          src={`https://image.tmdb.org/t/p/w500/${movie.backdrop_path}`}
+          src={`https://image.tmdb.org/t/p/w1280/${movie.backdrop_path}`}
           alt={`${movie.name} poster`}
           className=" h-51  sm:h-80 sm:min-h-full object-cover  shadow-md filter brightness-90"
         />

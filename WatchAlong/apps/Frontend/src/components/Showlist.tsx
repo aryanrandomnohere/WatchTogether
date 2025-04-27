@@ -59,7 +59,7 @@ export default function ShowsList({
   }
 
   return (
-    <div className="flex flex-col">
+    <div className="flex flex-col mx-5">
       <div className="text-slate-800 dark:text-white font-bold text-2xl sm:text-3xl self-start mb-2 mt-1 w-full">
         {title}
       </div>

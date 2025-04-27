@@ -63,9 +63,9 @@ function Window({ children, name }: WindowProps) {
       transition={{ duration: 0.5, ease: 'easeInOut' }}
       className="fixed inset-0 w-full h-screen bg-slate-950/20 dark:bg-slate-950/20 backdrop-blur-sm z-[1000] flex items-center justify-center p-1"
     >
-      <div className="flex flex-col w-auto h-auto max-w-full max-h-full bg-slate-200 dark:bg-gray-900 rounded-lg shadow-lg overflow-auto border border-slate-300 dark:border-slate-700">
+      <div className="flex flex-col w-auto h-auto max-w-full max-h-full bg-slate-200 dark:bg-gray-900 rounded-lg shadow-2xl overflow-auto ">
         <div
-          className="fixed z-10 self-end p-1 hover:bg-slate-300 dark:hover:bg-slate-800 rounded-full text-slate-700 dark:text-orange-600 text-3xl cursor-pointer"
+          className="fixed z-10 self-end p-1 hover:bg-slate-300 dark:hover:bg-slate-800/50 rounded-full text-slate-700 dark:text-orange-600 text-3xl cursor-pointer transition-all duration-300"
           onClick={close}
         >
           <HiXMark />
