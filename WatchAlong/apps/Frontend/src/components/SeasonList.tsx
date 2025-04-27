@@ -1,10 +1,12 @@
 import React, { useEffect, useState } from 'react';
-
+import { VscVmRunning } from "react-icons/vsc";
 import axios from 'axios';
 import { AnimatePresence, motion } from 'framer-motion';
 
 import { APIEpisodeType, EpisodeType } from '../types';
 import EpisodeBox from './EpisodeBox';
+import { useRecoilValue } from 'recoil';
+import { epState } from '../State/epState';
 
 const TOKEN =
   'eyJhbGciOiJIUzI1NiJ9.eyJhdWQiOiI0NzI5NmMxNjY1NWI1NGE1MzU0MTA4NzIyZWVmMjFhNSIsIm5iZiI6MTczMDkyMTU4My44NzM5OTk4LCJzdWIiOiI2NzJiYzQ2ZjQzM2M4MmVhMjY3ZWExNWEiLCJzY29wZXMiOlsiYXBpX3JlYWQiXSwidmVyc2lvbiI6MX0.T9tYHXZGv0OisrEbFuVodRU7ppPEKLvLAsKMbmJElkA';
@@ -21,6 +23,7 @@ interface SeasonListProps {
 const SeasonList: React.FC<SeasonListProps> = ({ seasonInfo, tvId }) => {
   const [isOpen, setIsOpen] = useState(false);
   const [episodes, setEpisodes] = useState<EpisodeType[]>([]);
+  const currentEpstate = useRecoilValue(epState);
   const [isLoading, setIsLoading] = useState(false);
   const [episodeCount, setEpisodeCount] = useState<number>(0);
 
@@ -88,11 +91,11 @@ const SeasonList: React.FC<SeasonListProps> = ({ seasonInfo, tvId }) => {
     <motion.div className="flex flex-col w-full">
       <motion.div
         onClick={() => setIsOpen(!isOpen)}
-        className="flex items-center justify-between w-full p-3 rounded-lg cursor-pointer hover:bg-slate-100 dark:hover:bg-slate-800/50 transition-colors duration-200"
+        className={`flex items-center justify-between w-full p-3 rounded-lg cursor-pointer ${(currentEpstate.season_number === seasonInfo.season_number  && !isOpen)? "border-2 border-blue-500" : "" } hover:bg-slate-100 dark:hover:bg-slate-800/50 transition-colors duration-200`}
         whileHover={{ scale: 1.01 }}
         whileTap={{ scale: 0.99 }}
       >
-        <div className="flex items-center gap-3">
+        <div className="flex w-full items-center gap-3">
           <motion.div
             className="w-10 h-10 rounded-lg overflow-hidden bg-slate-200 dark:bg-slate-700"
             whileHover={{ scale: 1.05 }}
@@ -143,6 +146,12 @@ const SeasonList: React.FC<SeasonListProps> = ({ seasonInfo, tvId }) => {
               {episodeCount} Episodes
             </motion.p>
           </div>
+          {currentEpstate.season_number === seasonInfo.season_number && <motion.div className='ml-auto mr-4' 
+          whileHover={{ scale: 1.1 }}
+          whileTap={{ scale: 0.9 }}
+          >
+            <VscVmRunning className='text-blue-500 text-2xl' />
+          </motion.div>}
         </div>
         <motion.button
           className="text-slate-400 dark:text-slate-500 hover:text-slate-600 dark:hover:text-slate-300 transition-colors duration-200"
@@ -170,7 +179,7 @@ const SeasonList: React.FC<SeasonListProps> = ({ seasonInfo, tvId }) => {
               height: { duration: 0.3, ease: 'easeInOut' },
               opacity: { duration: 0.2 },
             }}
-            className="pl-4 pr-2 py-1 overflow-hidden"
+            className=" overflow-hidden px-2"
           >
             {isLoading ? (
               <div className="flex justify-center items-center py-4">

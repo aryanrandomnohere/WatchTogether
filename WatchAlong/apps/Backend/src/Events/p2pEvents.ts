@@ -22,7 +22,7 @@ export default function p2pEvents(io: Server, socket: Socket) {
       }
 
       // Store the user's offer in the room and mark them as in the call
-      const joined = roomManager
+      roomManager
         .getInstance()
         .joinCall(roomId, userInfo.id, sdp);
 
@@ -66,7 +66,7 @@ export default function p2pEvents(io: Server, socket: Socket) {
       if (!room.inCall?.people?.has(userId)) {
         roomManager.getInstance().joinCall(roomId, userId, null);
       }
-
+      console.log("Sending answer to:", toUserId , "from:", userId);
       // Send the answer back to the user who sent the offer
       io.to(toUserId).emit("answer-created", userId, answer);
     },
@@ -92,7 +92,7 @@ export default function p2pEvents(io: Server, socket: Socket) {
       }
 
       // Forward ICE candidate to the other peer
-      io.to(to).emit("ice-candidate", { from: userId, candidate });
+      io.to(to).emit("ice-candidate", { from:userId, candidate });
     },
   );
 

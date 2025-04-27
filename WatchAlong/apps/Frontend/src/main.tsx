@@ -11,7 +11,7 @@ import './index.css';
 createRoot(document.getElementById('root')!).render(
   <RecoilRoot>
     <BrowserRouter>
-      <div className="overflow-hidden">
+      <div className="overflow-hidden bg-slate-950">
         <Root />
       </div>
     </BrowserRouter>

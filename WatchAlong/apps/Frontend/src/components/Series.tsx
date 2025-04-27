@@ -32,7 +32,8 @@ export default function Series({
   const Info = useRecoilValue(userInfo);
   const { roomId } = useParams();
   const { episode_number, season_number } = useRecoilValue(epState);
-  const [AnimeId, setAnimeId] = useState<string>('');
+  const [AnimeId, setAnimeId] = useState<string>(animeId);
+  const [isPart2, setIsPart2] = useState(false);
   console.log(isPlaying);
   useEffect(() => {
     if (videoRef.current) {
@@ -147,8 +148,11 @@ export default function Series({
               `/api/search?q=${animeId.replace(/-/g, ' ') + ' season ' + season_number}`
             );
             if (result.data[0]?.link_url) {
-              const newId = result.data[0]?.link_url?.split('-dub')[0];
-              console.log(newId); // Logs correctly
+              let newId = result.data[0]?.link_url?.split('-dub')[0];
+              if(newId.includes("-part-2")){
+                newId = newId.split("-part-2")[0];
+                setIsPart2(true);
+              }
               setAnimeId(newId);
             }
           } catch (error) {
@@ -184,7 +188,7 @@ export default function Series({
   };
 
   // If screenShare is true, show the ScreenShare component
-  if (screenShare) {
+  if (!screenShare) {
     return (
       <div className="screen-share-container">
         <Sfu />
@@ -235,6 +239,7 @@ export default function Series({
     return '';
   };
 
+
   const iframeSource = getIframeSource();
   if (!iframeSource) {
     return (
@@ -243,7 +248,7 @@ export default function Series({
       </div>
     );
   }
-
+console.log(iframeSource);
   // Determine iframe height based on type
   const getIframeHeight = () => {
     if (type === 'Anime' || type === 'AniMov') {

@@ -60,13 +60,28 @@ export class roomManager {
   public removeSubscriber(roomId: string, socketId: string) {
     const room = this.rooms.get(roomId);
     if (!room || !room.subscribers) return;
+    if(room.subscribers.has(socketId)){
+      const userId = room.subscribers.get(socketId);
+      if(userId){
+        room.inCall.people.delete(userId);
+      }
+    }
     room.subscribers.delete(socketId);
+    console.log(room.inCall.people);
+    return;
   }
 
   public userDisconnected(socketId: string) {
     for (const [roomId, room] of this.rooms.entries()) {
       if (!room || !room.subscribers) continue;
+      if(room.subscribers.has(socketId)){
+      const userId = room.subscribers.get(socketId);
+      if(userId){
+        room.inCall.people.delete(userId);
+      }
+    }
       room.subscribers.delete(socketId);
+      console.log(room.inCall.people);
       return roomId;
     }
   }
@@ -78,10 +93,12 @@ export class roomManager {
     const room = this.rooms.get(roomId);
     if (!room) return false;
     if (room.inCall?.people.size === 0 && sdp) {
+      console.log("first offer");
       room.inCall.people.add(userId);
       room.inCall.firstOffer = sdp;
       return true;
     }
+    console.log("not first offer");
     room.inCall?.people.add(userId);
     return true;
   }

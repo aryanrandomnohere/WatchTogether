@@ -47,15 +47,14 @@ interface User {
 
 export default function ChatBox({ messages }: { messages: Message[] }) {
   const chatContainerRef = useRef<HTMLDivElement | null>(null);
-
   useEffect(() => {
     const chatContainer = chatContainerRef.current;
     if (!chatContainer) return;
-
+    console.log(chatContainer.scrollHeight, chatContainer.clientHeight, chatContainer.scrollTop);
     const isAtBottom =
-      chatContainer.scrollHeight - chatContainer.clientHeight <= chatContainer.scrollTop + 100;
-
-    if (isAtBottom) {
+      chatContainer.scrollHeight - chatContainer.clientHeight <= chatContainer.scrollTop + 90;
+     console.log(isAtBottom);
+    if (!isAtBottom) {
       chatContainer.scrollTop = chatContainer.scrollHeight;
     }
   }, [messages]);

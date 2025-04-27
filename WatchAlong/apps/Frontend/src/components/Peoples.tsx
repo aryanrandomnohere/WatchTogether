@@ -2,10 +2,8 @@ import { useEffect, useRef, useState } from 'react';
 import toast from 'react-hot-toast';
 import { IoArrowBackCircleSharp } from 'react-icons/io5';
 import { useParams } from 'react-router-dom';
-
 import axios from 'axios';
 import { useRecoilState, useRecoilValue, useSetRecoilState } from 'recoil';
-
 import { chatType } from '../State/chatWindowState';
 import { joinedStatus } from '../State/isJoined';
 import { people } from '../State/roomPeopleState';
@@ -58,10 +56,17 @@ export default function Peoples() {
   };
 
   const setIceCandidate = ({ from, candidate }: { from: string; candidate: RTCIceCandidate }) => {
-    console.log('Received ICE candidate from:', from);
+    console.log('Received ICE candidate from:', from,"my id:", localStorage.getItem('userId') );
+    
+    if(from === localStorage.getItem('userId')){
+      console.log("Received ICE candidate from self , ignoring and will sort out later");
+      return;
+    }
     const index = p2pConnections.current.findIndex(conn => conn.withUserId === from);
     if (index === -1) {
       console.error('Cannot find connection for ICE candidate from:', from);
+      console.log(p2pConnections.current);
+      console.log(Info.id)
       return;
     }
     p2pConnections.current[index].instance
@@ -83,6 +88,24 @@ export default function Peoples() {
         return null;
     }
   };
+  const getCameraStreamAndSend = (pc: RTCPeerConnection) => {
+    if(!localVideoRef?.current?.srcObject){
+      navigator.mediaDevices.getUserMedia({ video: true,audio:true }).then((stream) => {
+        if(!localVideoRef?.current || stream.getTracks().length === 0) return;
+        localVideoRef.current.srcObject = stream;
+        localVideoRef.current.play();
+        console.log("Local description already set");
+        
+        // this is wrong, should propogate via a component
+        stream.getTracks().forEach((track) => {
+          console.error("track added");
+          console.log(track);
+          console.log(pc);
+          pc.addTrack(track, stream);
+        });
+      });
+    }
+  }
 
   async function createConnection({ to }: { to: string | null }) {
     const peerConnection = new RTCPeerConnection({
@@ -96,8 +119,10 @@ export default function Peoples() {
       withUserId: to,
       instance: peerConnection,
     });
+    console.log(p2pConnections.current);
 
     const index = p2pConnections.current.length - 1;
+    console.log("Index:", index);
     const videoRef = getVideoRef(index);
 
     if (!videoRef?.current) return null;
@@ -109,80 +134,41 @@ export default function Peoples() {
           sendIceCandidate({ userId: Info.id, to: to || '', candidate: event.candidate });
         }
       };
-
-      // Connection state monitoring
-      peerConnection.onconnectionstatechange = () => {
-        console.log('Connection state change:', peerConnection.connectionState, 'with peer:', to);
-      };
-
-      peerConnection.oniceconnectionstatechange = () => {
-        console.log(
-          'ICE connection state change:',
-          peerConnection.iceConnectionState,
-          'with peer:',
-          to
-        );
-      };
-
-      // Get local stream
-      const stream = await navigator.mediaDevices.getUserMedia({ video: true, audio: false });
-      if (!stream) {
-        console.log('Stream not found');
-        return null;
-      }
-
-      // Set up local video if not already set up
-      if (localVideoRef.current && !localVideoRef.current.srcObject) {
-        localVideoRef.current.srcObject = stream;
-        await localVideoRef.current
-          .play()
-          .catch(err => console.error('Error playing local video:', err));
-      }
-
-      // Add video track to the peer connection
-      stream.getVideoTracks().forEach(track => {
-        console.log('Adding local track to peer connection:', track.id);
-        peerConnection.addTrack(track, stream);
-      });
-
+     
       // Handle incoming tracks
-      peerConnection.ontrack = async event => {
-        console.log('Received track in createConnection:', event.track);
-        if (!videoRef.current) return;
-
-        let remoteStream = videoRef.current.srcObject as MediaStream;
-        if (!remoteStream) {
-          remoteStream = new MediaStream();
-          videoRef.current.srcObject = remoteStream;
-        }
-
-        if (!remoteStream.getTracks().some(t => t.id === event.track.id)) {
-          remoteStream.addTrack(event.track);
-          console.log('Added track to remote stream:', event.track.id);
-        }
-
-        try {
-          await videoRef.current.play();
-          console.log('Remote video playing successfully');
-        } catch (err) {
-          console.error('Error playing video:', err);
-        }
-      };
+      
 
       // Create the offer
       console.log('Creating offer');
+      peerConnection.onnegotiationneeded = async () => {
       const offer = await peerConnection.createOffer();
       console.log('Setting local description (offer)');
       await peerConnection.setLocalDescription(offer);
-      return offer;
+      if (offer) {
+        console.log('Sending offer to user:', to);
+        socket.emit(
+          'initiate-offer',
+          roomId,
+          {
+            id: Info.id,
+            username: Info.username,
+            displayname: Info.displayname,
+          },
+          to,
+          peerConnection.localDescription
+        );
+      }
+      };
+      getCameraStreamAndSend(peerConnection);
     } catch (error) {
-      console.error('Error in createConnection:', error);
+      console.error('Error in create_Connection:', error);
       return null;
     }
   }
 
   async function CreateAnswer(sdp: RTCSessionDescriptionInit, from: string) {
     // Create peer connection with STUN servers
+    console.log("Creating answer");
     const peerConnection = new RTCPeerConnection({
       iceServers: [
         { urls: 'stun:stun.l.google.com:19302' },
@@ -198,7 +184,10 @@ export default function Peoples() {
     const index = p2pConnections.current.findIndex(conn => conn.withUserId === from);
     const videoRef = getVideoRef(index);
 
-    if (!videoRef?.current) return null;
+    if (!videoRef?.current) {
+      console.log("No video ref");
+      return null;
+    }
 
     try {
       // Set up ICE candidate handler first
@@ -223,47 +212,14 @@ export default function Peoples() {
         );
       };
 
-      // Get local media stream
-      const stream = await navigator.mediaDevices.getUserMedia({ video: true, audio: false });
-      if (!stream) {
-        console.log('Local stream not found');
-        return null;
-      }
-
-      // Set up local video if not already set
-      if (localVideoRef.current && !localVideoRef.current.srcObject) {
-        localVideoRef.current.srcObject = stream;
-        try {
-          await localVideoRef.current.play();
-        } catch (err) {
-          console.error('Error playing local video:', err);
-        }
-      }
-
-      // Add local tracks to the peer connection
-      stream.getVideoTracks().forEach(track => {
-        console.log('Adding local track to peer connection:', track.id);
-        peerConnection.addTrack(track, stream);
-      });
-
       // Handle incoming remote tracks
       peerConnection.ontrack = async event => {
-        console.log('Received remote track from:', from, event.track);
-        if (!videoRef.current) return;
-
-        let remoteStream = videoRef.current.srcObject as MediaStream;
-        if (!remoteStream) {
-          remoteStream = new MediaStream();
-          videoRef.current.srcObject = remoteStream;
+        if (!videoRef.current) {
+          console.log("No video ref");
+          return;
         }
-
-        // Add the track if it's not already in the stream
-        if (!remoteStream.getTracks().some(t => t.id === event.track.id)) {
-          remoteStream.addTrack(event.track);
-          console.log('Added track to remote stream:', event.track.id);
-        }
-
-        // Try to play the video
+        console.log("videoRef:", videoRef, "index:", index);
+        videoRef.current.srcObject = new MediaStream([event.track]);
         try {
           await videoRef.current.play();
           console.log('Remote video playing successfully');
@@ -274,17 +230,24 @@ export default function Peoples() {
 
       // Process the remote offer first
       console.log('Setting remote description (offer)');
-      await peerConnection.setRemoteDescription(new RTCSessionDescription(sdp));
-
-      // Create and set local answer
+      await peerConnection.setRemoteDescription(sdp);
       console.log('Creating answer');
+      
       const answer = await peerConnection.createAnswer();
       console.log('Setting local description (answer)');
       await peerConnection.setLocalDescription(answer);
+      console.log(answer);
+      if (answer) {
+        console.log('Sending answer to initial caller');
+        socket.emit('answer-created', roomId, Info.id, from, peerConnection.localDescription);
+        setIsJoined(true);
+      } else {
+        console.error('Failed to create answer');
+      }
+      getCameraStreamAndSend(peerConnection);
 
-      return answer;
     } catch (error) {
-      console.error('Error in CreateAnswer:', error);
+      console.error('Error in Create_Answer:', error);
       return null;
     }
   }
@@ -295,29 +258,6 @@ export default function Peoples() {
 
   async function handleStartCall() {
     try {
-      console.log('Starting call');
-
-      // Get local stream first
-      const stream = await navigator.mediaDevices.getUserMedia({
-        video: true,
-        audio: false,
-      });
-
-      if (!stream) {
-        console.error('Could not get local media stream');
-        return;
-      }
-
-      // Set up local video
-      if (localVideoRef.current) {
-        localVideoRef.current.srcObject = stream;
-        try {
-          await localVideoRef.current.play();
-        } catch (err) {
-          console.error('Error playing local video:', err);
-        }
-      }
-
       // Get current call status from server
       const response = await axios.get(
         `${import.meta.env.VITE_BACKEND_APP_API_BASE_URL}/api/v1/room/call/${roomId}`,
@@ -334,58 +274,24 @@ export default function Peoples() {
       // Case 1: Joining an existing call with 1 person
       if (sdp && callCount.length === 1) {
         console.log('Joining call with user:', callCount[0]);
-        const answer = await CreateAnswer(sdp, callCount[0]);
-        if (answer) {
-          console.log('Sending answer to initial caller');
-          socket.emit('answer-created', roomId, Info.id, callCount[0], answer);
-          setIsJoined(true);
-        } else {
-          console.error('Failed to create answer');
-        }
+        await CreateAnswer(sdp, callCount[0]);
+        setIsJoined(true);
         return;
       }
 
       // Case 2: Starting a new call (no one in the call)
       if (callCount.length < 1) {
         console.log('Starting a new call (no one in call)');
-        const offer = await createConnection({ to: null });
-        if (offer) {
-          console.log('Emitting initial offer');
-          socket.emit(
-            'initiate-offer',
-            roomId,
-            {
-              id: Info.id,
-              username: Info.username,
-              displayname: Info.displayname,
-            },
-            null,
-            offer
-          );
-          setIsJoined(true);
-        }
+        await createConnection({ to: null });
+        setIsJoined(true);
         return;
       }
-
+      
       // Case 3: Joining a call with multiple people
       console.log('Joining call with multiple people:', callCount);
       for (const userId of callCount) {
         console.log('Creating connection with user:', userId);
-        const offer = await createConnection({ to: userId });
-        if (offer) {
-          console.log('Sending offer to user:', userId);
-          socket.emit(
-            'initiate-offer',
-            roomId,
-            {
-              id: Info.id,
-              username: Info.username,
-              displayname: Info.displayname,
-            },
-            userId,
-            offer
-          );
-        }
+        await createConnection({ to: userId });
       }
       setIsJoined(true);
     } catch (error) {
@@ -434,29 +340,71 @@ export default function Peoples() {
     // Handle ICE candidates from other peers
     socket.on('ice-candidate', data => {
       console.log('Received ICE candidate from:', data.from);
-      setIceCandidate(data);
+      setIceCandidate({from:data.from, candidate:data.candidate});
     });
 
     // Handle answers to our offers
     socket.on('answer-created', (from: string, answer: RTCSessionDescriptionInit) => {
+      if(from === localStorage.getItem('userId')){
+        console.log("Received answer from self , ignoring will sort out later");
+        return;
+    }
       console.log('Received answer from:', from);
-      const index = p2pConnections.current.findIndex(conn => conn.withUserId === from);
+      
+      let index ; 
+      if(p2pConnections.current.length === 1){
+        index = 0;
+        console.log("Setting withUserId to:", from);
+        console.log(Info.id)
+        p2pConnections.current[0].withUserId = from;
+      }else{
+        index = p2pConnections.current.findIndex(conn => conn.withUserId === from);
+      }
       if (index === -1) {
         console.error('Cannot find connection for user:', from);
         return;
       }
-
       const peerConnection = p2pConnections.current[index].instance;
+
+      console.log("Setting remote description", answer , "to:", peerConnection);
       peerConnection
-        .setRemoteDescription(new RTCSessionDescription(answer))
+        .setRemoteDescription(answer)
         .then(() => {
           console.log('Successfully set remote description (answer)');
         })
         .catch(err => {
           console.error('Error setting remote description (answer):', err);
         });
-    });
 
+      // Connection state monitoring
+      const videoRef = getVideoRef(index);
+      const withUserId = p2pConnections.current[index].withUserId;
+      // Connection state monitoring
+      peerConnection.onconnectionstatechange = () => {
+        console.log('Connection state change:', peerConnection.connectionState, 'with peer:', withUserId);
+      };
+
+      peerConnection.oniceconnectionstatechange = () => {
+        console.log(
+          'ICE connection state change:',
+          peerConnection.iceConnectionState,
+          'with peer:',
+          withUserId
+        );
+      };
+      // Get local stream
+      peerConnection.ontrack = async event => {
+        if (!videoRef?.current) return;
+        videoRef.current.srcObject = new MediaStream([event.track]);
+        try {
+          await videoRef.current.play();
+          console.log('Remote video playing successfully');
+        } catch (err) {
+          console.error('Error playing remote video:', err);
+        }
+      };
+    });
+   
     // Handle call status updates
     socket.on('call-status', (callStatus: boolean) => {
       console.log('Call status updated:', callStatus);
@@ -469,7 +417,6 @@ export default function Peoples() {
       async (msg: string, sdp: RTCSessionDescriptionInit, from: string) => {
         console.log('Received offer from:', from);
         JoinNotification(msg);
-
         const answer = await CreateAnswer(sdp, from);
         if (answer) {
           console.log('Sending answer to:', from);

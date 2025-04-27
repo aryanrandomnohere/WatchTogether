@@ -31,6 +31,9 @@ export default function InviteLinkModal({ roomId }: InviteLinkModalProps) {
       exit={{ opacity: 0, scale: 0.95 }}
       transition={{ duration: 0.2 }}
       className="flex flex-col items-center p-6 space-y-4 bg-slate-900 rounded-xl shadow-xl max-w-md w-full mx-auto"
+      style={{
+        backgroundImage: 'linear-gradient(to right,  rgb(100 100 100),rgb(15, 23, 42))',
+      }}
     >
       <div className="w-16 h-16 bg-slate-800 rounded-full flex items-center justify-center mb-2">
         <FaUserPlus className="w-8 h-8 text-blue-500" />

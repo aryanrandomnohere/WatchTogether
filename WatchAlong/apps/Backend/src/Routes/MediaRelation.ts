@@ -1,6 +1,7 @@
 import express, { Request, Response } from "express";
 import AuthMiddleware from "../AuthMiddleware.js";
 import { prisma as prismaClient } from "../db.js";
+import { streamingIdSchema } from "../InputValidation/MediaValidation.js";
 
 const MediaRouter = express.Router();
 const VALID_LIST_TYPES = ["Favourite", "Recently Watched", "Watch Later"];
@@ -337,5 +338,37 @@ MediaRouter.put(
     }
   },
 );
+
+MediaRouter.get("/animeId/:id",async (req:Request,res:Response)=>{
+  const {id} = req.params;
+  const animeId = await prismaClient.streamingIdAnime.findUnique({
+    where:{
+      id:parseInt(id)
+    }
+  })
+  if(!animeId){
+  res.status(200).json({msg:"Anime not found",status:false, streamingId:null})
+  return 
+  }
+  res.status(200).json({msg:"Anime found",status:true,streamingId:animeId.streamingId})
+  return 
+})
+
+MediaRouter.post("/animeId",async (req:Request,res:Response)=>{
+  const parsedData = streamingIdSchema.safeParse(req.body);
+  if(!parsedData.success){
+    res.status(400).json({msg:"Invalid data",errors:parsedData.error.errors})
+    return 
+  }
+  const {id,streamingId} = parsedData.data;
+  const animeId = await prismaClient.streamingIdAnime.create({
+    data:{
+      id:id,
+      streamingId
+    }
+})
+  res.status(201).json({msg:"Anime ID created",streamingId:animeId.streamingId})
+  return 
+})
 
 export default MediaRouter;

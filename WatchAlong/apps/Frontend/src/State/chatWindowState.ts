@@ -8,5 +8,5 @@ enum ChatType {
 }
 export const chatType = atom<ChatType>({
   key: 'chatType',
-  default: ChatType.CHATS,
+  default: ChatType.PEOPLE,
 });

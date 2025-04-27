@@ -4,7 +4,7 @@ import { useParams } from 'react-router-dom';
 import * as mediasoupClient from 'mediasoup-client';
 import { Socket, io } from 'socket.io-client';
 
-const SERVER_URL = 'http://localhost:4440'; 
+const SERVER_URL = 'http://localhost:4444'; 
 
 export default function Sfu() {
   const [isPublisher, setIsPublisher] = useState(false);
@@ -33,10 +33,13 @@ export default function Sfu() {
 
     try {
       // Initialize socket connection
-      socketRef.current = io(SERVER_URL, {
-        transports: ['websocket', 'polling'],
-        rejectUnauthorized: false,
-        secure: false
+      socketRef.current = io('http://localhost:4444', {
+        transports: ['websocket'],
+        autoConnect: true,
+        reconnection: true,
+        reconnectionAttempts: 5,
+        reconnectionDelay: 1000,
+        path: '/socket.io'
       });
 
       // Add connection error handler

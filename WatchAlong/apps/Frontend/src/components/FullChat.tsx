@@ -69,9 +69,11 @@ export default function FullChat() {
   const ref = useOutsideClick(handleClearChatOption);
   const setWasPlaying = useSetRecoilState(wasPlaying);
   const inputRef = useRef<HTMLInputElement>(null);
+  const notificationSound = useRef<HTMLAudioElement | null>(null);
+
   const handleLoadState = async () => {
     try {
-      //@ts-ignore
+      //@ts-expect-error - Socket.io types are not properly defined
       const response = await axios.get(
         `${import.meta.env.VITE_BACKEND_APP_API_BASE_URL}/api/v1/room/loadstate/${roomId}`,
         {
@@ -95,9 +97,19 @@ export default function FullChat() {
     }
   };
 
-  // Message & Poll Handlers
-  const handleReceiveMessage = (newMessage: Message) => {
-    setMessages(prevMessages => [...prevMessages, newMessage]); // Function-based update
+  useEffect(() => {
+    notificationSound.current = new Audio('/sounds/notification.mp3');
+  }, []);
+
+  const handleReceiveMessage = (message: Message) => {
+    setMessages((prevMessages) => [...prevMessages, message]);
+    
+    // Play sound only if the message is not from the current user
+    if (message.displayname !== Info.displayname && notificationSound.current) {
+      notificationSound.current.play().catch(error => {
+        console.error('Error playing notification sound:', error);
+      });
+    }
   };
 
   const handleAddPoll = (newPoll: Message) => {
@@ -170,7 +182,7 @@ export default function FullChat() {
   return (
     <div className="flex flex-col h-full bg-slate-900">
       <div className="flex-1 min-h-0 relative">
-        <ChatBox messages={messages} />
+        <ChatBox messages={messages}  />
       </div>
 
       <div

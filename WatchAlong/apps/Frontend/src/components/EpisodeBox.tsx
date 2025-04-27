@@ -99,7 +99,7 @@ export default function EpisodeBox({ episodes }: { episodes: EpisodeType[] }) {
             variants={item}
             onClick={() => handleEpisodeClick(episode)}
             className={`flex items-center gap-3 p-2 rounded-lg cursor-pointer transition-all duration-200 ${activeClass}`}
-            whileHover={{ scale: 1.01, x: 4 }}
+            whileHover={{ scale: 1.01, x: 8 }}
             whileTap={{ scale: 0.99 }}
           >
             <motion.div className="relative w-24 h-14 flex-shrink-0" whileHover={{ scale: 1.05 }}>
