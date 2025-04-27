@@ -183,7 +183,7 @@ roomRouter.get("/call/:roomId", async (req: Request, res: Response) => {
       : [];
     res
       .status(200)
-      .json({ callCount: stringArray, sdp: room.inCall?.firstOffer });
+      .json({ callCount: stringArray });
   } catch (error) {
     res.status(400).json({ msg: "Internal server error" });
   }
