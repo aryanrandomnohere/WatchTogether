@@ -88,22 +88,27 @@ export default function Peoples() {
         return null;
     }
   };
-  const getCameraStreamAndSend = (pc: RTCPeerConnection) => {
-    if(!localVideoRef?.current?.srcObject){
-      navigator.mediaDevices.getUserMedia({ video: true,audio:true }).then((stream) => {
-        if(!localVideoRef?.current || stream.getTracks().length === 0) return;
-        localVideoRef.current.srcObject = stream;
-        localVideoRef.current.play();
-        console.log("Local description already set");
-        ownStream = stream;
-        // this is wrong, should propogate via a component
-        stream.getTracks().forEach((track) => {
-          console.error("track added");
-          console.log(track);
-          console.log(pc);
-          pc.addTrack(track, stream);
+  const getCameraStreamAndSend = async (pc: RTCPeerConnection) => {
+    try{  if(ownStream && ownStream.getTracks().length > 0 ){
+      console.log("using existing stream");
+        ownStream.getTracks().forEach((track) => {
+           pc.addTrack(track, ownStream);
         });
-      });
+        return ownStream;
+      }
+       console.log("Getting new stream");
+      const stream = await navigator.mediaDevices.getUserMedia({video:true,audio:true});
+      if(!localVideoRef?.current || stream.getTracks().length == 0) return null;
+      localVideoRef.current.srcObject = stream;
+      localVideoRef.current.play();
+      ownStream = stream;
+      stream.getTracks().forEach((track)=>{
+        pc.addTrack(track,stream);
+      })
+      return stream;
+    } catch (error) {
+      console.error("Erro getting media stream:", error);
+      return null;
     }
   }
 
@@ -152,7 +157,10 @@ export default function Peoples() {
       };
       // Get local stream
       peerConnection.ontrack = async event => {
-        if (!videoRef?.current) return;
+        if (!videoRef?.current) {
+          console.log("No video ref");
+          return;
+        }
         videoRef.current.srcObject = new MediaStream([event.track]);
         try {
           await videoRef.current.play();
@@ -164,12 +172,11 @@ export default function Peoples() {
 
       // Create the offer
       console.log('Creating offer');
-      peerConnection.onnegotiationneeded = async () => {
+      await getCameraStreamAndSend(peerConnection);
       const offer = await peerConnection.createOffer();
       console.log('Setting local description (offer)');
-      getCameraStreamAndSend(peerConnection);
       await peerConnection.setLocalDescription(offer);
-      if (offer) {
+      if (peerConnection.localDescription) {
         console.log('Sending offer to user:', to);
         socket.emit(
           'initiate-offer',
@@ -183,7 +190,6 @@ export default function Peoples() {
           peerConnection.localDescription
         );
       }
-      };
     } catch (error) {
       console.error('Error in create_Connection:', error);
       return null;
@@ -238,11 +244,10 @@ export default function Peoples() {
 
       // Handle incoming remote tracks
       peerConnection.ontrack = async event => {
-        if (!videoRef.current) {
+        if (!videoRef?.current) {
           console.log("No video ref");
           return;
         }
-        console.log("videoRef:", videoRef, "index:", index);
         videoRef.current.srcObject = new MediaStream([event.track]);
         try {
           await videoRef.current.play();
@@ -255,10 +260,10 @@ export default function Peoples() {
       // Process the remote offer first
       console.log('Setting remote description (offer)');
       await peerConnection.setRemoteDescription(sdp);
+      await getCameraStreamAndSend(peerConnection);
       console.log('Creating answer');
       const answer = await peerConnection.createAnswer();
       console.log('Setting local description (answer)');
-      getCameraStreamAndSend(peerConnection);
       await peerConnection.setLocalDescription(answer);
       console.log(answer);
       if (answer) {
@@ -296,7 +301,6 @@ export default function Peoples() {
 
       // Case 1: Joining an existing call with 0 people
       if (callCount.length === 0) {
-        console.log('Joining call with user:', callCount[0] || null);
         socket.emit('join-call', roomId, localStorage.getItem('userId'));
         setIsJoined(true);
         return;
@@ -307,7 +311,10 @@ export default function Peoples() {
       // Case 2: Joining a call with multiple people
       console.log('Joining call with multiple people:', callCount);
       for (const userId of callCount) {
-
+        if(userId === localStorage.getItem('userId')){
+          console.log("Skipping self");
+          continue;
+        }
         console.log('Creating connection with user:', userId);
         await createConnection({ to: userId });
       }
@@ -319,12 +326,18 @@ export default function Peoples() {
 
   async function handleEndCall() {
     try {
+      // Stop own stream if it exists
+      if (ownStream) {
+        ownStream.getTracks().forEach(track => track.stop());
+        ownStream = null;
+      }
+  
       // Close all peer connections
       p2pConnections.current.forEach(conn => {
         conn.instance.close();
       });
       p2pConnections.current = [];
-
+  
       // Clear all video elements
       if (localVideoRef.current) {
         const stream = localVideoRef.current.srcObject as MediaStream;
@@ -333,7 +346,7 @@ export default function Peoples() {
           localVideoRef.current.srcObject = null;
         }
       }
-
+  
       [videoRef1, videoRef2, videoRef3].forEach(ref => {
         if (ref.current) {
           const stream = ref.current.srcObject as MediaStream;
@@ -343,7 +356,7 @@ export default function Peoples() {
           }
         }
       });
-
+  
       // Tell the server the user has left the call
       socket.emit('leave-call', roomId, localStorage.getItem('userId'));
       setIsJoined(false);
@@ -374,15 +387,13 @@ export default function Peoples() {
     }
       console.log('Received answer from:', from);
       
-      let index ; 
-      if(p2pConnections.current.length === 1){
+      let index = p2pConnections.current.findIndex(conn => conn.withUserId === from);
+      if(index === -1 && p2pConnections.current.length === 1){
         index = 0;
         console.log("Setting withUserId to:", from);
         p2pConnections.current[0].withUserId = from;
-      }else{
-        index = p2pConnections.current.findIndex(conn => conn.withUserId === from);
       }
-      if (index === -1) {
+      if (index === -1  ) {
         console.error('Cannot find connection for user:', from);
         return;
       }
@@ -433,8 +444,10 @@ export default function Peoples() {
         conn.instance.close();
       });
       p2pConnections.current = [];
-
-      // Stop all media tracks
+      if (ownStream) {
+        ownStream.getTracks().forEach(track => track.stop());
+        ownStream = null;
+      }
       if (localVideoRef.current && localVideoRef.current.srcObject) {
         const stream = localVideoRef.current.srcObject as MediaStream;
         stream.getTracks().forEach(track => track.stop());
@@ -463,13 +476,7 @@ export default function Peoples() {
             autoPlay
             playsInline
             muted
-            onLoadedMetadata={async e => {
-              try {
-                await e.currentTarget.play();
-              } catch (err) {
-                console.error('Error playing local video on load:', err);
-              }
-            }}
+            
           ></video>
           <div className="text-center mt-1">You</div>
         </div>
@@ -479,13 +486,7 @@ export default function Peoples() {
             className="w-full h-full object-cover rounded-lg"
             autoPlay
             playsInline
-            onLoadedMetadata={async e => {
-              try {
-                await e.currentTarget.play();
-              } catch (err) {
-                console.error('Error playing video 1 on load:', err);
-              }
-            }}
+           
           ></video>
         </div>
         <div className="w-1/2 p-2">
@@ -494,13 +495,7 @@ export default function Peoples() {
             className="w-full h-full object-cover rounded-lg"
             autoPlay
             playsInline
-            onLoadedMetadata={async e => {
-              try {
-                await e.currentTarget.play();
-              } catch (err) {
-                console.error('Error playing video 2 on load:', err);
-              }
-            }}
+           
           ></video>
         </div>
         <div className="w-1/2 p-2">
@@ -509,13 +504,6 @@ export default function Peoples() {
             className="w-full h-full object-cover rounded-lg"
             autoPlay
             playsInline
-            onLoadedMetadata={async e => {
-              try {
-                await e.currentTarget.play();
-              } catch (err) {
-                console.error('Error playing video 3 on load:', err);
-              }
-            }}
           ></video>
         </div>
       </div>
