@@ -70,7 +70,7 @@ export default function SeasonBox({ tvId }: { tvId?: string | number }) {
           <div className="h-6 w-32 bg-slate-200 dark:bg-slate-800 rounded animate-pulse" />
         </div>
         <div className="flex flex-col gap-2 p-4">
-          {[1, 2, 3].map((i) => (
+          {[1, 2, 3,4,5,6].map((i) => (
             <div key={i} className="flex items-center gap-3">
               <div className="w-10 h-10 bg-slate-200 dark:bg-slate-800 rounded-lg animate-pulse" />
               <div className="flex-1">
