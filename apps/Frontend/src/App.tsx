@@ -31,7 +31,6 @@ export default function App() {
   const userInfoState = useRecoilValue(userInfo);
   const userId = userInfoState.id;
   const navigate = useNavigate();
-
   // Apply theme to document
 
   useEffect(() => {

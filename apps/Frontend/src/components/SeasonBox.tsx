@@ -25,7 +25,6 @@ interface ApiSeasonResponse {
 export default function SeasonBox({ tvId }: { tvId?: string | number }) {
   const [seasonInfo, setSeasonInfo] = useState<seasonType[]>();
   const [isLoading, setIsLoading] = useState(false);
-
   useEffect(() => {
     async function getSeriesDetails() {
       try {
