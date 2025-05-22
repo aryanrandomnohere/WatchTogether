@@ -98,6 +98,9 @@ export default function FullChat() {
       console.error('Error loading state:', error);
     }
   };
+  useEffect(() => {
+    handleLoadState();
+  },[]);
 
   useEffect(() => {
     notificationSound.current = new Audio('/sounds/notification.mp3');
@@ -119,9 +122,7 @@ export default function FullChat() {
   };
 
   // Fetch initial data only once
-  useEffect(() => {
-    handleLoadState();
-  });
+ 
 
   // Handle socket events (runs only once)
   useEffect(() => {

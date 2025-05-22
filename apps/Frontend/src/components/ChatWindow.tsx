@@ -14,6 +14,7 @@ enum ChatType {
 }
 export default function ChatWindow() {
   const Type = useRecoilValue(chatType);
+  console.log("chat window rerendered");
   return (
     <div className=" h-fit min-h-full">
       {Type === ChatType.CHATS ? (

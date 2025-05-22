@@ -48,11 +48,12 @@ interface User {
 export default function ChatBox({ messages }: { messages: Message[] }) {
   const chatContainerRef = useRef<HTMLDivElement | null>(null);
   useEffect(() => {
+    console.log("page rerendered");
     const chatContainer = chatContainerRef.current;
     if (!chatContainer) return;
     console.log(chatContainer.scrollHeight, chatContainer.clientHeight, chatContainer.scrollTop);
     const isAtBottom =
-      chatContainer.scrollHeight - chatContainer.clientHeight <= chatContainer.scrollTop + 90;
+      chatContainer.scrollHeight - chatContainer.clientHeight <= chatContainer.scrollTop ;
      console.log(isAtBottom);
     if (!isAtBottom) {
       chatContainer.scrollTop = chatContainer.scrollHeight;

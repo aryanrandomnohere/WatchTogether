@@ -2,10 +2,8 @@ import { useEffect, useRef, useState } from 'react';
 import { HiDesktopComputer } from 'react-icons/hi';
 import { TbArrowBarToLeft, TbArrowBarToRight } from 'react-icons/tb';
 import { useParams } from 'react-router-dom';
-
 import axios from 'axios';
 import { useRecoilState, useRecoilValue, useSetRecoilState } from 'recoil';
-
 import { isAuthenticatedState } from '../State/authState';
 import { epState } from '../State/epState';
 import { lefSideIsOpen } from '../State/leftRoomSpace';
@@ -13,8 +11,7 @@ import { controlledPlaying, nowPlaying, wasPlaying } from '../State/playingOnSta
 import { userInfo } from '../State/userState';
 import ChatWindow from '../components/ChatWindow';
 import Chatnav from '../components/Chatnav';
-// import AlertBox from '../ui/AlertBox';
-import RoomNav from '../components/RoomNav';
+import RoomNav from '../components/RoomNav'
 import SeasonBox from '../components/SeasonBox';
 import Series from '../components/Series';
 import getSocket from '../services/getSocket';
@@ -27,24 +24,6 @@ interface isPlayingType {
   animeId?: string | undefined;
 }
 
-interface mData {
-  adult: boolean;
-  title?: string;
-  backdrop_path: string;
-  first_air_date: string;
-  genre_ids: number[] | genreId[];
-  id: number;
-  media_type?: string;
-  name?: string;
-  origin_country?: string[] | originalCountry[];
-  original_language?: string;
-  original_name: string;
-  overview: string;
-  popularity: number;
-  poster_path: string;
-  vote_average: number;
-  vote_count: number;
-}
 
 export default function Room() {
   const setEp = useSetRecoilState(epState);
@@ -57,17 +36,12 @@ export default function Room() {
   const controlledInput = useSetRecoilState(controlledPlaying);
   const Info = useRecoilValue(userInfo);
   const { roomId } = useParams();
-  const [relatedShows, setRelatedShows] = useState<mData[]>([]);
-  const [isLoadingRelated, setIsLoadingRelated] = useState(false);
-  const [backgroundImage, setBackgroundImage] = useState<string>('');
   const [navIsOpen, setNavIsOpen] = useState(true);
-  const [screenShare, setScreenShare] = useState(true);
   const isPlaying: isPlayingType = playing ?? wasplaying ?? { id: '', title: '', type: 'Custom' };
   const videoRef = useRef<HTMLVideoElement>(null);
-
+  console.log("room rerendered");
   useEffect(() => {
     if (!roomId || !isAuthenticated) return;
-
     async function fetchRoomName() {
       const response = await axios.get(
         `${import.meta.env.VITE_BACKEND_APP_API_BASE_URL}/api/v1/room/getRoomName/${roomId}`,
@@ -82,7 +56,7 @@ export default function Room() {
     fetchRoomName();
 
     const handleReceivePlaying = (playing: {
-      playingId: string;
+      playingId: string; 
       playingTitle: string;
       playingType: string;
       playingAnimeId: string;
@@ -116,92 +90,8 @@ export default function Room() {
     };
   }, [roomId, Info]);
 
-  // Fetch related shows when the current show changes
-  useEffect(() => {
-    async function fetchRelatedShows() {
-      if (!isPlaying.id || !['Series', 'Movie'].includes(isPlaying.type)) return;
-
-      setIsLoadingRelated(true);
-      try {
-        const mediaType = isPlaying.type.toLowerCase();
-        const response = await axios.get(
-          `https://api.themoviedb.org/3/${mediaType}/${isPlaying.id}/similar`,
-          {
-            headers: {
-              accept: 'application/json',
-              Authorization: `Bearer eyJhbGciOiJIUzI1NiJ9.eyJhdWQiOiI0NzI5NmMxNjY1NWI1NGE1MzU0MTA4NzIyZWVmMjFhNSIsIm5iZiI6MTczMDkyMTU4My44NzM5OTk4LCJzdWIiOiI2NzJiYzQ2ZjQzM2M4MmVhMjY3ZWExNWEiLCJzY29wZXMiOlsiYXBpX3JlYWQiXSwidmVyc2lvbiI6MX0.T9tYHXZGv0OisrEbFuVodRU7ppPEKLvLAsKMbmJElkA`,
-            },
-          }
-        );
-
-        // Filter out shows without posters and limit to 6
-        const filteredShows = response.data.results
-          .filter((show: mData) => show.poster_path)
-          .slice(0, 6)
-          .map((show: mData) => ({
-            ...show,
-            media_type: mediaType,
-          }));
-
-        setRelatedShows(filteredShows);
-      } catch (error) {
-        console.error('Error fetching related shows:', error);
-      } finally {
-        setIsLoadingRelated(false);
-      }
-    }
-
-    fetchRelatedShows();
-  }, [isPlaying.id, isPlaying.type]);
-
-  // Fetch background image for the current show
-  useEffect(() => {
-    async function fetchBackgroundImage() {
-      if (!isPlaying.id || !['Series', 'Movie'].includes(isPlaying.type)) {
-        setBackgroundImage('');
-        return;
-      }
-
-      try {
-        const mediaType = isPlaying.type.toLowerCase();
-        const response = await axios.get(
-          `https://api.themoviedb.org/3/${mediaType}/${isPlaying.id}`,
-          {
-            headers: {
-              accept: 'application/json',
-              Authorization: `Bearer eyJhbGciOiJIUzI1NiJ9.eyJhdWQiOiI0NzI5NmMxNjY1NWI1NGE1MzU0MTA4NzIyZWVmMjFhNSIsIm5iZiI6MTczMDkyMTU4My44NzM5OTk4LCJzdWIiOiI2NzJiYzQ2ZjQzM2M4MmVhMjY3ZWExNWEiLCJzY29wZXMiOlsiYXBpX3JlYWQiXSwidmVyc2lvbiI6MX0.T9tYHXZGv0OisrEbFuVodRU7ppPEKLvLAsKMbmJElkA`,
-            },
-          }
-        );
-
-        if (response.data.backdrop_path) {
-          setBackgroundImage(`https://image.tmdb.org/t/p/original${response.data.backdrop_path}`);
-        } else {
-          setBackgroundImage('');
-        }
-      } catch (error) {
-        console.error('Error fetching background image:', error);
-        setBackgroundImage('');
-      }
-    }
-
-    fetchBackgroundImage();
-  }, [isPlaying.id, isPlaying.type]);
-
-
   return (
     <div className="bg-slate-200 dark:bg-gray-900 min-h-screen flex flex-col px-1 pt-4 items-start relative">
-      {/* Background Image */}
-      {backgroundImage && (
-        <div
-          className="absolute inset-0 z-0 bg-cover bg-center bg-no-repeat"
-          style={{
-            backgroundImage: `url(${backgroundImage})`,
-            filter: 'blur(8px) brightness(0.3)',
-          }}
-        ></div>
-      )}
-
       {/* Content */}
       <div className="relative z-10 w-full">
         <div className="sm:mt-10 mt-28"></div>

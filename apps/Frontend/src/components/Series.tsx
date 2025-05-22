@@ -180,31 +180,31 @@ function handleViewerTrackEvent(e: RTCTrackEvent) {
     }
   }, [id, roomId, Info.displayname, Info.username, lastTime, hasAccess]);
 
-  useEffect(() => {
-    if ((id && type === 'Anime') || type === 'AniMov') {
-      if (season_number > 1) {
-        const getDifferentSeasonLink = async () => {
-          try {
-            const result = await axios.get(
-              `/api/search?q=${animeId.replace(/-/g, ' ') + ' season ' + season_number}`
-            );
-            if (result.data[0]?.link_url) {
-              let newId = result.data[0]?.link_url?.split('-dub')[0];
-              if(newId.includes("-part-2")){
-                newId = newId.split("-part-2")[0];
-                setIsPart2(true);
-              }
-              setAnimeId(newId);
-            }
-          } catch (error) {
-            console.error('Error fetching season link:', error);
-          }
-        };
+  // useEffect(() => {
+  //   if ((id && type === 'Anime') || type === 'AniMov') {
+  //     if (season_number > 1) {
+  //       const getDifferentSeasonLink = async () => {
+  //         try {
+  //           const result = await axios.get(
+  //             `/api/search?q=${animeId.replace(/-/g, ' ') + ' season ' + season_number}`
+  //           );
+  //           if (result.data[0]?.link_url) {
+  //             let newId = result.data[0]?.link_url?.split('-dub')[0];
+  //             if(newId.includes("-part-2")){
+  //               newId = newId.split("-part-2")[0];
+  //               setIsPart2(true);
+  //             }
+  //             setAnimeId(newId);
+  //           }
+  //         } catch (error) {
+  //           console.error('Error fetching season link:', error);
+  //         }
+  //       };
 
-        getDifferentSeasonLink();
-      }
-    }
-  }, [animeId, season_number, type]);
+  //       getDifferentSeasonLink();
+  //     }
+  //   }
+  // }, [animeId, season_number, type]);
 
   const handleAccessClick = async () => {
     setHasAccess(true);
