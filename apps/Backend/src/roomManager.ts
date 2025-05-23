@@ -17,6 +17,7 @@ interface Call {
 interface screenShareType {
   screenShare: boolean;
   screenSharerId: string | undefined;
+  sdp?:RTCSessionDescriptionInit
 }
 
 interface roomInterface {

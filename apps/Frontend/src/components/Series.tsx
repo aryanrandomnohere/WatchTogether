@@ -1,14 +1,13 @@
 import { useEffect, useRef, useState } from 'react';
 import { useParams } from 'react-router-dom';
-
 import axios from 'axios';
 import {  useRecoilValue } from 'recoil';
-
 import { epState } from '../State/epState';
 import { lefSideIsOpen } from '../State/leftRoomSpace';
 import { userInfo } from '../State/userState';
 import getSocket from '../services/getSocket';
 import { screenShareState } from '../State/screenShareState';
+import ScreenShareWindow from './ScreenShareWindow';
 
 const socket = getSocket();
 
@@ -38,42 +37,6 @@ export default function Series({
   console.log(isPlaying,isPart2);
 
 
-  async function viewerInit() {
-    const peer = createViewerPeer();
-    peer.addTransceiver("video", { direction: "recvonly" })
-}
-
-function createViewerPeer() {
-    const peer = new RTCPeerConnection({
-        iceServers: [
-            {
-                urls: "stun:stun.stunprotocol.org"
-            }
-        ]
-    });
-    peer.ontrack = handleViewerTrackEvent;
-    peer.onnegotiationneeded = () => handleViewerNegotiationNeededEvent(peer);
-
-    return peer;
-}
-
-async function handleViewerNegotiationNeededEvent(peer: RTCPeerConnection) {
-    const offer = await peer.createOffer();
-    await peer.setLocalDescription(offer);
-    const payload = {
-        sdp: peer.localDescription
-    };
-
-    const { data } = await axios.post('/consumer', payload);
-    const desc = new RTCSessionDescription(data.sdp);
-    peer.setRemoteDescription(desc).catch(e => console.log(e));
-}
-
-function handleViewerTrackEvent(e: RTCTrackEvent) {
-    if (videoRef.current) {
-        videoRef.current.srcObject = e.streams[0];
-    }
-};
 
 
   useEffect(() => {
@@ -230,22 +193,23 @@ function handleViewerTrackEvent(e: RTCTrackEvent) {
   };
 
   // If screenShare is true, show the ScreenShare component
-  if (screenShare.screenShare) {
-    if(screenShare.screenSharerId === Info.id){
+  if (!screenShare.screenShare || screenShare.screenShare) {
+    if(screenShare.screenSharerId != Info.id || screenShare.screenSharerId === Info.id ){
     return (
-      <div className="screen-share-container">
-        <video  className="w-full h-full" autoPlay playsInline ref={screenShareRef} />
-      </div>
+      <ScreenShareWindow/>
     );
-  }else if(!screenShareRef.current){
-    return (
-      <div onClick={viewerInit} className="screen-share-container">
-        <div className="my-button bg-slate-300 dark:bg-slate-600 text-slate-800 dark:text-white p-1.5 hover:cursor-pointer flex text-sm justify-center items-center gap-2 hover:bg-slate-400 dark:hover:bg-slate-800">
-          Get Access to the Video
-        </div>
-      </div>
-    );
-  } else {
+  }
+  // else
+  //  if(!screenShareRef.current){
+  //   return (
+  //     <div onClick={viewerInit} className="screen-share-container">
+  //       <div className="my-button bg-slate-300 dark:bg-slate-600 text-slate-800 dark:text-white p-1.5 hover:cursor-pointer flex text-sm justify-center items-center gap-2 hover:bg-slate-400 dark:hover:bg-slate-800">
+  //         Get Access to the Video
+  //       </div>
+  //     </div>
+  //   );
+  // }
+  else {
     return (
       <div className="screen-share-container">
         <video  className="w-full h-full" autoPlay playsInline ref={screenShareRef} />

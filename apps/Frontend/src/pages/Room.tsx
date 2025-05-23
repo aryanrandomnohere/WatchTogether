@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { HiDesktopComputer } from 'react-icons/hi';
 import { TbArrowBarToLeft, TbArrowBarToRight } from 'react-icons/tb';
 import { useParams } from 'react-router-dom';
@@ -38,7 +38,6 @@ export default function Room() {
   const { roomId } = useParams();
   const [navIsOpen, setNavIsOpen] = useState(true);
   const isPlaying: isPlayingType = playing ?? wasplaying ?? { id: '', title: '', type: 'Custom' };
-  const videoRef = useRef<HTMLVideoElement>(null);
   console.log("room rerendered");
   useEffect(() => {
     if (!roomId || !isAuthenticated) return;
@@ -102,7 +101,6 @@ export default function Room() {
             isOpen={isOpen}
             roomName={roomName}
             roomId={roomId}
-            videoRef={videoRef}
           />
         ) : (
           <div className="sm:mt-10 mt-28" onClick={() => setNavIsOpen(!navIsOpen)}>
@@ -118,7 +116,7 @@ export default function Room() {
             } flex-shrink-0 transition-all duration-300 ease-in-out overflow-hidden`}
           >
             {['Series', 'Anime', 'AnimeUrl'].includes(isPlaying.type) && (
-              <SeasonBox tvId={isPlaying.id} />
+              <SeasonBox isPlaying={isPlaying} tvId={isPlaying.id} />
             )}
           </div>
 
@@ -129,7 +127,6 @@ export default function Room() {
                 className={`flex items-center justify-center w-full ${!chatIsOpen && !isOpen ? 'h-full' : 'h-[44rem]'} overflow-hidden`}
               >
                 <Series
-                  screenShareRef={videoRef}
                   id={isPlaying.id}
                   type={isPlaying.type}
                   title={isPlaying.title}
