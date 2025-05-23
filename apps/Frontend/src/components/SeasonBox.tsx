@@ -21,8 +21,14 @@ interface ApiSeasonResponse {
   vote_average: string;
   season_number: string;
 }
+interface isPlayingType {
+  id: number | string;
+  title: string | undefined;
+  type: string;
+  animeId?: string | undefined;
+}
 
-export default function SeasonBox({ tvId }: { tvId?: string | number }) {
+export default function SeasonBox({ tvId, isPlaying }: { tvId?: string | number, isPlaying:isPlayingType}) {
   const [seasonInfo, setSeasonInfo] = useState<seasonType[]>();
   const [isLoading, setIsLoading] = useState(false);
   useEffect(() => {
@@ -56,7 +62,7 @@ export default function SeasonBox({ tvId }: { tvId?: string | number }) {
       }
     }
     getSeriesDetails();
-  }, [tvId]);
+  }, [tvId, isPlaying]);
 
   if (isLoading || !seasonInfo)
     return (

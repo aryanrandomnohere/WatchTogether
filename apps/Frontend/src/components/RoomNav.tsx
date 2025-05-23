@@ -7,11 +7,7 @@ import AlertBox from '../ui/AlertBox';
 import Modal from '../ui/Modal';
 import ChangeVideo from './ChangeVideo';
 import InviteLinkModal from './InviteLinkModal';
-import { useRecoilState, useRecoilValue } from 'recoil';
-import { screenShareState } from '../State/screenShareState';
-import getSocket from '../services/getSocket';
-import { userInfo } from '../State/userState';
-import { useEffect } from 'react';
+
 
 interface isPlayingType {
   id: number | string;
@@ -20,86 +16,21 @@ interface isPlayingType {
   animeId?: string | undefined;
 }
 
-interface screenShareType {
-  screenShare: boolean;
-  screenSharerId: string | undefined;
-}
+
 export default function RoomNav({
   isPlaying,
   setIsOpen,
   isOpen,
   roomName,
   roomId,
-  videoRef,
 }: {
   isPlaying: isPlayingType;
   setIsOpen: (isOpen: boolean) => void;
   isOpen: boolean;
   roomName: string;
   roomId: string | undefined;
-  videoRef: React.RefObject<HTMLVideoElement>;
 }) {
-  const [screenShare, setScreenShare] = useRecoilState(screenShareState);
-  const Info = useRecoilValue(userInfo);
 
-
-
-async function screenShareInit() {
-  const stream = await navigator.mediaDevices.getDisplayMedia({
-    video: {
-      width: { ideal: 1280 },
-      height: { ideal: 720 },
-      frameRate: { ideal: 60, max: 60 }
-    }
-  });
-    if (videoRef.current) {
-        videoRef.current.srcObject = stream;
-        videoRef.current.play();
-    }
-    const peer = createPeer();
-    stream.getTracks().forEach(track => peer.addTrack(track, stream));
-    setScreenShare({
-      screenShare: true,
-      screenSharerId: localStorage.getItem('userId') || undefined
-    });
-    getSocket().emit('screen-share', localStorage.getItem('userId') || Info.id, roomId);
-}
-
-
-function createPeer() {
-    const peer = new RTCPeerConnection({
-        iceServers: [
-            {
-                urls: "stun:stun.stunprotocol.org"
-            }
-        ]
-    });
-    peer.onnegotiationneeded = () => handleNegotiationNeededEvent(peer);
-
-    return peer;
-}
-
-async function handleNegotiationNeededEvent(peer: RTCPeerConnection) {
-    const offer = await peer.createOffer();
-    await peer.setLocalDescription(offer);
-    const payload = {
-        sdp: peer.localDescription
-    };
-
-    const { data } = await axios.post('/broadcast', payload);
-    const desc = new RTCSessionDescription(data.sdp);
-    peer.setRemoteDescription(desc).catch(e => console.log(e));
-}
-
-useEffect(() => {
-  getSocket().on('screen-share', (screenShare: screenShareType) => {
-    setScreenShare(screenShare);
-  });
-
-  return () => {
-    getSocket().off('screen-share');
-  };
-});
 
 
   return (
@@ -130,18 +61,7 @@ useEffect(() => {
             </Modal.window>
           </Modal>
         </div>
-        { !screenShare.screenShare ? <div onClick={screenShareInit} className="my-button bg-slate-300 dark:bg-slate-600 text-slate-800 dark:text-white p-1.5 hover:cursor-pointer flex text-sm justify-center items-center gap-2 hover:bg-slate-400 dark:hover:bg-slate-800">
-          <MdScreenShare className="sm:text-xl"  />
-          Screen Share
-        </div> : screenShare.screenSharerId === localStorage.getItem('userId') ? <div  className="my-button bg-slate-300 dark:bg-red-600 text-slate-800 dark:text-white p-1.5 hover:cursor-pointer flex text-sm justify-center items-center gap-2 hover:bg-slate-400 dark:hover:bg-slate-800">
-          <MdScreenShare className="sm:text-xl"  />
-          Stop Screen Share
-        </div>:
-        <div className="my-button bg-slate-300 dark:bg-slate-600 text-slate-800 dark:text-white p-1.5 hover:cursor-pointer flex text-sm justify-center items-center gap-2 hover:bg-slate-400 dark:hover:bg-slate-800">
-          <MdScreenShare className="sm:text-xl"  />
-          Currently Sharing
-        </div>
-        }
+       
       </div>
       <div className="sm:text-lg font-bold text-slate-800 dark:text-white">{roomName}</div>
       <AlertBox>

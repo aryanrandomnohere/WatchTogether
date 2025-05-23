@@ -103,7 +103,7 @@ export default function FullChat() {
   },[]);
 
   useEffect(() => {
-    notificationSound.current = new Audio('/sounds/notification.mp3');
+    notificationSound.current = new Audio('../assets/sounds/1.mp3');
   }, []);
 
   const handleReceiveMessage = (message: Message) => {
