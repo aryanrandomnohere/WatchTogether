@@ -70,7 +70,7 @@ export default function ScreenShareWindow() {
         peer.onicecandidate = (event) => {
             if (event.candidate) {
                 // Fixed: Use correct event name and type for consumer
-                socket.emit("client-ice-candidate", "consumer", event.candidate);
+                socket.emit("client-ice-candidate", "consumer",roomId, event.candidate);
             }
         };
         
@@ -148,7 +148,7 @@ export default function ScreenShareWindow() {
         peer.onicecandidate = (event) => {
             if (event.candidate) {
                 // Fixed: Use correct event name and type for broadcaster
-                socket.emit("client-ice-candidate", "broadcaster", event.candidate);
+                socket.emit("client-ice-candidate", "broadcaster",roomId, event.candidate);
             }
         };
         

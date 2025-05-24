@@ -32,7 +32,7 @@ export default function Chats({
         `}
         style={{ wordBreak: 'break-word' }}
       >
-        <div className="flex justify-between items-center mb-0.5">
+        <div className="flex justify-between items-center gap-2 mb-0.5">
           <span className={`font-semibold text-[0.85rem] ${isCurrentUser ? 'text-white/80' : 'text-slate-700 dark:text-slate-300'}`}>{chat.displayname}</span>
           <MsgAction chatId={chat.id} message={chat.message} displayname={chat.displayname} />
         </div>
