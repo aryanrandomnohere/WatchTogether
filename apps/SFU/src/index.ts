@@ -2,8 +2,9 @@
 import { Server } from "socket.io";
 import wrtc from '@koush/wrtc';
 import http from "http";
+import { SsManager } from "./SsManager.js";
 
-const { RTCPeerConnection, RTCSessionDescription } = wrtc;
+const { RTCPeerConnection, RTCSessionDescription, RTCIceCandidate } = wrtc;
 
 const server = http.createServer();
 const io = new Server(server, {
@@ -12,10 +13,10 @@ const io = new Server(server, {
     methods: ["GET", "POST"],
   },
 });
-
-let senderStream: MediaStream;
-let peer1: RTCPeerConnection | null;
-let peer2: RTCPeerConnection | null;
+enum deleteType {
+  FULL,
+  CONSUMER
+}
 
 io.on("connection", (socket) => {
   if(!socket.handshake.query['userId']) return;
@@ -33,79 +34,104 @@ io.on("connection", (socket) => {
   };
 
   socket.on('/consumer', async (sdp, roomId, userId) => {
-    peer2 = new RTCPeerConnection({
+     const consumer =  SsManager.getInstance().addConsumer(socket.id,roomId,userId,new RTCPeerConnection({
       iceServers: [{ urls: 'stun:stun.l.google.com:19302' }],
-    });
-
-    const desc = new RTCSessionDescription(sdp);
-    await peer2.setRemoteDescription(desc);
-    
-    if (senderStream && peer2) {
-      const tracks = senderStream.getTracks();
-      console.log('Adding tracks to consumer:', tracks.map(track => ({
-        kind: track.kind,
-        enabled: track.enabled,
-        muted: track.muted
-      })));
-      
-      for (const track of tracks) {
-        peer2.addTrack(track, senderStream);
-      }
+    }))
+    const broadcaster = SsManager.getInstance().getBraodcaster(roomId);
+    if (!consumer || !broadcaster) {
+      console.log("Consumer or broadcaster not found");
+      return;
     }
-
-    const answer = await peer2.createAnswer();
-    await peer2.setLocalDescription(answer);
-    
-    peer2.onicecandidate = (event) => {
+    consumer.onicecandidate = (event) => {
       if (event.candidate) {
         sendIceCandidate({ to: userId, candidate: event.candidate });
       }
     };
+
+    const desc = new RTCSessionDescription(sdp);
+    await consumer.setRemoteDescription(desc);
+    
+    if (broadcaster.stream) {
+      const tracks = broadcaster.stream.getTracks();
+      console.log('Adding tracks to consumer:',tracks.length);
+      
+      for (const track of tracks) {
+        consumer.addTrack(track, broadcaster.stream);
+      }
+    }
+
+    const answer = await consumer.createAnswer();
+    await consumer.setLocalDescription(answer);
+    
+   
     
     io.to(userId.toString()).emit("ss-answer", { answer });
   });
 
   // Broadcast endpoint
   socket.on('/broadcast', async (sdp: RTCSessionDescriptionInit, roomId: string, userId: string) => {
-    console.log("Offer created by server")
-    peer1 = new RTCPeerConnection({
-      iceServers: [{ urls: 'stun:stun.l.google.com:19302' }],
-    });
-
-    peer1.ontrack = (event) => {
-      senderStream = event.streams[0];
+    const broadcaster  = SsManager.getInstance().addBroadcaster(
+      socket.id,
+      roomId,
+      userId,
+      new RTCPeerConnection({
+        iceServers: [{ urls: 'stun:stun.l.google.com:19302' }]
+      })
+    );
+    if(!broadcaster || !broadcaster.peer){
+      console.log("Failed to create broadcaster");
+      return;
+    }
+      broadcaster.peer.ontrack = (event) => {
+      console.log("Received track from broadcaster:", event.track.kind);
+      const stream = event.streams[0];
+      broadcaster.stream = stream;
+      SsManager.getInstance().updateBroadcasterStream(roomId, stream);
+      console.log(broadcaster.stream);
       console.log('Received tracks from broadcaster:', 
-        event.streams[0].getTracks().map(track => ({
+        broadcaster.stream.getTracks().map(track => ({
           kind: track.kind,
           enabled: track.enabled,
           muted: track.muted
         }))
       );
     };
-
-    const desc = new RTCSessionDescription(sdp);
-    await peer1.setRemoteDescription(desc);
-    
-    peer1.onicecandidate = event => {
+ 
+    broadcaster.peer.onicecandidate = event => {
       if (event.candidate) {
         console.log("Broadcaster's ice candidate generated:", event.candidate)
         sendIceCandidate({ to: userId, candidate: event.candidate });
       }
     };
+    const desc = new RTCSessionDescription(sdp);
+    await broadcaster.peer.setRemoteDescription(desc);
+   
     
-    const answer = await peer1.createAnswer();
-    await peer1.setLocalDescription(answer);
-    console.log("Sending answer to client:", userId);
+    const answer = await broadcaster.peer.createAnswer();
+    await broadcaster.peer.setLocalDescription(answer);
+    console.log("Sending answer to broadcaster:", userId);
     io.to(userId).emit("ss-answer", { answer });
   });
 
-  socket.on("client-ice-candidate", (type: string, candidate: RTCIceCandidate) => {
+  socket.on("client-ice-candidate", (type: string,roomId:string, candidate: RTCIceCandidate) => {
+    const consumer = SsManager.getInstance().getConsumer(socket.id,roomId);
+    const broadcaster = SsManager.getInstance().getBraodcaster(roomId);
+    if(!consumer || !broadcaster || !broadcaster.peer) return
     if (type === "broadcaster") {
-      peer1?.addIceCandidate(candidate);  
+      broadcaster?.peer?.addIceCandidate(new RTCIceCandidate(candidate));  
     } else {
-      peer2?.addIceCandidate(candidate);
+      consumer?.addIceCandidate(new RTCIceCandidate(candidate));
     }
   });
+  socket.on("disconnect",()=>{
+  const deleteResult = SsManager.getInstance().handleDisconnection(socket.id)
+  if(deleteResult === deleteType.FULL){
+    console.log("Room deleted due to broadcaster disconnect");
+    // Notify remaining clients if needed
+  } else if (deleteResult === deleteType.CONSUMER) {
+    console.log("Consumer removed from room");
+  }
+  })
 });
 
 // Start server
