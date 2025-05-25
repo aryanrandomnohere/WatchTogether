@@ -11,7 +11,6 @@ import p2pEvents from "./Events/p2pEvents.js";
 import { roomManager } from "./roomManager.js";
 import { UserManager } from "./UserManager.js";
 import { prisma } from "./db.js";
-import { log } from "console";
 const app = express();
 
 app.use(
@@ -79,7 +78,6 @@ io.on("connection", (socket) => {
     );
   });
   socket.on("leave-room", async (roomId: string) => {
-    console.log("Component unmounted leave-room called");
     roomManager.getInstance().removeSubscriber(roomId, socket.id);
     if (roomManager.getInstance().getRoomTotal(roomId) === 0) {
       const lastRoomState = roomManager.getInstance().unsubscribe(roomId);

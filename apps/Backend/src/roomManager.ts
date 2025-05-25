@@ -15,9 +15,8 @@ interface Call {
 }
 
 interface screenShareType {
-  screenShare: boolean;
+  status: boolean;
   screenSharerId: string | undefined;
-  sdp?:RTCSessionDescriptionInit
 }
 
 interface roomInterface {
@@ -48,7 +47,7 @@ export class roomManager {
           people: new Set(),
         },
         screenShare: {
-          screenShare: false,
+          status: false,
           screenSharerId: undefined,
         },
       });
@@ -79,7 +78,6 @@ export class roomManager {
       }
     }
     room.subscribers.delete(socketId);
-    console.log(room.inCall.people);
     return;
   }
 
@@ -92,7 +90,7 @@ export class roomManager {
         room.inCall.people.delete(userId);
         room.inCall.people.delete('');
       if(room.screenShare.screenSharerId === userId) room.screenShare = {
-        screenShare: false,
+        status: false,
         screenSharerId: undefined,
       }
 
@@ -100,7 +98,7 @@ export class roomManager {
     }
       room.subscribers.delete(socketId);
       room.inCall.people.delete('');
-      console.log(room.inCall.people);
+      console.log(room.subscribers);
       return roomId;
     }
   }
@@ -143,7 +141,7 @@ export class roomManager {
     if (!room) return;
     if(!room.screenShare){
       room.screenShare = {
-        screenShare: true,
+        status: true,
         screenSharerId: bywhomId,
       };
     }
@@ -153,7 +151,7 @@ export class roomManager {
     const room = this.rooms.get(roomId);
     if (!room) return;
     room.screenShare = {
-      screenShare: false,
+      status: false,
       screenSharerId: undefined,
     };
   }

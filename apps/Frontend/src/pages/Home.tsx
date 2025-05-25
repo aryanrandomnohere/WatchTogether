@@ -120,15 +120,15 @@ export default function Home() {
         <SlideShow />
       </div>
 
-      {popular && <ShowsList title="Popular Movies" shows={popular?.slice(0, 11)} />}
-      {popularSeries && <ShowsList title="Popular Series" shows={popularSeries?.slice(0, 11)} />}
+      {popular && <ShowsList title="Popular Movies" shows={popular?.slice(0, 12)} />}
+      {popularSeries && <ShowsList title="Popular Series" shows={popularSeries?.slice(0, 12)} />}
       <div className=" h-screen flex flex-col  pl-2 w-full ">
-        <ShowsList title="Recently Watched" shows={recentlywatched?.slice(0, 11)} />
+        <ShowsList title="Recently Watched" shows={recentlywatched?.slice(0, 12)} />
       </div>
 
       {favourites && favourites?.length > 0 && (
         <div className="h-screen flex flex-col  pl-2 w-full ">
-          <ShowsList title="Favourites" shows={favourites?.slice(0, 11)} />
+          <ShowsList title="Favourites" shows={favourites?.slice(0, 12)} />
         </div>
       )}
     </div>
