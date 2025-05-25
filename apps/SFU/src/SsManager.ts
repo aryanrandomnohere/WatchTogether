@@ -100,6 +100,13 @@ if(room){
 }
 return deleteType.CONSUMER;
 }
+public getRoom(roomId:string){
+    const room = this.roomPeerTrack.get(roomId)
+    if(room){
+        return room;
+    }
+    return null;
+}
 
 public handleDisconnection(socketId: string): deleteType | undefined {
     for (const [roomId, room] of this.roomPeerTrack.entries()) {

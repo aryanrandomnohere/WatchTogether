@@ -5,7 +5,6 @@ import http from "http";
 import { SsManager } from "./SsManager.js";
 
 const { RTCPeerConnection, RTCSessionDescription, RTCIceCandidate } = wrtc;
-
 const server = http.createServer();
 const io = new Server(server, {
   cors: {
@@ -19,8 +18,12 @@ enum deleteType {
 }
 
 io.on("connection", (socket) => {
-  if(!socket.handshake.query['userId']) return;
-  console.log(socket.handshake.query["userId"]);
+  console.log("Connection made");
+  if(!socket.handshake.query['userId']){
+    console.log("UserId is not passed with the connection string ");
+    return;
+  }
+  console.log(socket.handshake.query['userId']);
   socket.join(socket.handshake.query['userId'].toString());
   const sendIceCandidate = ({
     to,
@@ -29,11 +32,11 @@ io.on("connection", (socket) => {
     to: string;
     candidate: RTCIceCandidate;
   }) => {
-    console.log('Sending ICE candidate to:', to);
+    // console.log('Sending ICE candidate to:', to);
     io.to(to.toString()).emit('server-ice-candidate', { candidate });
   };
 
-  socket.on('/consumer', async (sdp, roomId, userId) => {
+  socket.on('consumer', async (sdp, roomId, userId) => {
      const consumer =  SsManager.getInstance().addConsumer(socket.id,roomId,userId,new RTCPeerConnection({
       iceServers: [{ urls: 'stun:stun.l.google.com:19302' }],
     }))
@@ -42,6 +45,8 @@ io.on("connection", (socket) => {
       console.log("Consumer or broadcaster not found");
       return;
     }
+    console.log(consumer,broadcaster)
+    console.log(SsManager.getInstance().getRoom(roomId))
     consumer.onicecandidate = (event) => {
       if (event.candidate) {
         sendIceCandidate({ to: userId, candidate: event.candidate });
@@ -53,11 +58,20 @@ io.on("connection", (socket) => {
     
     if (broadcaster.stream) {
       const tracks = broadcaster.stream.getTracks();
-      console.log('Adding tracks to consumer:',tracks.length);
+      console.log('Adding tracks to consumer:', tracks.length);
+      console.log('Track details:', tracks.map(track => ({
+        kind: track.kind,
+        enabled: track.enabled,
+        muted: track.muted,
+        readyState: track.readyState
+      })));
       
       for (const track of tracks) {
+        console.log('Adding track to consumer:', track.kind);
         consumer.addTrack(track, broadcaster.stream);
       }
+    } else {
+      console.log('No broadcaster stream available');
     }
 
     const answer = await consumer.createAnswer();
@@ -69,7 +83,8 @@ io.on("connection", (socket) => {
   });
 
   // Broadcast endpoint
-  socket.on('/broadcast', async (sdp: RTCSessionDescriptionInit, roomId: string, userId: string) => {
+  socket.on('broadcast', async (sdp: RTCSessionDescriptionInit, roomId: string, userId: string) => {
+    console.log("Hit")
     const broadcaster  = SsManager.getInstance().addBroadcaster(
       socket.id,
       roomId,
@@ -83,11 +98,9 @@ io.on("connection", (socket) => {
       return;
     }
       broadcaster.peer.ontrack = (event) => {
-      console.log("Received track from broadcaster:", event.track.kind);
       const stream = event.streams[0];
       broadcaster.stream = stream;
       SsManager.getInstance().updateBroadcasterStream(roomId, stream);
-      console.log(broadcaster.stream);
       console.log('Received tracks from broadcaster:', 
         broadcaster.stream.getTracks().map(track => ({
           kind: track.kind,
@@ -99,10 +112,9 @@ io.on("connection", (socket) => {
  
     broadcaster.peer.onicecandidate = event => {
       if (event.candidate) {
-        console.log("Broadcaster's ice candidate generated:", event.candidate)
         sendIceCandidate({ to: userId, candidate: event.candidate });
       }
-    };
+    }; 
     const desc = new RTCSessionDescription(sdp);
     await broadcaster.peer.setRemoteDescription(desc);
    
@@ -114,12 +126,16 @@ io.on("connection", (socket) => {
   });
 
   socket.on("client-ice-candidate", (type: string,roomId:string, candidate: RTCIceCandidate) => {
+    // console.log("Received Ice candidate from:",type,candidate)
     const consumer = SsManager.getInstance().getConsumer(socket.id,roomId);
     const broadcaster = SsManager.getInstance().getBraodcaster(roomId);
     if(!consumer || !broadcaster || !broadcaster.peer) return
+    console.log(consumer, broadcaster);
     if (type === "broadcaster") {
+      console.log("BroadCaster sent his ice candidates")
       broadcaster?.peer?.addIceCandidate(new RTCIceCandidate(candidate));  
     } else {
+      console.log("consumer sent his ice candidates")
       consumer?.addIceCandidate(new RTCIceCandidate(candidate));
     }
   });
@@ -135,6 +151,6 @@ io.on("connection", (socket) => {
 });
 
 // Start server
-server.listen(5002, () => {
-  console.log('Server running on port 5002');
+server.listen(5003, () => {
+  console.log('Server running on port 5003');
 });
