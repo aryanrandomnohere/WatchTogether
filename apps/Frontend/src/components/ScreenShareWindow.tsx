@@ -7,19 +7,20 @@ import { useEffect, useRef, useState } from "react";
 import { userInfo } from "../State/userState";
 import { useParams } from "react-router-dom";
 import getSsSocket from "../services/getSsSocket";
+import toast from "react-hot-toast";
 interface screenShareType {
-    screenShare: boolean;
+    status: boolean;
     screenSharerId: string | undefined;
 }
 
 let peer: RTCPeerConnection | null;
 const socket = getSsSocket()
-
 export default function ScreenShareWindow() {
     const [screenShare, setScreenShare] = useRecoilState(screenShareState);
     const videoRef = useRef<HTMLVideoElement | null>(null);
     const containerRef = useRef<HTMLDivElement | null>(null);
     const [isFullscreen, setIsFullscreen] = useState(false);
+    const [isViewing,setIsViewing] = useState(false)
     const Info = useRecoilValue(userInfo);
     const { roomId } = useParams();
 
@@ -40,30 +41,58 @@ export default function ScreenShareWindow() {
         }
     });
 
+    getSocket().on("screen-share",(updatedState:screenShareType)=>{
+        setScreenShare(updatedState)
+    })
+    getSocket().on("stop-screen-share",(updatedState:screenShareType)=>{
+        toast.success("Screen Share Ended")
+        setScreenShare(updatedState)
+        setIsViewing(false);
+        if (videoRef.current?.srcObject) {
+            const tracks = (videoRef.current.srcObject as MediaStream).getTracks();
+            tracks.forEach(track => track.stop());
+          }
+        
+          // Clear the video element
+          videoRef.current!.srcObject = null;
+        
+          // Close and nullify peer
+          if (peer) {
+            peer.ontrack = null;
+            peer.onicecandidate = null;
+            peer.onconnectionstatechange = null;
+            peer.close();
+            peer = null; // <== if you're using `let peer`
+          }
+    })
+
     // NEW: Handle renegotiation from server
-    socket.on("ss-renegotiate", async ({ offer }: { offer: RTCSessionDescription }) => {
-        console.log("Renegotiation offer received");
-        if (peer) {
-            try {
-                await peer.setRemoteDescription(new RTCSessionDescription(offer));
-                const answer = await peer.createAnswer();
-                await peer.setLocalDescription(answer);
-                socket.emit("ss-renegotiate-answer", answer, roomId);
-                console.log("Renegotiation answer sent");
-            } catch (error) {
-                console.error("Error handling renegotiation:", error);
-            }
-        }
-    });
+    // socket.on("ss-renegotiate", async ({ offer }: { offer: RTCSessionDescription }) => {
+    //     console.log("Renegotiation offer received");
+    //     if (peer) {
+    //         try {
+    //             await peer.setRemoteDescription(new RTCSessionDescription(offer));
+    //             const answer = await peer.createAnswer();
+    //             await peer.setLocalDescription(answer);
+    //             socket.emit("ss-renegotiate-answer", answer, roomId);
+    //             console.log("Renegotiation answer sent");
+    //         } catch (error) {
+    //             console.error("Error handling renegotiation:", error);
+    //         }
+    //     }
+    // });
 
     return () => {
         socket.off("server-ice-candidate");
         socket.off("ss-answer");
-        socket.off("ss-renegotiate"); // Clean up new listener
+        getSocket().off("screen-share");
+        getSocket().off("stop-screen-share")
+        // socket.off("ss-renegotiate"); // Clean up new listener
     }
 }, [])
 
     async function viewerInit() {
+        setIsViewing(true);
         peer = createViewerPeer();
         peer.addTransceiver("video", { direction: "recvonly" })
     }
@@ -169,7 +198,7 @@ export default function ScreenShareWindow() {
             const peer = createPeer();
             stream.getTracks().forEach(track => peer.addTrack(track, stream));
             setScreenShare({
-                screenShare: true,
+                status: true,
                 screenSharerId: localStorage.getItem('userId') || undefined
             });
             getSocket().emit('screen-share', localStorage.getItem('userId') || Info.id, roomId);
@@ -179,7 +208,7 @@ export default function ScreenShareWindow() {
                     videoRef.current.srcObject = null;
                 }
                 setScreenShare({
-                    screenShare: false,
+                    status: false,
                     screenSharerId: undefined
                 });
                 getSocket().emit('stop-screen-share', roomId);
@@ -249,6 +278,49 @@ export default function ScreenShareWindow() {
         }
     };
 
+    function handleEndScreenShare(){
+        getSocket().emit("stop-screen-share",roomId, localStorage.getItem('userId') || Info.id)
+        setScreenShare({screenSharerId:undefined,status:false})
+        toast.success("Screen Share ended")
+        if (videoRef.current?.srcObject) {
+            const tracks = (videoRef.current.srcObject as MediaStream).getTracks();
+            tracks.forEach(track => track.stop());
+          }
+        
+          // Clear the video element
+          videoRef.current!.srcObject = null;
+        
+          // Close and nullify peer
+          if (peer) {
+            peer.ontrack = null;
+            peer.onicecandidate = null;
+            peer.onconnectionstatechange = null;
+            peer.close();
+            peer = null; // <== if you're using `let peer`
+          }
+    }
+
+    function handleLeaveScreenShare(){
+         setIsViewing(false);
+         if (videoRef.current?.srcObject) {
+            const tracks = (videoRef.current.srcObject as MediaStream).getTracks();
+            tracks.forEach(track => track.stop());
+          }
+        
+          // Clear the video element
+          videoRef.current!.srcObject = null;
+        
+          // Close and nullify peer
+          if (peer) {
+            peer.ontrack = null;
+            peer.onicecandidate = null;
+            peer.onconnectionstatechange = null;
+            peer.close();
+            peer = null; // <== if you're using `let peer`
+          }
+        toast.success("Leaved room successfully")
+    }
+
     useEffect(() => {
         const handleFullscreenChange = () => {
             setIsFullscreen(!!document.fullscreenElement);
@@ -281,7 +353,7 @@ export default function ScreenShareWindow() {
                 style={{ backgroundColor: 'black' }}
             />
             {/* Add overlay message if video isn't playing */}
-            {screenShare.screenShare && screenShare.screenSharerId !== localStorage.getItem('userId') && (
+            {screenShare.status && screenShare.screenSharerId !== localStorage.getItem('userId') && (
                 <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
                     <div className="bg-black/50 text-white px-4 py-2 rounded-lg text-sm">
                         Click to play if video doesn't start automatically
@@ -289,7 +361,27 @@ export default function ScreenShareWindow() {
                 </div>
             )}
             <div className="absolute bottom-4 right-4 flex gap-2">
-                {screenShare.screenShare && (
+               
+                {!screenShare.status ? (
+                    <div onClick={screenShareInit} className="my-button bg-slate-300 dark:bg-slate-600 text-slate-800 dark:text-white p-1.5 hover:cursor-pointer flex text-sm justify-center items-center gap-2 hover:bg-slate-400 dark:hover:bg-slate-800">
+                        <MdScreenShare className="sm:text-xl" />
+                        Screen Share
+                    </div>
+                ) : screenShare.screenSharerId === localStorage.getItem('userId') ? (
+                    <div onClick={handleEndScreenShare} className="my-button bg-slate-300 dark:bg-red-600 text-slate-800 dark:text-white p-1.5 hover:cursor-pointer flex text-sm justify-center items-center gap-2 hover:bg-slate-400 dark:hover:bg-slate-800">
+                        <MdScreenShare className="sm:text-xl" />
+                        Stop Screen Share
+                    </div>
+                ) : isViewing ? ( <div onClick={handleLeaveScreenShare} className="my-button bg-slate-300 dark:bg-red-600 text-slate-800 dark:text-white p-1.5 hover:cursor-pointer flex text-sm justify-center items-center gap-2 hover:bg-slate-400 dark:hover:bg-slate-800">
+                    <MdScreenShare className="sm:text-xl" />
+                    Leave
+                </div>) :(
+                    <div onClick={viewerInit} className="my-button bg-slate-300 dark:bg-slate-600 text-slate-800 dark:text-white p-1.5 hover:cursor-pointer flex text-sm justify-center items-center gap-2 hover:bg-slate-400 dark:hover:bg-slate-800">
+                        <MdScreenShare className="sm:text-xl" />
+                        Enter Stream
+                    </div>
+                )}
+                 {screenShare.status && (
                     <button
                         onClick={toggleFullscreen}
                         className="p-2 bg-slate-800/50 hover:bg-slate-700/50 text-white rounded-lg transition-colors"
@@ -297,22 +389,6 @@ export default function ScreenShareWindow() {
                     >
                         <IoExpand className="text-xl" />
                     </button>
-                )}
-                {!screenShare.screenShare ? (
-                    <div onClick={screenShareInit} className="my-button bg-slate-300 dark:bg-slate-600 text-slate-800 dark:text-white p-1.5 hover:cursor-pointer flex text-sm justify-center items-center gap-2 hover:bg-slate-400 dark:hover:bg-slate-800">
-                        <MdScreenShare className="sm:text-xl" />
-                        Screen Share
-                    </div>
-                ) : screenShare.screenSharerId === localStorage.getItem('userId') ? (
-                    <div className="my-button bg-slate-300 dark:bg-red-600 text-slate-800 dark:text-white p-1.5 hover:cursor-pointer flex text-sm justify-center items-center gap-2 hover:bg-slate-400 dark:hover:bg-slate-800">
-                        <MdScreenShare className="sm:text-xl" />
-                        Stop Screen Share
-                    </div>
-                ) : (
-                    <div onClick={viewerInit} className="my-button bg-slate-300 dark:bg-slate-600 text-slate-800 dark:text-white p-1.5 hover:cursor-pointer flex text-sm justify-center items-center gap-2 hover:bg-slate-400 dark:hover:bg-slate-800">
-                        <MdScreenShare className="sm:text-xl" />
-                        Enter Stream
-                    </div>
                 )}
             </div>
         </div>

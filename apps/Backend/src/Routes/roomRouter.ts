@@ -33,7 +33,6 @@ roomRouter.get("/loadstate/:roomId", async (req: Request, res: Response) => {
         room?.roomStatus;
       playing = { playingId, playingTitle, playingType, playingAnimeId };
       screenShare = room?.screenShare;
-      console.log("local variable used to fetch");
     } else {
       playing = await prisma.room.findFirst({
         where: {
@@ -50,7 +49,6 @@ roomRouter.get("/loadstate/:roomId", async (req: Request, res: Response) => {
         screenShare: false,
         screenSharerId: undefined,
       }
-      console.log("db variable used to fetch");
     }
     const Messages = await prisma.chat.findMany({
       where: { roomId },
@@ -111,7 +109,6 @@ roomRouter.get("/get-token", async (req: Request, res: Response) => {
   const token = new AccessToken(API_KEY, API_SECRET, { identity });
   token.addGrant({ roomJoin: true, room });
   const newToken = await token.toJwt();
-  console.log(newToken);
   res.json({ token: newToken });
 });
 
@@ -127,7 +124,6 @@ roomRouter.get(
       if (room?.roomStatus) {
         const { isPlaying, currentTime } = room?.roomStatus;
         pastState = { isPlaying, currentTime };
-        console.log("local variable used to fetch");
       } else {
         pastState = await prisma.room.findFirst({
           where: {

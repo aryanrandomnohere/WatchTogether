@@ -143,16 +143,45 @@ export default function videoEvents(io: Server, socket: Socket) {
     socket.join(playerRoom);
   });
 
-  socket.on("screen-share", ( userId: string,roomId: string) => {
+  socket.on("screen-share", ( senderId: string,roomId: string) => {
+    console.log("screen-share hit")
     const room = roomManager.getInstance().getRoom(roomId);
-    if (room?.screenShare) {
-      room.screenShare.screenSharerId = userId;
-      room.screenShare.screenShare = true;
+    if(!room){
+      console.log("Room Does not exist returning")
     }
-    for(const user in room?.subscribers.entries()){
-      console.log("Screen share started:",user)
-      console.log(room.screenShare)
-      io.to(user).emit("screen-share",room.screenShare)
+    if (room?.screenShare) {
+      room.screenShare.screenSharerId = senderId;
+      room.screenShare.status = true;
+    }
+    if (room?.subscribers) {
+      for(const [socketId, userId] of room.subscribers.entries()){
+        if(senderId === userId) continue;
+        console.log("Screen share started:",userId)
+        io.to(userId).emit("screen-share",room.screenShare)
+      }
     }
   });
+
+socket.on("stop-screen-share", (roomId:string, senderId)=>{
+  console.log("stop-screen-share hit")
+  const room = roomManager.getInstance().getRoom(roomId);
+  if(!room){
+    console.log("Room Does not exist returning")
+  }
+  if (room?.screenShare) {
+    room.screenShare.screenSharerId = undefined ;
+    room.screenShare.status = false;
+  }
+  if (room?.subscribers) {
+    for(const [socketId, userId] of room.subscribers.entries()){
+
+      if(senderId === userId){
+        console.log(senderId,userId)
+        continue;
+      } 
+      io.to(userId).emit("stop-screen-share",room.screenShare)
+    }
+  }
+})
+
 }

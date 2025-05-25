@@ -1,14 +1,14 @@
 import { atom } from "recoil";
 
 interface screenShareType {
-    screenShare: boolean;
+    status: boolean;
     screenSharerId: string | undefined;
   }
 
   export const screenShareState = atom<screenShareType>({
     key: 'screenShareState',
     default: {
-      screenShare: false,
+      status: false,
       screenSharerId: undefined,
     },
   });
