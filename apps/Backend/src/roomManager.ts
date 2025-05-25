@@ -91,11 +91,15 @@ export class roomManager {
       if(userId){
         room.inCall.people.delete(userId);
         room.inCall.people.delete('');
+      if(room.screenShare.screenSharerId === userId) room.screenShare = {
+        screenShare: false,
+        screenSharerId: undefined,
+      }
+
       }
     }
       room.subscribers.delete(socketId);
       room.inCall.people.delete('');
-
       console.log(room.inCall.people);
       return roomId;
     }

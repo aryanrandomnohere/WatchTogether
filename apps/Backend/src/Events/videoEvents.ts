@@ -143,10 +143,16 @@ export default function videoEvents(io: Server, socket: Socket) {
     socket.join(playerRoom);
   });
 
-  socket.on("screen-share", ( screenSharerId: string,roomId: string) => {
-    const room = roomManager.getInstance().getRoom(screenSharerId);
+  socket.on("screen-share", ( userId: string,roomId: string) => {
+    const room = roomManager.getInstance().getRoom(roomId);
     if (room?.screenShare) {
+      room.screenShare.screenSharerId = userId;
       room.screenShare.screenShare = true;
+    }
+    for(const user in room?.subscribers.entries()){
+      console.log("Screen share started:",user)
+      console.log(room.screenShare)
+      io.to(user).emit("screen-share",room.screenShare)
     }
   });
 }
