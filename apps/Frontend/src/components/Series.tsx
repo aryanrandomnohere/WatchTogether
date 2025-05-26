@@ -12,12 +12,10 @@ import ScreenShareWindow from './ScreenShareWindow';
 const socket = getSocket();
 
 export default function Series({
-  screenShareRef,
   id,
   type,
   animeId = '',
 }: {
-  screenShareRef: React.RefObject<HTMLVideoElement>;
   id: number | string;
   type: string;
   title?: string | undefined;
