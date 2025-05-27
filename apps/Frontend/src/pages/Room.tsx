@@ -92,7 +92,7 @@ export default function Room() {
   return (
     <div className="bg-slate-200 dark:bg-gray-900 min-h-screen flex flex-col px-1 pt-3 items-start relative">
       {/* Content */}
-      <div className="relative  w-full">
+      <div className="relative z-10 w-full">
         <div className="sm:mt-10 mt-28"></div>
         {navIsOpen ? (
           <RoomNav

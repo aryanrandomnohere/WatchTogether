@@ -191,30 +191,7 @@ export default function Series({
   };
 
   // If screenShare is true, show the ScreenShare component
-  if (!screenShare.screenShare || screenShare.screenShare) {
-    if(screenShare.screenSharerId != Info.id || screenShare.screenSharerId === Info.id ){
-    return (
-      <ScreenShareWindow/>
-    );
-  }
-  // else
-  //  if(!screenShareRef.current){
-  //   return (
-  //     <div onClick={viewerInit} className="screen-share-container">
-  //       <div className="my-button bg-slate-300 dark:bg-slate-600 text-slate-800 dark:text-white p-1.5 hover:cursor-pointer flex text-sm justify-center items-center gap-2 hover:bg-slate-400 dark:hover:bg-slate-800">
-  //         Get Access to the Video
-  //       </div>
-  //     </div>
-  //   );
-  // }
-  else {
-    return (
-      <div className="screen-share-container">
-        <video  className="w-full h-full" autoPlay playsInline ref={screenShareRef} />
-      </div>
-    );
-  }
-  }
+
 
   if (!id) {
     return (
@@ -282,12 +259,8 @@ console.log(iframeSource);
   };
 
   return (
-    <iframe
-      className={`w-full ${getIframeHeight()} max-w-[73rem] rounded`}
-      src={iframeSource}
-      frameBorder="0"
-      allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-      allowFullScreen
-    ></iframe>
+  
+       <ScreenShareWindow getIframeHeight= {getIframeHeight} iframeSource ={iframeSource}/>
+  
   );
 }

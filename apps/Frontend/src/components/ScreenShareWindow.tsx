@@ -15,7 +15,7 @@ interface screenShareType {
 
 let peer: RTCPeerConnection | null;
 const socket = getSsSocket()
-export default function ScreenShareWindow() {
+export default function ScreenShareWindow({getIframeHeight,iframeSource}:{iframeSource:string, getIframeHeight: ()=>string}) {
     const [screenShare, setScreenShare] = useRecoilState(screenShareState);
     const videoRef = useRef<HTMLVideoElement | null>(null);
     const containerRef = useRef<HTMLDivElement | null>(null);
@@ -113,7 +113,6 @@ export default function ScreenShareWindow() {
         }
         peer.ontrack = handleViewerTrackEvent;
         peer.onnegotiationneeded = () => handleViewerNegotiationNeededEvent();
-
         return peer;
     }
 
@@ -129,54 +128,76 @@ export default function ScreenShareWindow() {
     }
 
     function handleViewerTrackEvent(e: RTCTrackEvent) {
-        console.log("Track event received:", e.streams[0]);
-        if (videoRef.current) {
-            videoRef.current.srcObject = e.streams[0];
-            videoRef.current.muted = true; // Always start muted for autoplay
-            videoRef.current.autoplay = true;
-            videoRef.current.playsInline = true;
-
-            videoRef.current.onloadedmetadata = () => {
-                console.log("Video metadata loaded, attempting to play");
-                if (videoRef.current) {
-                    const playPromise = videoRef.current.play();
-                    if (playPromise !== undefined) {
-                        playPromise.then(() => {
-                            console.log("Video playback started successfully");
-                            // Unmute after playback starts if not the sharer
-                            if (videoRef.current && screenShare.screenSharerId !== localStorage.getItem('userId')) {
-                                setTimeout(() => {
-                                    if (videoRef.current) {
-                                        videoRef.current.muted = false;
-                                    }
-                                }, 1000);
-                            }
-                        }).catch(error => {
-                            console.error("Error playing video:", error);
-                        });
-                    }
-                }
-            };
-
-            videoRef.current.oncanplay = () => {
-                console.log("Video can start playing");
-                if (videoRef.current && videoRef.current.paused) {
-                    videoRef.current.play().catch(e => console.error("Error in oncanplay:", e));
-                }
-            };
-
-            videoRef.current.onerror = (e) => {
-                console.error("Video element error:", e);
-            };
-            
-            // Force load the video
-            videoRef.current.load();
-
-        } else {
-            console.error("Video element reference is null");
+        const stream = e.streams?.[0];
+    
+        console.log("Track event received.");
+        if (!stream) {
+            console.error("❌ No stream found in RTCTrackEvent.");
+            return;
         }
+    
+        console.log("✅ Stream object received:", stream);
+        console.log("📺 Stream active:", stream.active);
+        console.log("🎥 Video tracks:", stream.getVideoTracks());
+        console.log("🎙️ Audio tracks:", stream.getAudioTracks());
+    
+        if (!stream.active || stream.getTracks().length === 0) {
+            console.warn("⚠️ Received stream is inactive or has no tracks.");
+        }
+    
+        // Optional: Expose stream globally for manual testing
+        //@ts-ignore
+        window.mediaStream = stream;
+    
+        if (!videoRef.current) {
+            console.error("❌ videoRef is null.");
+            return;
+        }
+    
+        const videoEl = videoRef.current;
+    
+        console.log("🎯 Attaching stream to video element...");
+        videoEl.srcObject = stream;
+    
+        videoEl.autoplay = true;
+        videoEl.playsInline = true;
+    
+        // Start muted initially for autoplay to work across browsers
+        const isSelfStream = screenShare.screenSharerId === localStorage.getItem('userId');
+        videoEl.muted = true;
+    
+        videoEl.onloadedmetadata = () => {
+            console.log("✅ Video metadata loaded");
+    
+            videoEl.play().then(() => {
+                console.log("▶️ Video playback started");
+    
+                if (!isSelfStream) {
+                    // Unmute after a short delay to allow autoplay
+                    setTimeout(() => {
+                        if (videoEl) {
+                            videoEl.muted = false;
+                            console.log("🔊 Video unmuted for remote stream");
+                        }
+                    }, 1000);
+                }
+            }).catch((error) => {
+                console.error("❌ Error playing video:", error);
+            });
+        };
+    
+        videoEl.oncanplay = () => {
+            console.log("⏯️ Video can start playing");
+            if (videoEl.paused) {
+                videoEl.play().catch(e => console.error("❌ Error in oncanplay play():", e));
+            }
+        };
+    
+        videoEl.onerror = (e) => {
+            console.error("❌ Video element error:", e);
+        };
     }
-
+    
     async function screenShareInit() {
         try {
             const stream = await navigator.mediaDevices.getDisplayMedia({
@@ -187,37 +208,66 @@ export default function ScreenShareWindow() {
                 },
                 audio: true
             });
+    
+            // Start track health monitoring
+            checkSharerVideoTrack(stream);
+    
+            if(!videoRef.current){
+                console.log("Ref not found")
+            }
 
             if (videoRef.current) {
                 const videoStream = new MediaStream(stream.getVideoTracks());
                 videoRef.current.srcObject = videoStream;
                 videoRef.current.muted = true; // Mute for self-view to prevent feedback
-                videoRef.current.play();
+                await videoRef.current.play();
             }
-
+    
             const peer = createPeer();
             stream.getTracks().forEach(track => peer.addTrack(track, stream));
+    
             setScreenShare({
                 status: true,
                 screenSharerId: localStorage.getItem('userId') || undefined
             });
+    
             getSocket().emit('screen-share', localStorage.getItem('userId') || Info.id, roomId);
-
+    
             stream.getVideoTracks()[0].onended = () => {
                 if (videoRef.current) {
                     videoRef.current.srcObject = null;
                 }
+    
                 setScreenShare({
                     status: false,
                     screenSharerId: undefined
                 });
+    
                 getSocket().emit('stop-screen-share', roomId);
             };
         } catch (error) {
             console.error("Error starting screen share:", error);
         }
     }
-
+    
+    // Health check function for sharer's video track
+    const checkSharerVideoTrack = (stream: MediaStream) => {
+        const track = stream.getVideoTracks()[0];
+        setInterval(() => {
+          console.log("📡 Sharer Track State:");
+          console.log("▶️ enabled:", track.enabled);
+          console.log("🔇 muted:", track.muted);
+          console.log("📽️ readyState:", track.readyState);
+      
+          if (track.readyState !== "live" || track.muted) {
+            console.warn("⚠️ Sharer's track is not delivering frames.");
+          } else {
+            console.log("✅ Sharer's track is healthy.");
+          }
+        }, 2000);
+      };
+      
+    
     function createPeer() {
         peer = new RTCPeerConnection({
             iceServers: [
@@ -341,8 +391,8 @@ export default function ScreenShareWindow() {
 
     return (
         <div ref={containerRef} className="screen-share-container w-full h-full flex flex-col items-center justify-center relative">
-            <video
-                className="w-full h-full object-contain bg-black rounded-lg cursor-pointer"
+             <video
+                className={`w-full h-full object-contain bg-black rounded-lg cursor-pointer ${screenShare.status? "block":"hidden"}`}
                 autoPlay
                 playsInline
                 muted={screenShare.screenSharerId === localStorage.getItem('userId')} // Mute self-view, unmute others
@@ -351,16 +401,24 @@ export default function ScreenShareWindow() {
                 onClick={handleVideoClick}
                 onError={(e) => console.error("Video error:", e)}
                 style={{ backgroundColor: 'black' }}
-            />
+            /> 
+       {!screenShare.status && <iframe
+            className={`w-full ${getIframeHeight()} max-w-[73rem] rounded ${!screenShare.status? "block":"hidden"}`}
+            src={`${iframeSource}`}
+            frameBorder="0"
+            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+            allowFullScreen
+          ></iframe> }
+
             {/* Add overlay message if video isn't playing */}
-            {screenShare.status && screenShare.screenSharerId !== localStorage.getItem('userId') && (
+            {/* {screenShare.status && screenShare.screenSharerId !== localStorage.getItem('userId') && (
                 <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
                     <div className="bg-black/50 text-white px-4 py-2 rounded-lg text-sm">
                         Click to play if video doesn't start automatically
                     </div>
                 </div>
-            )}
-            <div className="absolute bottom-4 right-4 flex gap-2">
+            )} */}
+            <div className="absolute top-1 right-4 flex gap-2">
                
                 {!screenShare.status ? (
                     <div onClick={screenShareInit} className="my-button bg-slate-300 dark:bg-slate-600 text-slate-800 dark:text-white p-1.5 hover:cursor-pointer flex text-sm justify-center items-center gap-2 hover:bg-slate-400 dark:hover:bg-slate-800">
