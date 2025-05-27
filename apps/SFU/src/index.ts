@@ -58,21 +58,39 @@ io.on("connection", (socket) => {
     
     if (broadcaster.stream) {
       const tracks = broadcaster.stream.getTracks();
-      console.log('Adding tracks to consumer:', tracks.length);
-      console.log('Track details:', tracks.map(track => ({
+      console.log('🎥 Adding tracks to consumer:', tracks.length);
+      console.log('🔍 Track details:', tracks.map(track => ({
         kind: track.kind,
         enabled: track.enabled,
         muted: track.muted,
         readyState: track.readyState
       })));
-      
+    
       for (const track of tracks) {
-        console.log('Adding track to consumer:', track.kind);
+        console.log('➕ Adding track to consumer:', track.kind);
         consumer.addTrack(track, broadcaster.stream);
       }
+    
+      // 🔁 Periodically check track health
+      const interval = setInterval(() => {
+        console.log('📡 Checking broadcaster track status...');
+        tracks.forEach((track, index) => {
+          console.log(`🔄 Track ${index} (${track.kind}) status:`);
+          console.log('   ▶️ enabled:', track.enabled);
+          console.log('   🔇 muted:', track.muted);
+          console.log('   📽️ readyState:', track.readyState);
+    
+          if (track.readyState !== 'live' || track.muted) {
+            console.warn(`⚠️ Track ${index} is not healthy.`);
+          } else {
+            console.log(`✅ Track ${index} is healthy.`);
+          }
+        });
+      }, 2000);
     } else {
-      console.log('No broadcaster stream available');
+      console.log('🚫 No broadcaster stream available');
     }
+    
 
     const answer = await consumer.createAnswer();
     await consumer.setLocalDescription(answer);
