@@ -4,6 +4,12 @@ import { number } from "zod";
 import { roomManager } from "../roomManager.js";
 import { prisma } from "../db.js";
 
+
+enum ssType {
+  P2P,
+  SERVER
+}
+
 export default function videoEvents(io: Server, socket: Socket) {
   socket.on(
     "change-video",
@@ -143,7 +149,7 @@ export default function videoEvents(io: Server, socket: Socket) {
     socket.join(playerRoom);
   });
 
-  socket.on("screen-share", ( senderId: string,roomId: string) => {
+  socket.on("screen-share", ( senderId: string,roomId: string, type:ssType) => {
     console.log("screen-share hit")
     const room = roomManager.getInstance().getRoom(roomId);
     if(!room){
@@ -152,6 +158,7 @@ export default function videoEvents(io: Server, socket: Socket) {
     if (room?.screenShare) {
       room.screenShare.screenSharerId = senderId;
       room.screenShare.status = true;
+      room.screenShare.type = type
     }
     if (room?.subscribers) {
       for(const [socketId, userId] of room.subscribers.entries()){
