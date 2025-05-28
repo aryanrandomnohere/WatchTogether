@@ -14,9 +14,14 @@ interface Call {
   people: Set<string>;
 }
 
+enum ssType {
+  P2P,
+  SERVER
+}
 interface screenShareType {
   status: boolean;
   screenSharerId: string | undefined;
+  type:ssType | null
 }
 
 interface roomInterface {
@@ -49,6 +54,7 @@ export class roomManager {
         screenShare: {
           status: false,
           screenSharerId: undefined,
+          type:null
         },
       });
     }
@@ -92,6 +98,7 @@ export class roomManager {
       if(room.screenShare.screenSharerId === userId) room.screenShare = {
         status: false,
         screenSharerId: undefined,
+        type:null
       }
 
       }
@@ -136,13 +143,14 @@ export class roomManager {
   }
 
 
-  public setScreenShare(roomId: string, bywhom: string, bywhomId: string) {
+  public setScreenShare(roomId: string, bywhom: string, bywhomId: string, type:ssType) {
     const room = this.rooms.get(roomId);
     if (!room) return;
     if(!room.screenShare){
       room.screenShare = {
         status: true,
         screenSharerId: bywhomId,
+        type: type
       };
     }
   }
@@ -153,6 +161,7 @@ export class roomManager {
     room.screenShare = {
       status: false,
       screenSharerId: undefined,
+      type:null
     };
   }
 

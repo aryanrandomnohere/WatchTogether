@@ -120,10 +120,10 @@ export default function p2pEvents(io: Server, socket: Socket) {
 
     // If no one is left in the call, mark the call as inactive
     if (room.inCall.people.size === 0) {
-      io.to(roomId).emit("call-status", false);
+      io.to(`${roomId}`).emit("call-status", false);
     } else {
       // Notify other participants that this user has left
-      io.to(roomId).emit("user-left-call", userId);
+      io.to(roomId).emit("leave-call", userId);
     }
   });
 }
