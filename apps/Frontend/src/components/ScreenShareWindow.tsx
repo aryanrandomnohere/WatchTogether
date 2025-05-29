@@ -30,6 +30,7 @@ export default function ScreenShareWindow({getIframeHeight,iframeSource}:{iframe
     const containerRef = useRef<HTMLDivElement | null>(null);
     const [isFullscreen, setIsFullscreen] = useState(false);
     const [isViewing,setIsViewing] = useState(false)
+    const [isSharing, setIsSharing] = useState(false)
     const Info = useRecoilValue(userInfo);
     const { roomId } = useParams();
     const [getType, setGetType] = useState<ssType | null>(ssType.P2P)
@@ -52,7 +53,12 @@ export default function ScreenShareWindow({getIframeHeight,iframeSource}:{iframe
             }
         }
         await newPeer.setRemoteDescription(sdp);
-        stream?.getTracks().forEach(track => newPeer.addTrack(track, stream!));
+        if (stream) {
+            for (const track of stream.getTracks()) {
+              newPeer.addTrack(track, stream);
+            }
+          }
+          
         const answer = await newPeer.createAnswer()
         if(answer){
         await newPeer.setLocalDescription(answer)
@@ -146,6 +152,7 @@ return
         setIsViewing(true);
         peer = createViewerPeer();
         peer.addTransceiver("video", { direction: "recvonly" })
+        peer.addTransceiver("audio", { direction: "recvonly" }); 
     }
 
     function createViewerPeer() {
@@ -189,17 +196,15 @@ return
 
     function handleViewerTrackEvent(e: RTCTrackEvent) {
         const stream = e.streams?.[0];
-    
+        stream.getAudioTracks().forEach(track => {
+            console.log("🔎 Remote audio track:", track.label, "enabled:", track.enabled);
+          });
+          
         console.log("Track event received.");
         if (!stream) {
             console.error("❌ No stream found in RTCTrackEvent.");
             return;
         }
-    
-        console.log("✅ Stream object received:", stream);
-        console.log("📺 Stream active:", stream.active);
-        console.log("🎥 Video tracks:", stream.getVideoTracks());
-        console.log("🎙️ Audio tracks:", stream.getAudioTracks());
     
         if (!stream.active || stream.getTracks().length === 0) {
             console.warn("⚠️ Received stream is inactive or has no tracks.");
@@ -221,8 +226,7 @@ return
         videoEl.playsInline = true;
     
         // Start muted initially for autoplay to work across browsers
-        const isSelfStream = screenShare.screenSharerId === localStorage.getItem('userId');
-        videoEl.muted = true;
+        const isSelfStream = screenShare.screenSharerId === userId;
     
         videoEl.onloadedmetadata = () => {
             console.log("✅ Video metadata loaded");
@@ -277,10 +281,10 @@ return
                     },
                     audio: true
                 });
-            
                 // Start track health monitoring
+               if(stream){
                 checkSharerVideoTrack(stream);
-            
+                
                 if(!videoRef.current){
                     console.log("Ref not found")
                 }
@@ -291,8 +295,13 @@ return
                     videoRef.current.muted = true; // Mute for self-view to prevent feedback
                     await videoRef.current.play();
                 }
-                if(type === ssType.SERVER)   stream?.getTracks().forEach(track => peer.addTrack(track, stream!));
-       
+                if(type === ssType.SERVER && stream) {
+                    for (const track of stream.getTracks()) {
+                      peer.addTrack(track, stream);
+                    }
+                  }
+                  
+            setIsSharing(true)
             setScreenShare({
                 status: true,
                 screenSharerId: localStorage.getItem('userId') || undefined,
@@ -314,8 +323,10 @@ return
     
                 getSocket().emit('stop-screen-share', roomId);
             };
+        }
         } catch (error) {
             console.error("Error starting screen share:", error);
+            handleEndScreenShare()
         }
     }
     
@@ -406,7 +417,7 @@ return
             const tracks = (videoRef.current.srcObject as MediaStream).getTracks();
             tracks.forEach(track => track.stop());
           }
-        
+        setIsSharing(false)
           // Clear the video element
           videoRef.current!.srcObject = null;
         
@@ -418,6 +429,14 @@ return
             peer.close();
             peer = null; // <== if you're using `let peer`
           }
+          p2pConnections.current.forEach(conn =>{
+            conn.ontrack = null;
+            conn.onicecandidate = null;
+            conn.onconnectionstatechange = null;
+            conn.close();; // <== if you're using `let peer`
+          })
+          p2pConnections.current.clear()
+
     }
 
     function handleLeaveScreenShare(){
@@ -465,7 +484,7 @@ return
                 className={`w-full h-full object-contain bg-black rounded-lg cursor-pointer ${screenShare.status? "block":"hidden"}`}
                 autoPlay
                 playsInline
-                muted={screenShare.screenSharerId === localStorage.getItem('userId')} // Mute self-view, unmute others
+                muted={screenShare.screenSharerId === userId} // Mute self-view, unmute others
                 controls={false}
                 ref={videoRef}
                 onClick={handleVideoClick}
@@ -550,7 +569,7 @@ return
             )} */}
             <div className="absolute top-1 right-4 flex gap-2">
                 
-                {!screenShare.status || (!getType && screenShare.screenSharerId === Info.id )  ? !getType && screenShare.status ? (<></>): (
+                {!screenShare.status || !isSharing && (!getType && screenShare.screenSharerId === Info.id )  ? !getType && screenShare.status ? (<></>): (
                     <div onClick={selectSsType} className="my-button bg-slate-300 dark:bg-slate-600 text-slate-800 dark:text-white p-1.5 hover:cursor-pointer flex text-sm justify-center items-center gap-2 hover:bg-slate-400 dark:hover:bg-slate-800">
                         <MdScreenShare className="sm:text-xl" />
                         Screen Share
