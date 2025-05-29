@@ -23,9 +23,7 @@ export default function p2pEvents(io: Server, socket: Socket) {
       to: string | null,
       sdp: RTCSessionDescriptionInit,
     ) => {
-      console.log(
-        `User ${userInfo.id} initiating offer in room ${roomId}${to ? ` to user ${to}` : ""}`,
-      );
+      
 
       const room = roomManager.getInstance().getRoom(roomId);
       if (!room) {
@@ -41,7 +39,7 @@ export default function p2pEvents(io: Server, socket: Socket) {
       // If this is the first person joining (no specific target)
       if (!to) {
         // Just broadcast that a call is active in the room
-        io.to(roomId).emit("call-status", true);
+        io.to(`${roomId}'room`).emit("call-status", true);
         return;
       }
 
@@ -64,9 +62,6 @@ export default function p2pEvents(io: Server, socket: Socket) {
       toUserId: string,
       answer: RTCSessionDescriptionInit,
     ) => {
-      console.log(
-        `User ${userId} sending answer to ${toUserId} in room ${roomId}`,
-      );
 
       const room = roomManager.getInstance().getRoom(roomId);
       if (!room) {
@@ -77,6 +72,10 @@ export default function p2pEvents(io: Server, socket: Socket) {
       // Add user to call if they're not already in
       if (!room.inCall?.people?.has(userId)) {
         roomManager.getInstance().joinCall(roomId, userId);
+      }
+      if(toUserId === userId) {
+        console.log("Sending answer to self will sort out later")
+        return;
       }
       console.log("Sending answer to:", toUserId , "from:", userId);
       // Send the answer back to the user who sent the offer
@@ -96,7 +95,6 @@ export default function p2pEvents(io: Server, socket: Socket) {
       to: string;
       candidate: RTCIceCandidate;
     }) => {
-      console.log(`ICE candidate from ${userId} to ${to}`);
 
       if (userId === to || !to) {
         console.log("Invalid ICE candidate target");
@@ -120,10 +118,31 @@ export default function p2pEvents(io: Server, socket: Socket) {
 
     // If no one is left in the call, mark the call as inactive
     if (room.inCall.people.size === 0) {
-      io.to(`${roomId}`).emit("call-status", false);
+      io.to(`${roomId}'room`).emit("call-status", false);
     } else {
       // Notify other participants that this user has left
-      io.to(roomId).emit("leave-call", userId);
+      io.to(`${roomId}'room`).emit("leave-call", userId);
     }
   });
+
+  socket.on("consumer",(sdp:RTCSessionDescription, roomId:string,consumerId:string,broadcaster:string)=>{
+    const room = roomManager.getInstance().getRoom(roomId);
+    if(!room){
+      socket.emit("consumer-error","Room does not exist")
+    }
+    io.to(broadcaster).emit("consumer",sdp,consumerId)
+  })
+  socket.on("consumer-candidate",(candidate:RTCIceCandidate,consumerId:string,broadcaster:string)=>{
+   io.to(broadcaster).emit("consumer-candidate",candidate,consumerId)
+  })
+
+  socket.on("broadcaster-answer",(answer:RTCSessionDescription, consumerId)=>{
+    io.to(consumerId).emit("broadcaster-answer",answer)
+  })
+
+  socket.on("broadcaster-candidate", (candidate:RTCIceCandidate,consumerId:string)=>{
+  io.to(consumerId).emit("broadcaster-candidate", candidate);
+  })
+
+
 }

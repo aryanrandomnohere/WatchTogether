@@ -40,7 +40,7 @@ const io = new Server(server, {
 
 io.on("connection", (socket) => {
   socket.on("join-room", async (roomId: string, userId: string) => {
-    socket.join(`${roomId}`);
+    socket.join(`${roomId}'room`);
     if (roomManager.getInstance().getRoomTotal(roomId) === 0) {
       const roomState = await prisma.room.findUnique({
         where: {
@@ -71,7 +71,7 @@ io.on("connection", (socket) => {
       if (!user) continue;
       allUserData.push(user);
     }
-    io.to(`${roomId}`).emit(
+    io.to(`${roomId}'room`).emit(
       "room-people-data",
       roomManager.getInstance().getRoomTotal(roomId),
       allUserData,
@@ -100,7 +100,7 @@ io.on("connection", (socket) => {
       if (!user) continue;
       allUserData.push(user);
     }
-    io.to(`${roomId}`).emit(
+    io.to(`${roomId}'room`).emit(
       "room-people-data",
       roomManager.getInstance().getRoomTotal(roomId),
       allUserData,
@@ -164,7 +164,7 @@ io.on("connection", (socket) => {
       if (!user) continue;
       allUserData.push(user);
     }
-    io.to(`${roomId}`).emit(
+    io.to(`${roomId}'room`).emit(
       "room-people-data",
       roomManager.getInstance().getRoomTotal(roomId),
       allUserData,

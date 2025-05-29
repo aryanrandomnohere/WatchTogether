@@ -10,6 +10,9 @@ export default function getSocket() {
     socketInstance = io(`${import.meta.env.VITE_BACKEND_APP_API_BASE_URL}`, {
       transports: ['websocket'], // Optional, use WebSocket as the transport method
       autoConnect: false, // Optional: Disable auto connection
+      query: {
+        userId: localStorage.getItem('userId')
+    }
     });
 
     // Add event listeners to the socket instance

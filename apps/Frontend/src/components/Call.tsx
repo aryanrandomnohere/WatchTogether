@@ -240,6 +240,7 @@ export default function Call() {
     candidate: RTCIceCandidate;
   }) => {
     console.log('Sending ICE candidate to:', to);
+    if(userId == to) return
     getSocket().emit('ice-candidate', { userId, to, candidate });
     return;
   };
@@ -304,6 +305,7 @@ export default function Call() {
 
 
   async function createConnection({ to }: { to: string | null }) {
+    if(to === Info.id) return
     const peerConnection = new RTCPeerConnection({
       iceServers: [
         { urls: 'stun:stun.l.google.com:19302' },
@@ -384,6 +386,7 @@ export default function Call() {
           to,
           peerConnection.localDescription
         );
+
       }
     } catch (error) {
       console.error('Error in create_Connection:', error);
@@ -395,13 +398,17 @@ export default function Call() {
   async function CreateAnswer(sdp: RTCSessionDescriptionInit, from: string) {
     // Create peer connection with STUN servers
     console.log("Creating answer");
+    if(from === Info.id){
+      console.log("Received answer from self");
+      return
+    }
     const peerConnection = new RTCPeerConnection({
       iceServers: [
         { urls: 'stun:stun.l.google.com:19302' },
         { urls: 'stun:stun1.l.google.com:19302' },
       ],
     });
-
+    
     p2pConnections.current.push({
       withUserId: from,
       instance: peerConnection,
@@ -421,6 +428,10 @@ export default function Call() {
       peerConnection.onicecandidate = event => {
         if (event.candidate) {
           console.log('Sending ICE candidate to:', from);
+          if(from == Info.id || localStorage.getItem("userId")) {
+            console.log("Sending answer to self will sort out later")
+            return;
+          }
           sendIceCandidate({ userId: localStorage.getItem('userId')|| Info.id, to: from, candidate: event.candidate });
         }
       };
