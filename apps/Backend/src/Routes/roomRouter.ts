@@ -183,9 +183,12 @@ roomRouter.get("/call/:roomId", async (req: Request, res: Response) => {
     const stringArray: string[] = room.inCall?.people
       ? Array.from(room.inCall.people)
       : [];
+    console.log("roomStrength :", stringArray)
+
     res
       .status(200)
       .json({ callCount: stringArray });
+
   } catch (error) {
     res.status(400).json({ msg: "Internal server error" });
   }

@@ -36,6 +36,9 @@ export default function App() {
   useEffect(() => {
     if (!isAuthenticated || !userId) return;
     socket.emit('register', userId);
+    return ()=>{
+      socket.off('register' )
+    }
   }, [userId]);
 
   useEffect(() => {

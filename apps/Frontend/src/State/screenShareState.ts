@@ -15,6 +15,6 @@ interface screenShareType {
     default: {
       status: false,
       screenSharerId: undefined,
-      type:
+      type: null
     },
   });

@@ -56,7 +56,7 @@ export default function videoEvents(io: Server, socket: Socket) {
           });
         }
 
-        io.to(roomId).emit("receive-playing", newPlaying);
+        io.to(`${roomId}'room`).emit("receive-playing", newPlaying);
       } catch (error) {
         console.error("Error saving video:", error);
       }
@@ -83,7 +83,7 @@ export default function videoEvents(io: Server, socket: Socket) {
             },
           });
         }
-        io.to(roomId).emit("receive-ep", episode, season);
+        io.to(`${roomId}'room`).emit("receive-ep", episode, season);
       } catch (error) {
         log(`Error while changing ep ${error}`);
       }
@@ -183,7 +183,6 @@ socket.on("stop-screen-share", (roomId:string, senderId)=>{
     for(const [socketId, userId] of room.subscribers.entries()){
 
       if(senderId === userId){
-        console.log(senderId,userId)
         continue;
       } 
       io.to(userId).emit("stop-screen-share",room.screenShare)

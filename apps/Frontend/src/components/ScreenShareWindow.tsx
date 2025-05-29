@@ -3,7 +3,7 @@ import { IoExpand } from "react-icons/io5";
 import { useRecoilState, useRecoilValue } from "recoil";
 import { screenShareState } from "../State/screenShareState";
 import getSocket from "../services/getSocket";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { userInfo } from "../State/userState";
 import { useParams } from "react-router-dom";
 import getSsSocket from "../services/getSsSocket";
@@ -19,7 +19,10 @@ enum ssType {
     type:ssType | null
   }
 
+
 let peer: RTCPeerConnection | null;
+let stream:MediaStream | null = null
+
 const socket = getSsSocket()
 export default function ScreenShareWindow({getIframeHeight,iframeSource}:{iframeSource:string, getIframeHeight: ()=>string}) {
     const [screenShare, setScreenShare] = useRecoilState(screenShareState);
@@ -29,7 +32,36 @@ export default function ScreenShareWindow({getIframeHeight,iframeSource}:{iframe
     const [isViewing,setIsViewing] = useState(false)
     const Info = useRecoilValue(userInfo);
     const { roomId } = useParams();
-    const [type, setType] = useState<ssType | null>(null)
+    const [getType, setGetType] = useState<ssType | null>(ssType.P2P)
+    const p2pConnections = useRef<Map<string,RTCPeerConnection>>(new Map());
+    const userId = useMemo(()=>localStorage.getItem("userId") || Info.id ,[Info.id])
+    const [shareRoom,setShareRoom] = useState(false)
+   
+   
+    async function CreateBroadcasterAnswer(sdp:RTCSessionDescription, consumerId:string){
+        console.log("Offer received from client creating answer his id:",consumerId,"My Id:",userId)
+        if(consumerId == userId){
+                console.log("Received offer from self",consumerId,userId)
+            return 
+        }
+        const newPeer = new RTCPeerConnection()
+        p2pConnections.current.set(consumerId,newPeer);
+        newPeer.onicecandidate = (event) =>{
+            if(event.candidate){
+                getSocket().emit("broadcaster-candidate",event.candidate, consumerId )
+            }
+        }
+        await newPeer.setRemoteDescription(sdp);
+        stream?.getTracks().forEach(track => newPeer.addTrack(track, stream!));
+        const answer = await newPeer.createAnswer()
+        if(answer){
+        await newPeer.setLocalDescription(answer)
+        console.log("Now Sending Answer")
+        getSocket().emit("broadcaster-answer",answer,consumerId)
+        }
+        
+    }
+
 
     useEffect(() => {
     socket.on("ss-answer", ({ answer }: { answer: RTCSessionDescription }) => {
@@ -59,7 +91,6 @@ export default function ScreenShareWindow({getIframeHeight,iframeSource}:{iframe
             const tracks = (videoRef.current.srcObject as MediaStream).getTracks();
             tracks.forEach(track => track.stop());
           }
-        
           // Clear the video element
           videoRef.current!.srcObject = null;
         
@@ -73,28 +104,41 @@ export default function ScreenShareWindow({getIframeHeight,iframeSource}:{iframe
           }
     })
 
-    // NEW: Handle renegotiation from server
-    // socket.on("ss-renegotiate", async ({ offer }: { offer: RTCSessionDescription }) => {
-    //     console.log("Renegotiation offer received");
-    //     if (peer) {
-    //         try {
-    //             await peer.setRemoteDescription(new RTCSessionDescription(offer));
-    //             const answer = await peer.createAnswer();
-    //             await peer.setLocalDescription(answer);
-    //             socket.emit("ss-renegotiate-answer", answer, roomId);
-    //             console.log("Renegotiation answer sent");
-    //         } catch (error) {
-    //             console.error("Error handling renegotiation:", error);
-    //         }
-    //     }
-    // });
+    getSocket().on("consumer",  CreateBroadcasterAnswer)
+    getSocket().on("consumer-candidate", (candidate:RTCIceCandidate,consumerId:string)=>{
+        if(consumerId ===Info.id) {
+            console.log("Received candidate from self")
+            return
+                    }
+        console.log("Received Candidate fromt he consumer ")
+       const consumerPeer =  p2pConnections.current.get(consumerId)
+       consumerPeer?.addIceCandidate(candidate);
+    })
+    getSocket().on("broadcaster-answer", async (answer:RTCSessionDescription)=>{
+
+         await peer?.setRemoteDescription(answer);
+        console.log("Broadcaster answer set successfully")
+    })
+    getSocket().on("broadcaster-candidate",async (candidate:RTCIceCandidate,to:string )=>{
+        if(to ===Info.id) {
+console.log("Received candidate from self as broadcaster")
+return
+        }
+        console.log("Received candidate from the broadcaster")
+        peer?.addIceCandidate(candidate)
+    })
+
+
 
     return () => {
         socket.off("server-ice-candidate");
         socket.off("ss-answer");
         getSocket().off("screen-share");
-        getSocket().off("stop-screen-share")
-        // socket.off("ss-renegotiate"); // Clean up new listener
+        getSocket().off("stop-screen-share");
+        getSocket().off("broadcaster-answer");
+        getSocket().off("broadcaster-candidate");
+        getSocket().off("consumer-candidate");
+        getSocket().off("consumer");
     }
 }, [])
 
@@ -105,7 +149,7 @@ export default function ScreenShareWindow({getIframeHeight,iframeSource}:{iframe
     }
 
     function createViewerPeer() {
-        const peer = new RTCPeerConnection({
+           peer = new RTCPeerConnection({
             iceServers: [
                 {
                     urls: "stun:stun.stunprotocol.org"
@@ -114,9 +158,15 @@ export default function ScreenShareWindow({getIframeHeight,iframeSource}:{iframe
         });
         peer.onicecandidate = (event) => {
             if (event.candidate) {
-                console.log("Sending ice candidate to the server")
+               if(screenShare.type === ssType.SERVER ) {
+                console.log("Sending candidate to the server")
                 socket.emit("client-ice-candidate", "consumer", roomId, event.candidate)
             }
+                if(screenShare.type === ssType.P2P) {
+                console.log("Sending candidate to the broadcaster")
+                    getSocket().emit("consumer-candidate",event.candidate,userId, screenShare.screenSharerId)
+                }
+                }
         }
         peer.ontrack = handleViewerTrackEvent;
         peer.onnegotiationneeded = () => handleViewerNegotiationNeededEvent();
@@ -130,8 +180,11 @@ export default function ScreenShareWindow({getIframeHeight,iframeSource}:{iframe
         const payload = {
             sdp: peer.localDescription
         };
-        console.log("Sending the sdp as consumer")
-        socket.emit("consumer", payload.sdp, roomId, Info.id)
+        if(screenShare.type === ssType.SERVER) socket.emit("consumer", payload.sdp, roomId, Info.id)
+            else{ 
+                console.log("Sending offer to the main server for p2p")
+                getSocket().emit("consumer", payload.sdp, roomId, Info.id , screenShare.screenSharerId)
+        }
     }
 
     function handleViewerTrackEvent(e: RTCTrackEvent) {
@@ -202,50 +255,61 @@ export default function ScreenShareWindow({getIframeHeight,iframeSource}:{iframe
             console.error("❌ Video element error:", e);
         };
     }
-    
-    async function screenShareInit() {
-        try {
-            const stream = await navigator.mediaDevices.getDisplayMedia({
-                video: {
-                    width: { ideal: 1920 },
-                    height: { ideal: 1080 },
-                    frameRate: { ideal: 60, max: 60 }
-                },
-                audio: true
-            });
-    
-            // Start track health monitoring
-            checkSharerVideoTrack(stream);
-    
-            if(!videoRef.current){
-                console.log("Ref not found")
-            }
 
-            if (videoRef.current) {
-                const videoStream = new MediaStream(stream.getVideoTracks());
-                videoRef.current.srcObject = videoStream;
-                videoRef.current.muted = true; // Mute for self-view to prevent feedback
-                await videoRef.current.play();
-            }
+    function selectSsType(){
+        console.log("Setting screen share type to null")
+        setGetType(null)
+        setScreenShare({status:true,screenSharerId:Info.id,type:null})
+    }
+
     
-            const peer = createPeer();
-            stream.getTracks().forEach(track => peer.addTrack(track, stream));
+    async function screenShareInit({type}:{type:ssType}) {
     
+        try {
+    
+           peer = createPeer(type);
+           if(!peer) return
+                stream = await navigator.mediaDevices.getDisplayMedia({
+                    video: {
+                        width: { ideal: 1920 },
+                        height: { ideal: 1080 },
+                        frameRate: { ideal: 60, max: 60 }
+                    },
+                    audio: true
+                });
+            
+                // Start track health monitoring
+                checkSharerVideoTrack(stream);
+            
+                if(!videoRef.current){
+                    console.log("Ref not found")
+                }
+            
+                if (videoRef.current) {
+                    const videoStream = new MediaStream(stream.getVideoTracks());
+                    videoRef.current.srcObject = videoStream;
+                    videoRef.current.muted = true; // Mute for self-view to prevent feedback
+                    await videoRef.current.play();
+                }
+                if(type === ssType.SERVER)   stream?.getTracks().forEach(track => peer.addTrack(track, stream!));
+       
             setScreenShare({
                 status: true,
-                screenSharerId: localStorage.getItem('userId') || undefined
+                screenSharerId: localStorage.getItem('userId') || undefined,
+                type:getType
             });
     
-            getSocket().emit('screen-share', localStorage.getItem('userId') || Info.id, roomId, );
+            getSocket().emit('screen-share', localStorage.getItem('userId') || Info.id, roomId,type );
     
-            stream.getVideoTracks()[0].onended = () => {
+           if(stream)  stream.getVideoTracks()[0].onended = () => {
                 if (videoRef.current) {
-                    videoRef.current.srcObject = null;
+                    videoRef.current.srcObject =  null;
                 }
     
                 setScreenShare({
                     status: false,
-                    screenSharerId: undefined
+                    screenSharerId: undefined,
+                    type:null
                 });
     
                 getSocket().emit('stop-screen-share', roomId);
@@ -273,7 +337,7 @@ export default function ScreenShareWindow({getIframeHeight,iframeSource}:{iframe
       };
       
     
-    function createPeer() {
+    function createPeer(type:ssType) {
         peer = new RTCPeerConnection({
             iceServers: [
                 {
@@ -281,6 +345,7 @@ export default function ScreenShareWindow({getIframeHeight,iframeSource}:{iframe
                 }
             ]
         });
+        if(type == ssType.SERVER){
         peer.onicecandidate = (event) => {
             if (event.candidate) {
                 console.log("Sending Ice Candidate to the server")
@@ -288,6 +353,7 @@ export default function ScreenShareWindow({getIframeHeight,iframeSource}:{iframe
             }
         }
         peer.onnegotiationneeded = () => handleNegotiationNeededEvent();
+        }
         return peer;
     }
 
@@ -334,7 +400,7 @@ export default function ScreenShareWindow({getIframeHeight,iframeSource}:{iframe
 
     function handleEndScreenShare(){
         getSocket().emit("stop-screen-share",roomId, localStorage.getItem('userId') || Info.id)
-        setScreenShare({screenSharerId:undefined,status:false})
+        setScreenShare({screenSharerId:undefined,status:false, type:null})
         toast.success("Screen Share ended")
         if (videoRef.current?.srcObject) {
             const tracks = (videoRef.current.srcObject as MediaStream).getTracks();
@@ -414,12 +480,12 @@ export default function ScreenShareWindow({getIframeHeight,iframeSource}:{iframe
             allowFullScreen
           ></iframe>
            }
-             <div className="absolute flex bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900 w-full h-full">
+                { getType === null && screenShare.status &&  <div className="absolute flex bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900 w-full h-full">
         <div className="absolute inset-0 bg-black/10"></div>
         <div className="absolute top-1/4 left-1/3 w-64 h-64 bg-purple-500/20 rounded-full blur-3xl"></div>
         <div className="absolute bottom-1/3 right-1/4 w-80 h-80 bg-blue-500/15 rounded-full blur-3xl"></div>
         
-        <div className="flex w-full h-full justify-center items-center flex-col gap-8 relative z-10">
+     <div className="flex w-full h-full justify-center items-center flex-col gap-8 relative z-10">
             <div className="text-center fade-in mb-4">
                 <h1 className="text-3xl font-bold text-white mb-2">Choose Connection Method</h1>
                 <p className="text-gray-300">Select how you want to share your screen</p>
@@ -428,7 +494,10 @@ export default function ScreenShareWindow({getIframeHeight,iframeSource}:{iframe
             <div className="flex gap-8 fade-in">
                 <div className="flex flex-col items-center group">
                     <button className="px-8 py-4 bg-gradient-to-r from-purple-600 to-purple-700 hover:from-purple-500 hover:to-purple-600 border-none rounded-xl text-white font-semibold text-lg shadow-lg hover:shadow-purple-500/25 transition-all duration-300 button-hover transform hover:scale-105 min-w-[160px]" 
-                            onClick={()=>setType(ssType.P2P)}>
+                            onClick={()=>{
+                                setGetType(ssType.P2P)
+                                screenShareInit({type:ssType.P2P})
+                                }}>
                         <div className="flex items-center gap-2">
                             <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.111 16.404a5.5 5.5 0 017.778 0M12 20h.01m-7.08-7.071c3.904-3.905 10.236-3.905 14.141 0M1.394 9.393c5.857-5.857 15.355-5.857 21.213 0"></path>
@@ -444,7 +513,10 @@ export default function ScreenShareWindow({getIframeHeight,iframeSource}:{iframe
                 
                 <div className="flex flex-col items-center group">
                     <button className= "px-8 py-4 bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-500 hover:to-blue-600 border-none rounded-xl text-white font-semibold text-lg shadow-lg hover:shadow-blue-500/25 transition-all duration-300 button-hover transform hover:scale-105 min-w-[160px]" 
-                            onClick={()=>setType(ssType.SERVER)}>
+                            onClick={()=>{
+                                setGetType(ssType.SERVER)
+                                screenShareInit({type:ssType.SERVER})    
+                                }}>
                         <div className="flex items-center gap-2">
                             <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 12h14M5 12a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v4a2 2 0 01-2 2M5 12a2 2 0 00-2 2v4a2 2 0 002 2h14a2 2 0 002-2v-4a2 2 0 00-2-2m-2-4h.01M17 16h.01"></path>
@@ -463,7 +535,7 @@ export default function ScreenShareWindow({getIframeHeight,iframeSource}:{iframe
                 <p>Both methods provide secure screen sharing. Choose based on your network setup and performance needs.</p>
             </div>
         </div>
-    </div>
+    </div>}
            </div>
 
 
@@ -478,8 +550,8 @@ export default function ScreenShareWindow({getIframeHeight,iframeSource}:{iframe
             )} */}
             <div className="absolute top-1 right-4 flex gap-2">
                 
-                {!screenShare.status && screenShare.type ? (
-                    <div onClick={screenShareInit} className="my-button bg-slate-300 dark:bg-slate-600 text-slate-800 dark:text-white p-1.5 hover:cursor-pointer flex text-sm justify-center items-center gap-2 hover:bg-slate-400 dark:hover:bg-slate-800">
+                {!screenShare.status || (!getType && screenShare.screenSharerId === Info.id )  ? !getType && screenShare.status ? (<></>): (
+                    <div onClick={selectSsType} className="my-button bg-slate-300 dark:bg-slate-600 text-slate-800 dark:text-white p-1.5 hover:cursor-pointer flex text-sm justify-center items-center gap-2 hover:bg-slate-400 dark:hover:bg-slate-800">
                         <MdScreenShare className="sm:text-xl" />
                         Screen Share
                     </div>
@@ -497,7 +569,7 @@ export default function ScreenShareWindow({getIframeHeight,iframeSource}:{iframe
                         Enter Stream
                     </div>
                 )}
-                 {screenShare.status && (
+                 {screenShare.status && getType != null && (
                     <button
                         onClick={toggleFullscreen}
                         className="p-2 bg-slate-800/50 hover:bg-slate-700/50 text-white rounded-lg transition-colors"

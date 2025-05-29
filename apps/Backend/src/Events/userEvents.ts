@@ -157,7 +157,7 @@ export default function userEvents(io: Server, socket: Socket) {
             }),
             tx.user.findUnique({
               where: { id: userId },
-              select: {
+              select: { 
                 id: true,
                 username: true,
                 displayname: true,
