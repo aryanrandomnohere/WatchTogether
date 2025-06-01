@@ -2,6 +2,7 @@
 interface ssType {
     broadcaster:{
         socketId:string;
+        userId:string;
         peer:RTCPeerConnection;
         stream: MediaStream | null;
     };
@@ -33,6 +34,7 @@ public addBroadcaster(socketId: string, roomId: string, userId: string, peer: RT
             broadcaster: {
                 socketId,
                 peer,
+                userId,
                 stream: null
             },
             consumers: new Map(),
@@ -48,6 +50,7 @@ public addBroadcaster(socketId: string, roomId: string, userId: string, peer: RT
     room.broadcaster = {
         socketId,
         peer,
+        userId,
         stream:null
     };
 

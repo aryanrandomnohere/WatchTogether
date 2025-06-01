@@ -1,6 +1,6 @@
 // server.js
 import { Server } from "socket.io";
-import wrtc from '@koush/wrtc';
+import wrtc, { MediaStream } from '@koush/wrtc';
 import http from "http";
 import { SsManager } from "./SsManager.js";
 
@@ -16,6 +16,7 @@ enum deleteType {
   FULL,
   CONSUMER
 }
+
 
 io.on("connection", (socket) => {
   console.log("Connection made");
@@ -88,16 +89,42 @@ io.on("connection", (socket) => {
         });
       }, 2000);
     } else {
-      console.log('🚫 No broadcaster stream available');
+      const broadcasterId = broadcaster.userId
+      if(!broadcasterId) {
+        io.to(userId).emit("screen-share-error")
+        return 
+      }
+      console.log("Sending tracks to ",broadcasterId)
+      io.to(broadcasterId).emit("add-tracks")
+      const expectedTracks = 2; // audio + video
+      let receivedTracks = 0;
+      const receivedStream = new MediaStream();
+      
+      broadcaster.peer.ontrack = async (event) => {
+        const clonedTrack = event.track.clone();
+        receivedStream.addTrack(clonedTrack);
+        broadcaster.stream = receivedStream;
+        consumer.addTrack(clonedTrack, receivedStream);
+      
+        receivedTracks++;
+        console.log(`Track ${receivedTracks} of ${expectedTracks} received`);
+      
+        if (receivedTracks === expectedTracks) {
+          const answer = await consumer.createAnswer();
+          await consumer.setLocalDescription(answer);
+          io.to(userId.toString()).emit("ss-answer", { answer });
+        }
+      };
+      setTimeout(async () => {
+        if (!consumer.localDescription) {
+          const answer = await consumer.createAnswer();
+          await consumer.setLocalDescription(answer);
+          io.to(userId.toString()).emit("ss-answer", { answer });
+          console.warn("Sent answer with incomplete tracks (timeout fallback)");
+        }
+      }, 3000); // 3 seconds wait
+      
     }
-    
-
-    const answer = await consumer.createAnswer();
-    await consumer.setLocalDescription(answer);
-    
-   
-    
-    io.to(userId.toString()).emit("ss-answer", { answer });
   });
 
   // Broadcast endpoint
@@ -115,18 +142,18 @@ io.on("connection", (socket) => {
       console.log("Failed to create broadcaster");
       return;
     }
-      broadcaster.peer.ontrack = (event) => {
-      const stream = event.streams[0];
-      broadcaster.stream = stream;
-      SsManager.getInstance().updateBroadcasterStream(roomId, stream);
-      console.log('Received tracks from broadcaster:', 
-        broadcaster.stream.getTracks().map(track => ({
-          kind: track.kind,
-          enabled: track.enabled,
-          muted: track.muted
-        }))
-      );
-    };
+    //   broadcaster.peer.ontrack = (event) => {
+    //   const stream = event.streams[0];
+    //   broadcaster.stream = stream;
+    //   SsManager.getInstance().updateBroadcasterStream(roomId, stream);
+    //   console.log('Received tracks from broadcaster:', 
+    //     broadcaster.stream.getTracks().map(track => ({
+    //       kind: track.kind,
+    //       enabled: track.enabled,
+    //       muted: track.muted
+    //     }))
+    //   );
+    // }
  
     broadcaster.peer.onicecandidate = event => {
       if (event.candidate) {
