@@ -85,6 +85,15 @@ export default function ScreenShareWindow({getIframeHeight,iframeSource}:{iframe
                 .catch(e => console.log("Error adding ICE candidate:", e));
         }
     });
+    socket.on("add-tracks",()=>{
+        console.log("addtrack called")
+        if((screenShare.type === ssType.SERVER) && stream && peer) {
+            console.log("Adding tracks again")
+            for (const track of stream.getTracks()) {
+              peer.addTrack(track, stream);
+            }
+          }
+    })
 
     getSocket().on("screen-share",(updatedState:screenShareType)=>{
         setScreenShare(updatedState)
@@ -268,7 +277,7 @@ return
 
     
     async function screenShareInit({type}:{type:ssType}) {
-    
+    console.log(type)
         try {
     
            peer = createPeer(type);
@@ -295,11 +304,12 @@ return
                     videoRef.current.muted = true; // Mute for self-view to prevent feedback
                     await videoRef.current.play();
                 }
-                if(type === ssType.SERVER && stream) {
+                if (stream && peer && type === ssType.SERVER) {
+                    console.log("Adding tracks to peer connection");
                     for (const track of stream.getTracks()) {
-                      peer.addTrack(track, stream);
+                        peer.addTrack(track, stream);
                     }
-                  }
+                }
                   
             setIsSharing(true)
             setScreenShare({
@@ -356,19 +366,24 @@ return
                 }
             ]
         });
+        console.log("Create peer called ")
         if(type == ssType.SERVER){
+            console.log("Making conneciton with the server")
         peer.onicecandidate = (event) => {
             if (event.candidate) {
                 console.log("Sending Ice Candidate to the server")
                 socket.emit("client-ice-candidate", "broadcaster", roomId, event.candidate)
             }
         }
+        console.log(peer)
         peer.onnegotiationneeded = () => handleNegotiationNeededEvent();
         }
         return peer;
     }
 
     async function handleNegotiationNeededEvent() {
+        console.log("creating offer")
+
         if (!peer) {
             console.log("Peer does not exist")
             return
