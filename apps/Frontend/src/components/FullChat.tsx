@@ -100,7 +100,7 @@ export default function FullChat() {
   };
   useEffect(() => {
     handleLoadState();
-  },[]);
+  },[Info.id, roomId]);
 
   useEffect(() => {
     notificationSound.current = new Audio('../assets/sounds/1.mp3');
@@ -133,7 +133,7 @@ export default function FullChat() {
       socket.off('receive-message', handleReceiveMessage);
       socket.off('new-poll', handleAddPoll);
     };
-  }); // Removed `messages` dependency
+  },[Info.id, roomId]); 
 
   function sendMessage(e: FormEvent) {
     e.preventDefault();
