@@ -37,3 +37,4 @@ yarn-error.log*
 .DS_Store
 *.pem
 apps/Frontend/node_modules/
+apps/Frontend/node_modules/
